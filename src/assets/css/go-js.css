@@ -1,0 +1,18 @@
+/* Go JS Styles */
+#myPaletteDiv{
+    max-width: 150px; 
+    margin-right: 2px; 
+    flex-grow: 1; 
+    height: 500px; 
+    background-color: #8f9194;
+    border: solid 1px black;
+  }
+  
+  #myDiagramDiv {
+    margin: 2px; 
+    flex-grow: 1; 
+    height: 500px; 
+    background-color: #8f9194;
+    border: solid 1px black;
+  }
+  

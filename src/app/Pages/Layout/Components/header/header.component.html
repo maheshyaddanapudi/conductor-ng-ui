@@ -1,0 +1,66 @@
+<nav id="navigation" name="navigation" class="container-fluid fixed-top navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand btn btn-outline-success my-4 mr-sm-2 my-sm-0 text-white" href="">Fillory</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto mr-auto">
+        <li class="nav-item dropdown mr-4">
+            <a class="nav-link" [routerLink]="['home']" skipLocationChange >Swagger Docs</a>
+        </li>
+        <li class="nav-item dropdown mr-4">
+           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             Create
+           </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" [routerLink]="['create-taskdef']" skipLocationChange>Conductor Taskdef</a>
+              <a class="dropdown-item" [routerLink]="['initiate-simple-conductor-workflow-creation']" skipLocationChange>Conductor Simple Workflow</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item disabled" disabled>Conductor Complex Workflow (Coming Soon)</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item disabled" disabled>Conductor Events (Coming Soon)</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item disabled" disabled>Conductor Event Handlers (Coming Soon)</a>
+            </div>
+        </li>
+        <li class="nav-item dropdown mr-4">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            View
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" [routerLink]="['view-taskdefs']" skipLocationChange>Conductor Taskdefs</a>
+              <a class="dropdown-item" [routerLink]="['view-workflows']" skipLocationChange>Conductor Workflows</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" [routerLink]="['view-config']" skipLocationChange>Conductor Server Config</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" [routerLink]="['view-queues-and-poll-data']" skipLocationChange>Conductor Queues and Poll Data</a>
+          </div>
+          
+        </li>
+
+          <li class="nav-item dropdown mr-4">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Executions
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" (click)="workflow_executions_selection('All')">All</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" (click)="workflow_executions_selection('Running')">Running</a>
+                <a class="dropdown-item" (click)="workflow_executions_selection('Paused')">Paused</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" (click)="workflow_executions_selection('Completed')">Completed</a>
+                <a class="dropdown-item" (click)="workflow_executions_selection('Failed')">Failed</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" (click)="workflow_executions_selection('Timed Out')">Timed Out</a>
+                <a class="dropdown-item" (click)="workflow_executions_selection('Terminated')">Terminated</a>
+            </div>
+          </li>
+      </ul>
+    </div>
+    <div class="row">
+      <div class="text-center" style="width: 100px;"><p class="text-white">{{now | date :'dd-MMM-yy'}}</p></div>
+      <div class="text-center" style="width: 100px;"><p class="text-white">{{now | date :'hh:mm:ss'}}</p></div>
+      <div><button type="button" class="text-center btn btn-sm btn-danger mr-sm-2">Logout</button></div>
+    </div>
+</nav>

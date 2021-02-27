@@ -1,0 +1,15 @@
+.btn-darksalmon:active,
+.btn-darksalmon.active,
+.btn-darksalmon:focus,
+.btn-darksalmon.focus,
+.btn-darksalmon{
+    background-color: darksalmon;
+    border-color: darksalmon;
+    font-weight: bold;
+    color: darkblue;
+    outline: thick;
+    box-shadow: none;
+}
+.btn-rounded {
+    border-radius: 25px;
+  }
