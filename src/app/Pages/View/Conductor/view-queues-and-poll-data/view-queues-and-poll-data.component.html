@@ -1,0 +1,40 @@
+<div class="container-fluid bg-secondary card">
+    <div class="card-header text-center text-white">
+        <h5><b>Task Queue and Poll Data</b></h5>
+    </div>
+</div>
+<app-loader *ngIf="!task_queue_all_data && !error_message && !poll_queue_all_data"></app-loader>
+<div class="container-fluid bg-secondary">
+    <div *ngIf="error_message" class="alert alert-warning mt-2 text-center" role="alert">
+        <strong>{{error_message}}</strong>
+    </div>
+</div>
+<div class="container-fluid bg-dark card">
+    <div class="card-header">
+        <h6 class="title text-center text-white">Queue Depth Details</h6>
+    </div>
+    <table *ngIf="task_queue_all_data" class="table table-secondary table-bordered border-light">
+        <tbody class="tbody">
+            <tr *ngFor="let item of task_queue_all_data | keyvalue; index as item_counter">
+                <td class="text-center">{{item_counter+1}}</td>
+                <th class="text-center">{{item.key}}</th>
+                <td class="text-center">{{item.value}}</td>
+            </tr>
+        </tbody>
+    </table>
+    
+</div>
+<div class="container-fluid bg-secondary card">
+    <div class="card-header">
+        <h6 class="title text-center text-white">Poll Data Details</h6>
+    </div>
+    <table *ngFor="let poll_data of poll_queue_all_data" class="table table-dark table-bordered border-light mt-2">
+        <tbody class="tbody">
+            <tr *ngFor="let item of poll_data | keyvalue; index as item_counter">
+                <td class="text-center">{{item_counter+1}}</td>
+                <th class="text-center">{{item.key}}</th>
+                <td class="text-center">{{do_transformation_if_needed(item.key, item.value)}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
