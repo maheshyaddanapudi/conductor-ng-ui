@@ -16,9 +16,6 @@ services:
         interval: 30s
         timeout: 30s
         retries: 15
-      depends_on:
-        keycloak:
-          condition: service_healthy
       mem_limit: "3096000000"
       volumes:
         - es_data:/var/lib/elasticsearch
@@ -44,9 +41,6 @@ services:
         interval: 60s
         timeout: 30s
         retries: 15
-      depends_on:
-        keycloak:
-          condition: service_healthy
       mem_limit: "512000000"
       volumes:
         - mysql_data:/var/lib/mysql
@@ -79,7 +73,9 @@ services:
         retries: 15
       mem_limit: "1536000000"
   conductor-ng-ui:
-      image: zzzmahesh/conductor-ng-ui:latest
+      image: conductor-ng-ui:latest
+      build: 
+        context: .
       restart: on-failure
       mem_limit: "512000000"
       environment:
@@ -88,8 +84,6 @@ services:
       ports:
         - 80:80
       depends_on:
-        keycloak:
-          condition: service_healthy
         conductor-boot:
           condition: service_healthy
       mem_limit: "512000000"
