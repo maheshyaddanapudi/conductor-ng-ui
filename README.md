@@ -67,8 +67,10 @@ To pull the image :
     Below command will start the Conductor NG UI
 
     	export WF_SERVER=http://localhost:8080/api
-	export OAUTH_ENABLED=N
-	npm run server
+	
+    	export OAUTH_ENABLED=N
+	
+    	npm run server
 
     Replace your Conductor Server Endpoint accordingly
 
