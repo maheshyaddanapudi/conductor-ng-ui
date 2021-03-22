@@ -18,7 +18,7 @@ services:
         retries: 15
       mem_limit: "3096000000"
       volumes:
-        - es_data:/var/lib/elasticsearch
+        - elasticsearch_data:/var/lib/elasticsearch
   mysql:
       image: mysql:5.7
       restart: on-failure
@@ -31,7 +31,7 @@ services:
         - 33060:33060
       environment:
         MYSQL_ROOT_PASSWORD: Root@1234
-        MYSQL_DATABASE: conductor
+        mysql_db_dataBASE: conductor
         MYSQL_USER: conductor
         MYSQL_PASSWORD: Conductor@1234
         MYSQL_INITDB_SKIP_TZINFO: NONE
@@ -43,7 +43,7 @@ services:
         retries: 15
       mem_limit: "512000000"
       volumes:
-        - mysql_data:/var/lib/mysql
+        - mysql_db_data:/var/lib/mysql
   conductor-boot:
       image: zzzmahesh/conductorboot:latest
       restart: on-failure
@@ -59,9 +59,9 @@ services:
       ports:
         - 8080:8080
       environment:
-        MYSQL_DATABASE_HOST: mysql
-        MYSQL_DATABASE_PORT: 3306
-        MYSQL_DATABASE: conductor
+        mysql_db_dataBASE_HOST: mysql
+        mysql_db_dataBASE_PORT: 3306
+        mysql_db_dataBASE: conductor
         MYSQL_USER: conductor
         MYSQL_PASSWORD: Conductor@1234
         ELASTICSEARCH_URL: http://elasticsearch:9200
@@ -92,17 +92,7 @@ services:
           aliases:
             - conductor-ng-ui
 volumes:
-  es_data:
-    driver: local
-    driver_opts:
-      type: none
-      device: $PWD/container/persistence/elasticsearch
-      o: bind
-  mysql_data:
-    driver: local
-    driver_opts:
-      type: none
-      device: $PWD/container/persistence/mysql
-      o: bind
+  elasticsearch_data:
+  mysql_db_data:
 networks:
   conductor-ng-ui-nw:
