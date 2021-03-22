@@ -40,7 +40,7 @@ SonarQube: [![Quality Gate Status](https://sonarcloud.io/api/project_badges/meas
 
 ## Build using Node
 
-		npm run build
+    npm run build
       - for development build
     npm run build-prod
       - for production build
@@ -62,19 +62,23 @@ To pull the image :
 
 ## Run Conductor NG UI : Standalone
 
-	  cd <to project root folder>
+	cd <to project root folder>
 		
-	Below command will start the Conductor NG UI
+    Below command will start the Conductor NG UI
 
-    export WF_SERVER=http://localhost:8080/api
+    	export WF_SERVER=http://localhost:8080/api
 
-      Replace your Conductor Server Endpoint accordingly
+    Replace your Conductor Server Endpoint accordingly
 
-		npm run server
+	npm run server
 
-## Application URLs
+#### Note: To avoid CORS issue while running on local host, open chrom with disabled security. Example (For Mac) is as below and should be similar on other OS too.
 
-		http://localhost:4200/ - To access Angular Web UI.
+	open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security
+
+### Application URLs
+
+	http://localhost:4200/ - To access Angular Web UI.
 
 ## Run Conductor NG UI : Docker
 
@@ -100,6 +104,14 @@ Few other examples / ways / configurations to run the container as:
 
     Note: If you are using Conductor Boot instead of pure conductor, then the userinfo url will http://<<conductor_server_url>>/userinfo . Here the conductor_server_url refers to the base url and not the API endpoint.
 
+#### Note: To avoid CORS issue while running on local host, open chrom with disabled security. Example (For Mac) is as below and should be similar on other OS too.
+
+	open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security
+
+### Application URLs
+
+	http://localhost - To access Angular Web UI.
+
 ## Run Conductor NG UI : Docker Compose
 
     1) A simple setup
@@ -109,3 +121,11 @@ Few other examples / ways / configurations to run the container as:
     2) A full fledged setup
 
         docker-compose -f docker-compose-suite.yml up -d
+	
+#### Note: To avoid CORS issue while running on local host, open chrom with disabled security. Example (For Mac) is as below and should be similar on other OS too.
+
+	open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security
+
+### Application URLs
+
+	http://localhost - To access Angular Web UI.
