@@ -12,6 +12,8 @@
 container/persistence/mysql/
 /container/persistence/elasticsearch/
 container/persistence/elasticsearch/
+/container/persistence/postgres/
+container/persistence/postgres/
 
 # profiling files
 chrome-profiler-events.json

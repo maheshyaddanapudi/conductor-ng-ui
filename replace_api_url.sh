@@ -49,9 +49,9 @@ fi
 
 if [ $OAUTH_USER_INFO_URL ] ; 
     then 
-        find '/usr/share/nginx/html' -name '*.js' -exec sed -i -e 's,OAUTH_USER_INFO_VALUE,'"$OAUTH_USER_INFO_URL"',g' {} \;
+        find '/usr/share/nginx/html' -name '*.js' -exec sed -i -e 's,OAUTH_USER_INFO_URL_VALUE,'"$OAUTH_USER_INFO_URL"',g' {} \;
     else 
-        find '/usr/share/nginx/html' -name '*.js' -exec sed -i -e 's,OAUTH_USER_INFO_VALUE,'"$OAUTH_USER_INFO_URL_DEFAULT"',g' {} \;
+        find '/usr/share/nginx/html' -name '*.js' -exec sed -i -e 's,OAUTH_USER_INFO_URL_VALUE,'"$OAUTH_USER_INFO_URL_DEFAULT"',g' {} \;
 fi
 
 if [ $OAUTH_LOGOUT_URL ] ; 
