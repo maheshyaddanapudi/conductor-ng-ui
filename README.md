@@ -124,6 +124,10 @@ Few other examples / ways / configurations to run the container as:
 
         docker-compose -f docker-compose-suite.yml up -d
 	
+#### Note: For a full suite, it is assumed, the persistence also will be expected to be mapped. Hence create the below folder structure before "A full fledged setup"
+
+	mkdir container container/persistence container/persistence/mysql container/persistence/postgres container/persistence/elasticsearch
+	
 #### Note: To avoid CORS issue while running on local host, open chrom with disabled security. Example (For Mac) is as below and should be similar on other OS too.
 
 	open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security
