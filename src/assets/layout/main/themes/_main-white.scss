@@ -1,0 +1,39 @@
+// Theme White
+
+// Variables
+
+$app-container-bg: #f1f4f6;
+$app-sidebar-bg: #ffffff;
+$app-header-bg: #fafbfc;
+$app-header-logo-bg: rgba(255, 255, 255, .9);
+
+// Content
+
+.app-theme-white {
+
+  &.app-container {
+    background-image: linear-gradient(to bottom, #323232 0%, #3F3F3F 40%, #1C1C1C 150%), linear-gradient(to top, rgba(255, 255, 255, 0.40) 0%, rgba(0, 0, 0, 0.25) 200%) !important;
+    background-blend-mode: multiply;
+  }
+
+  .app-sidebar {
+    .app-sidebar-content {
+      background: $app-sidebar-bg;
+    }
+  }
+
+  .app-inner-layout__wrapper {
+    border-bottom: $gray-200 solid 1px;
+  }
+
+  .app-page-title {
+    background: rgba(255, 255, 255, .45);
+  }
+
+  .app-sidebar .app-header__logo,
+  .app-footer .app-footer__inner,
+  .app-header {
+    background: $app-header-bg;
+  }
+
+}

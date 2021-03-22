@@ -1,0 +1,317 @@
+<div class="card-body text-center bg-dark text-white">
+  <table *ngIf="!loading" class="table table-striped table-bordered">
+      <thead class="thead bg-primary text-while">
+          <th class="text-center text-white">#</th>
+          <th class="text-center text-white">Task Name</th>
+          <th class="text-center text-white">Task Type</th>
+          <th class="text-center text-white">Task Reference Name</th>
+          <th class="text-center text-white">Input</th>
+          <th class="text-center text-white">Output</th>
+          <th *ngIf="tasks_execution_list" class="text-center text-white">Status</th>
+          <th class="text-center text-white">Metadata</th>
+          <th class="text-center text-white">JSON</th>
+          <th class="text-center text-white">Sub Tasks</th>
+      </thead>
+      <tbody *ngIf="tasks_list && tasks_list.length > 0" class="tbody table-secondary text-dark">
+          <tr *ngFor="let a_task of tasks_list ; index as task_counter">
+           <td class="text-center">{{task_counter+1}}</td>
+           <td class="text-center">{{a_task.name}}</td>
+           <td class="text-center">{{a_task.type}}</td>
+           <td class="text-center">{{a_task.taskReferenceName}}</td>
+           <td class="text-center">
+              <ng-template #inputParametersContent let-c="close" let-d="dismiss">
+                  <div class="modal-header bg-dark text-white">
+                    <div class="card-body text-center mx-auto"><h4 class="card-title">Input Parameter(s)</h4></div>
+                    <button type="button" class="close text-white" aria-label="Close" (click)="d('Cross click')">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div> 
+                  
+                  <div *ngIf="!tasks_execution_list ; else workflow_execution_input_template" class="modal-body bg-secondary">
+                    <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                        <div class="card-body">
+                          <div *ngIf="a_task.inputParameters" class="alert alert-primary text-center" role="alert">
+                            Total of {{get_keys_length(a_task.inputParameters)}} Params Found
+                          </div>
+                          <table class="mb-0 table table-dark">
+                            <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>Parameter Name</th>
+                              <th>Parameter Variable</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let anInputParam of a_task.inputParameters | keyvalue; index as inputParamCounter">
+                              <th scope="row">{{inputParamCounter+1}}</th>
+                              <td>{{anInputParam.key}}</td>
+                              <td>{{anInputParam.value}}</td>
+                            </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                    </perfect-scrollbar>
+                  </div>
+                  <ng-template #workflow_execution_input_template>
+                    <div class="modal-body bg-secondary">
+                      <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                          <div class="card-body">
+                            <div *ngIf="a_task.task && a_task.task.inputData ; else count_from_input_parameters" class="alert alert-primary text-center" role="alert">
+                              Total of {{get_keys_length(a_task.task.inputData)}} Params Found
+                            </div>
+                            <ng-template #count_from_input_parameters>
+                              <div *ngIf="a_task.inputParameters">
+                                Total of {{get_keys_length(a_task.inputParameters)}} Params Found
+                              </div>
+                            </ng-template>
+                            <table class="mb-0 table table-dark">
+                              <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>Parameter Name</th>
+                                <th>Parameter Value</th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              <tr *ngFor="let anInputParam of get_input_data_from_execution(a_task) | keyvalue; index as inputParamCounter">
+                                <th scope="row">{{inputParamCounter+1}}</th>
+                                <td>{{anInputParam.key}}</td>
+                                <td>{{anInputParam.value}}</td>
+                              </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                      </perfect-scrollbar>
+                    </div>
+                  </ng-template>
+                  <div class="modal-footer bg-dark">
+                    <button type="button" class="btn btn-light" (click)="c('Close click')">Close</button>
+                  </div>
+                </ng-template>
+              <button *ngIf="undefined != a_task.inputParameters && get_keys_length(a_task.inputParameters) > 0 ; else inputKeysDisabled" (click)="openLarge(inputParametersContent)" type="button" class="btn btn-primary btn-sm">Input</button>
+              <ng-template #inputKeysDisabled>
+                  <button type="button" class="btn btn-primary btn-sm disabled" disabled>Input</button>
+              </ng-template>
+           </td>
+           <td class="text-center">
+              <ng-template #outputParametersContent let-c="close" let-d="dismiss">
+                  <div class="modal-header bg-dark text-white">
+                    <div class="card-body text-center mx-auto"><h4 class="card-title">Output Parameter(s)</h4></div>
+                    <button type="button" class="close text-white" aria-label="Close" (click)="d('Cross click')">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div> 
+                  <div *ngIf="!a_task.task || !a_task.task.outputData ; else workflow_execution_output_template" class="modal-body bg-secondary">
+                    <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                        <div class="card-body">
+                          <div *ngIf="a_task.taskDefinition.outputKeys" class="alert alert-primary text-center" role="alert">
+                            Total of {{a_task.taskDefinition.outputKeys.length}} Params Found
+                          </div>
+                          <table class="mb-0 table table-dark">
+                            <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>Parameter Name</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let anOutputParam of a_task.taskDefinition.outputKeys ; index as outputParamCounter">
+                              <th scope="row">{{outputParamCounter+1}}</th>
+                              <td>{{anOutputParam}}</td>
+                            </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                    </perfect-scrollbar>
+                  </div>
+                  <ng-template #workflow_execution_output_template>
+                    <div class="modal-body bg-secondary">
+                      <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                          <div class="card-body">
+                            <div *ngIf="get_keys_length(a_task.task.outputData) > 0" class="alert alert-primary text-center" role="alert">
+                              Total of {{get_keys_length(a_task.task.outputData)}} Params Found
+                            </div>
+                            <table class="mb-0 table table-dark">
+                              <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>Parameter Name</th>
+                                <th>Parameter Value</th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              <tr *ngFor="let anOutputParam of a_task.task.outputData | keyvalue ; index as outputParamCounter">
+                                <th scope="row">{{outputParamCounter+1}}</th>
+                                <td>{{anOutputParam.key}}</td>
+                                <td>{{anOutputParam.value}}</td>
+                              </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                      </perfect-scrollbar>
+                    </div>
+                  </ng-template>
+                  <div class="modal-footer bg-dark">
+                    <button type="button" class="btn btn-light" (click)="c('Close click')">Close</button>
+                  </div>
+                </ng-template>
+              <button *ngIf="enable_output_button(a_task) ; else outputKeysDisabled" (click)="openLarge(outputParametersContent)" type="button" class="btn btn-success btn-sm">Output</button>
+              <ng-template #outputKeysDisabled>
+                  <button type="button" class="btn btn-success btn-sm disabled" disabled>Output</button>
+              </ng-template>
+           </td>
+           <td *ngIf="tasks_execution_list" class="text-center">
+            <div *ngIf="get_status_from_execution(a_task) == 'RUNNING' ; else taskExecutionStatusSecondCheck" class="badge badge-pill badge-info">{{get_status_from_execution(a_task)}}</div>
+              <ng-template #taskExecutionStatusSecondCheck>
+                  <div *ngIf="get_status_from_execution(a_task) == 'COMPLETED' ; else taskExecutionStatusWarningOrDanger" class="badge badge-pill badge-success">{{get_status_from_execution(a_task)}}</div>
+                  <ng-template #taskExecutionStatusWarningOrDanger>
+                    <div *ngIf="get_status_from_execution(a_task) == 'FAILED' || get_status_from_execution(a_task) == 'TERMINATED' ; else taskExecutionStatusWarning" class="badge badge-pill badge-danger">{{get_status_from_execution(a_task)}}</div>
+                    <ng-template #taskExecutionStatusWarning>
+                      <div *ngIf="get_status_from_execution(a_task) != 'SKIPPED' && get_status_from_execution(a_task) != 'SKIPPED / TBD' ; else task_status_skipped_template" class="badge badge-pill badge-warning">{{get_status_from_execution(a_task)}}</div>
+                      <ng-template #task_status_skipped_template>
+                        <div class="badge badge-pill badge-secondary">{{get_status_from_execution(a_task)}}</div>
+                      </ng-template>
+                    </ng-template>  
+                  </ng-template>
+              </ng-template>
+           </td>
+           <td class="text-center">
+              <ng-template #metadataContent let-c="close" let-d="dismiss">
+                <div class="card-body text-white" style="background-color: rgb(51, 51, 51); border-color: rgb(51, 51, 51);">
+                  <div class="modal-header text-white">
+                    <div class="card-body text-center mx-auto"><h4 class="card-title">TaskDef Metadata</h4></div>
+                    <button type="button" class="close text-white" aria-label="Close" (click)="d('Cross click')">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div> 
+                    <perfect-scrollbar style="height: 500px">
+                    <div style="padding-right: 5%">
+                      <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text bg-light text-dark">Owner App</span></div>
+                        <input type="text" class="form-control text-right" value="{{a_task.taskDefinition.ownerApp}}" readonly>
+                      </div>
+                      <br>
+                      <div class="input-group"><input type="text" class="form-control text-left" value="{{a_task.taskDefinition.executionNameSpace}}" readonly>
+                        <div class="input-group-append"><span class="input-group-text bg-light text-dark">Execution Name Space</span></div>
+                      </div>
+                      <br>
+                      <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text bg-light text-dark">Timeout Seconds</span></div>
+                        <input type="text" class="form-control text-right" value="{{a_task.taskDefinition.timeoutSeconds}}" readonly>
+                      </div>
+                      <br>
+                      <div class="input-group"><input type="text" class="form-control text-left" value="{{a_task.taskDefinition.responseTimeoutSeconds}}" readonly>
+                        <div class="input-group-append"><span class="input-group-text bg-light text-dark">Response Timeout Seconds</span></div>
+                      </div>
+                      <br>
+                      <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text bg-light text-dark">Concurrent Exec Limit</span></div>
+                        <input type="text" class="form-control text-right" value="{{a_task.taskDefinition.concurrentExecLimit}}" readonly>
+                      </div>
+                      <br>
+                      <div class="input-group"><input type="text" class="form-control text-left" value="{{a_task.taskDefinition.retryCount}}" readonly>
+                        <div class="input-group-append"><span class="input-group-text bg-light text-dark">Retry Count</span></div>
+                      </div>
+                      <br>
+                      <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text bg-light text-dark">Timeout Policy</span></div>
+                        <input type="text" class="form-control text-right" value="{{a_task.taskDefinition.timeoutPolicy}}" readonly>
+                      </div>
+                      <br>
+                      <div class="input-group"><input type="text" class="form-control text-left" value="{{a_task.taskDefinition.retryLogic}}" readonly>
+                        <div class="input-group-append"><span class="input-group-text bg-light text-dark">Retry Logic</span></div>
+                      </div>
+                      <br>
+                      <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text bg-light text-dark">Retry Delay Seconds</span></div>
+                        <input type="text" class="form-control text-right" value="{{a_task.taskDefinition.retryDelaySeconds}}" readonly>
+                      </div>
+                      <br>
+                      <div class="input-group"><input type="text" class="form-control text-left" value="{{a_task.taskDefinition.rateLimitPerFrequency}}" readonly>
+                        <div class="input-group-append"><span class="input-group-text bg-light text-dark">Rate Limit Per Frequency</span></div>
+                      </div>
+                      <br>
+                      <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text bg-light text-dark">Rate Limit Frequency In Seconds</span></div>
+                        <input type="text" class="form-control text-right" value="{{a_task.taskDefinition.rateLimitFrequencyInSeconds}}" readonly>
+                      </div>
+                      <br>
+                      <div class="input-group"><input type="text" class="form-control text-left" value="{{a_task.taskDefinition.isolationGroupId}}" readonly>
+                        <div class="input-group-append"><span class="input-group-text bg-light text-dark">Isolation Group Id</span></div>
+                      </div>
+                      <br>
+                      <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text bg-light text-dark">Create Time</span></div>
+                        <input type="text" class="form-control text-right" value="{{a_task.taskDefinition.createTime | date:'yyyy-MM-dd HH:mm:ss Z'}}" readonly>
+                      </div>
+                      <br>
+                      <div class="input-group"><input type="text" class="form-control text-left" value="{{a_task.taskDefinition.updateTime | date:'yyyy-MM-dd HH:mm:ss Z'}}" readonly>
+                        <div class="input-group-append"><span class="input-group-text bg-light text-dark">Update Time</span></div>
+                      </div>
+                      <br>
+                      <div class="input-group">
+                        <div class="input-group-prepend"><span class="input-group-text bg-light text-dark">Created By</span></div>
+                        <input type="text" class="form-control text-right" value="{{a_task.taskDefinition.createdBy}}" readonly>
+                      </div>
+                      <br>
+                      <div class="input-group"><input type="text" class="form-control text-left" value="{{a_task.taskDefinition.updatedBy}}" readonly>
+                        <div class="input-group-append"><span class="input-group-text bg-light text-dark">Updated By</span></div>
+                      </div>
+                    </div>
+                  </perfect-scrollbar>
+                </div>
+                <div class="d-block text-center card-footer">
+                    Please scroll to see all details (In case of smaller screens) ...
+                </div>
+            </ng-template>
+            <button *ngIf="a_task.type == 'SIMPLE' ; else metadata_disabled_template" type="button" class="btn btn-dark btn-sm" (click)="openLarge(metadataContent)">Metadata</button>
+            <ng-template #metadata_disabled_template>
+              <button type="button" class="btn btn-dark btn-sm disabled" disabled>Metadata</button>
+            </ng-template>
+           </td>
+           <td class="text-center">
+            <ng-template #taskDefJsonContent let-c="close" let-d="dismiss">
+              <div class="modal-header bg-dark text-white">
+                <div class="card-body text-center mx-auto"><h4 class="card-title">Workflow Task JSON</h4></div>
+                <button type="button" class="close text-white" aria-label="Close" (click)="setTaskDefJsonTemp(); d('Cross click')">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body bg-secondary">
+                  <div class="card-border mb-3 card card-body border-light bg-light">
+                      <perfect-scrollbar style="height: 150px">
+                          {{taskDefJsonTemp}}
+                      </perfect-scrollbar>
+                  </div>
+              </div>
+              <div class="modal-footer bg-dark">
+                <button type="button" class="btn btn-light" (click)="setTaskDefJsonTemp(); c('Close click')">Close</button>
+              </div>
+            </ng-template>
+          <button type="button" class="btn btn-sm btn-outline-focus" (click)="setTaskDefJsonTemp(a_task); openLarge(taskDefJsonContent)">JSON</button>
+           </td>
+           <td class="text-center">
+              <ng-template #sub_tasks_template let-c="close" let-d="dismiss">
+              <perfect-scrollbar style="height: 550px;">
+                  <app-display-branches-list [branch_task_list]="branch_task_list" [workflow_name]="workflow_name" [workflow_version]="workflow_version" [workflow_status]="workflow_status" [parent_task_ref_name]="a_task.taskReferenceName" [tasks_execution_list]="tasks_execution_list"></app-display-branches-list>
+              </perfect-scrollbar>  
+              <div class="d-block text-center card-footer mt-0 bg-dark">
+                  <form class="form-inline mb-2">
+                      <div class="form-group col-md-6">
+                          <button type="button" class="btn btn-light btn-lg btn-block" (click)="c('Cancel click')">Close</button>
+                      </div>
+                      <div class="form-group col-md-6">
+                          <button type="button" class="btn btn-info btn-lg btn-block" (click)="open_tasks_in_new_window(a_task.taskReferenceName)">Open in a New Window - Full Screen</button>
+                      </div>
+                  </form>
+              </div>
+              </ng-template>
+              <button *ngIf="a_task.type == 'FORK_JOIN' || a_task.type == 'DECISION' || a_task.type == 'DO_WHILE' ; else sub_tasks_disabled_template" type="button" class="btn btn-info btn-sm" (click)="get_sub_tasks_list(a_task) ; openLarge(sub_tasks_template)">Sub Tasks</button>
+              <ng-template #sub_tasks_disabled_template>
+                  <button type="button" class="btn btn-info btn-sm disabled" disabled>Sub Tasks</button>
+              </ng-template>
+           </td>
+          </tr>
+      </tbody>
+  </table>
+</div>

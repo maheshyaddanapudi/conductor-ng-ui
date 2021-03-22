@@ -1,0 +1,228 @@
+<div class="container-fluid bg-secondary card mt-2">
+  <div class="card-header bg-dark text-center text-white">
+      <h5><b>Workflow Executions - History</b></h5>
+  </div>
+</div>
+<div class="container-fluid">
+
+  <div *ngIf="!error_message && !search_results" class="loading-custom">Loading...</div>
+
+  <div *ngIf="error_message" class="alert alert-warning mt-2" role="alert">
+      {{error_message}}
+  </div>
+  
+  <div *ngIf="!error_message && search_results" class="alert alert-primary mt-2 text-center" role="alert">
+      Total of {{search_results.totalHits}} Workflow Executions Found
+  </div>
+  
+  <div class="container-fluid d-flex text-center justify-content-center">
+
+    <div class="col-md-4">
+      <div class="custom-control custom-switch">
+        <input type="checkbox" class="custom-control-input" id="autorefresh" [checked]="auto_refresh" (click)="set_auto_refresh($event)">
+        <label class="custom-control-label text-white" for="autorefresh"><strong>Auto-Refresh</strong></label>
+      </div>
+    </div>
+
+    <div class="col-md-4 text-center">
+      <div class="container-fluid">
+        <p *ngIf="auto_refresh_message ; else auto_refresh_message_paused" style="color: green;">
+          {{auto_refresh_message}}
+        </p>
+        <ng-template #auto_refresh_message_paused>
+          <p style="color: orange;">
+            Auto-Refresh is Paused ...
+          </p>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <button type="button" class="btn btn-focus btn-sm" (click)="refresh()"><strong>Refresh</strong></button>
+    </div>
+  </div>
+
+  <ul class="pagination justify-content-center" style="margin:20px 0">
+    <li *ngIf="current_page_selected > 1 ; else previous_deactivated_template" class="page-item"><a class="page-link" (click)="set_current_page_selected(current_page_selected - 1)"><strong>Previous</strong></a></li>
+    <ng-template #previous_deactivated_template>
+      <li class="page-item disabled"><a class="page-link">Previous</a></li>
+    </ng-template>
+    <li *ngFor="let page_number of numbers" class="page-item">
+      <a *ngIf="is_active_page(page_number) ; else non_current_page_template" class="page-link bg-primary text-white">{{page_number}}</a>
+      <ng-template #non_current_page_template>
+        <a class="page-link" (click)="set_current_page_selected(page_number)">{{page_number}}</a>
+      </ng-template>
+    </li>
+    <li *ngIf="current_page_selected < total_pages ; else next_deactivated_template" class="page-item"><a class="page-link" (click)="set_current_page_selected(current_page_selected + 1)"><strong>Next</strong></a></li>
+    <ng-template #next_deactivated_template>
+      <li class="page-item disabled"><a class="page-link">Next</a></li>
+    </ng-template>
+  </ul>
+
+  <div class="container-fluid dropdown text-center text-white">
+    <label for="dropdownMenuOffset"><strong>Results per pag</strong>e</label>
+    &nbsp;:&nbsp;
+    <button type="button" class="btn btn-dark dropdown-toggle" id="dropdownMenuOffset" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-offset="10,20">
+      <strong>{{page_size}}</strong>
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuOffset">
+      <a class="dropdown-item" (click)="update_page_size(10)">10</a>
+      <a class="dropdown-item" (click)="update_page_size(25)">25</a>
+      <a class="dropdown-item" (click)="update_page_size(50)">50</a>
+      <a class="dropdown-item" (click)="update_page_size(100)">100</a>
+    </div>
+  </div>
+
+  <div class="main-card mb-3 card">
+      <div class="table-responsive">
+        <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+          <thead class="text-white bg-info">
+          <tr>
+            <th class="text-center">#</th>
+            <th class="text-center">Workflow Name</th>
+            <th>Workflow Id</th>
+            <th class="text-center">Version</th>
+            <th class="text-center">Start Time</th>
+            <th class="text-center">Update Time</th>
+            <th class="text-center">Status</th>
+            <th class="text-center">Input</th>
+            <th class="text-center">Output</th>
+            <th class="text-center">JSON</th>
+            <th class="text-center">Details</th>
+          </tr>
+          </thead>
+          <tbody *ngIf="undefined!=search_results">
+          <tr *ngFor="let workflowExecution of search_results.results ; index as workflowExecutionCounter">
+            <td class="text-center text-muted">#{{ ((current_page_selected-1)*page_size) + workflowExecutionCounter+1}}</td>
+            <td class="text-center">
+              <div class="widget-content p-0">
+                <div class="widget-content-left flex2">
+                  <div class="widget-heading">{{workflowExecution.workflowType}}</div>
+                  <div class="widget-subheading opacity-7">Priority:: {{workflowExecution.priority}}</div>
+                </div>
+              </div>
+            </td>
+            <td>{{workflowExecution.workflowId}}</td>
+            <td class="text-center">{{workflowExecution.version}}</td>
+            <td class="text-center">{{workflowExecution.startTime}}</td>
+            <td class="text-center">{{workflowExecution.updateTime}}</td>
+            <td class="text-center">
+                <div *ngIf="workflowExecution.status == 'RUNNING' ; else workflowExecutionStatusSecondCheck" class="badge badge-pill badge-info">{{workflowExecution.status}}</div>
+                <ng-template #workflowExecutionStatusSecondCheck>
+                    <div *ngIf="workflowExecution.status == 'COMPLETED' ; else workflowExecutionStatusWarningOrDanger" class="badge badge-pill badge-success">{{workflowExecution.status}}</div>
+                    <ng-template #workflowExecutionStatusWarningOrDanger>
+                      <div *ngIf="workflowExecution.status == 'FAILED' || workflowExecution.status == 'TERMINATED' ; else workflowExecutionStatusWarning" class="badge badge-pill badge-danger">{{workflowExecution.status}}</div>
+                      <ng-template #workflowExecutionStatusWarning>
+                        <div class="badge badge-pill badge-warning">{{workflowExecution.status}}</div>
+                      </ng-template>  
+                    </ng-template>
+                </ng-template>
+            </td>
+            <td class="text-center">
+              <ng-template #workflowExecutionInput let-c="close" let-d="dismiss">
+                <div class="modal-header bg-dark text-white">
+                  <div class="card-body text-center mx-auto"><h4 class="card-title">Input Parameter(s)</h4></div>
+                  <button type="button" class="close text-white" aria-label="Close" (click)="d('Cross click')">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body bg-secondary">
+                  <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                      <div class="card-body">
+                        <table class="mb-0 table table-dark">
+                          <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Parameter Name</th>
+                            <th>Parameter Value</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let an_item of convert_string_to_json(workflowExecution.input) | keyvalue; index as item_counter">
+                              <th scope="row">{{item_counter+1}}</th>
+                              <td>{{an_item.key}}</td>
+                              <td>{{an_item.value}}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                  </perfect-scrollbar>
+                </div>
+                <div class="modal-footer bg-dark">
+                  <button type="button" class="btn btn-light" (click)="c('Close click')">Close</button>
+                </div>
+              </ng-template>
+              <button *ngIf="undefined != workflowExecution.input ; else inputKeysDisabled" (click)="openLarge(workflowExecutionInput)" type="button" class="btn btn-primary btn-sm">Input</button>
+              <ng-template #inputKeysDisabled>
+                  <button type="button" class="btn btn-primary btn-sm disabled">Input</button>
+              </ng-template>
+            </td>
+            <td class="text-center">
+              <ng-template #workflowExecutionOutput let-c="close" let-d="dismiss">
+                <div class="modal-header bg-dark text-white">
+                  <div class="card-body text-center mx-auto"><h4 class="card-title">Output Parameter(s)</h4></div>
+                  <button type="button" class="close text-white" aria-label="Close" (click)="d('Cross click')">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body bg-secondary">
+                  <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                      <div class="card-body">
+                        <table class="mb-0 table table-dark">
+                          <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Parameter Name</th>
+                            <th>Parameter Value</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let an_item of convert_string_to_json(workflowExecution.output) | keyvalue; index as item_counter">
+                              <th scope="row">{{item_counter+1}}</th>
+                              <td>{{an_item.key}}</td>
+                              <td>{{an_item.value}}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                  </perfect-scrollbar>
+                </div>
+                <div class="modal-footer bg-dark">
+                  <button type="button" class="btn btn-light" (click)="c('Close click')">Close</button>
+                </div>
+              </ng-template>
+              <button *ngIf="undefined != workflowExecution.output; else outputKeysDisabled" (click)="openLarge(workflowExecutionOutput)" type="button" class="btn btn-success btn-sm">Output</button>
+              <ng-template #outputKeysDisabled>
+                  <button type="button" class="btn btn-success btn-sm disabled">Output</button>
+              </ng-template>
+            </td>
+            <td class="text-center">
+                <ng-template #workflowExecutionJsonContent let-c="close" let-d="dismiss">
+                  <div class="modal-header bg-dark">
+                    <h4 class="modal-title text-white text-center">Workflow Execution JSON</h4>
+                    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body bg-secondary">
+                      <div class="card-border card card-body">
+                          <perfect-scrollbar style="height: 150px">
+                              {{conver_json_to_string(workflowExecution)}}
+                          </perfect-scrollbar>
+                      </div>
+                  </div>
+                  <div class="modal-footer bg-dark">
+                    <button type="button" class="btn btn-secondary btn-light" (click)="c('Close click')">Close</button>
+                  </div>
+                </ng-template>
+              <button type="button" class="btn btn-focus btn-sm" (click)="openLarge(workflowExecutionJsonContent)">JSON</button>
+            </td>
+            <td class="text-center">
+              <button type="button" class="btn btn-dark btn-sm" (click)="viewWorkflowExecutionDetails(workflowExecution.workflowType, workflowExecution.version, workflowExecution.workflowId)">Details</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+</div>

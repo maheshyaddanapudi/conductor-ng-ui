@@ -1,0 +1,212 @@
+<div [class]="'app-sidebar sidebar-shadow ' + (config$ | async).sidebarTheme" (mouseover)="sidebarHover()"
+     (mouseout)="sidebarHover()">
+  <div class="app-header__logo">
+    <div class="logo-src"></div>
+    <div class="header__pane ml-auto">
+      <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
+              [ngClass]="{'is-active' : globals.toggleSidebar}" (click)="toggleSidebar()">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+      </button>
+    </div>
+  </div>
+  <div class="app-sidebar-content bg-dark text-white">
+    <div class="app-sidebar-scroll">
+      <perfect-scrollbar [autoPropagation]="true">
+        <div class="v-sidebar-menu vsm-default">
+          <div class="vsm-list">
+            <ngb-accordion [destroyOnHide]="false" [closeOthers]="true" [activeIds]="extraParameter">
+              <ngb-panel>
+                <ng-template ngbPanelHeader>
+                  <div class="vsm-header text-info"><strong>Main Navigation</strong></div>
+                </ng-template>
+              </ngb-panel>
+              <ngb-panel id="dashboardsMenu">
+                <ng-template ngbPanelHeader>
+                  <button ngbPanelToggle class="vsm-link">
+                    <i class="vsm-icon pe-7s-graph text-white"></i>
+                    <span class="vsm-title text-info"><strong>Dashboards</strong></span>
+                    <i class="vsm-arrow text-white"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngbPanelContent>
+                  <div class="vsm-dropdown">
+                    <div class="vsm-list">
+                      <div class="vsm-item"><a routerLink="/dashboard/workflow-dashboard" routerLinkActive="active-item"
+                                               [routerLinkActiveOptions]="{exact: true}" class="vsm-link"><span
+                        class="vsm-title text-info"><strong>Workflow Statistics</strong></span></a>
+                      </div>
+                      <div *ngIf="LOG_AGGREGATOR_ANALYTICS_IFRAME_URL" class="vsm-item"><a routerLink="/dashboard/log-aggregation-dashboard" routerLinkActive="active-item"
+                        [routerLinkActiveOptions]="{exact: true}" class="vsm-link"><span
+                        class="vsm-title text-info"><strong>Log Statistics</strong></span></a>
+                        </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </ngb-panel>
+              <ngb-panel id="reportsMenu">
+                <ng-template ngbPanelHeader>
+                  <button ngbPanelToggle class="vsm-link">
+                    <i class="vsm-icon pe-7s-play text-white"></i>
+                    <span class="vsm-title text-info"><strong>Workflow Executions</strong></span>
+                    <i class="vsm-arrow text-white"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngbPanelContent>
+                  <div class="vsm-dropdown">
+                    <div class="vsm-list">
+                      <div class="vsm-item">
+                        <a routerLinkActive="active-item" (click)="workflow_executions_selection('All')" class="vsm-link"><span
+                          class="vsm-title text-info"><strong>All</strong></span></a>
+                      </div>
+                      <div class="vsm-item">
+                        <a routerLinkActive="active-item" (click)="workflow_executions_selection('Running')" class="vsm-link"><span
+                          class="vsm-title text-info">Running</span></a>
+                      </div>
+                      <div class="vsm-item">
+                        <a routerLinkActive="active-item" (click)="workflow_executions_selection('Paused')" class="vsm-link"><span
+                          class="vsm-title text-info">Paused</span></a>
+                      </div>
+                      <div class="vsm-item">
+                        <a routerLinkActive="active-item" (click)="workflow_executions_selection('Completed')"
+                           class="vsm-link"><span class="vsm-title text-info">Completed</span></a>
+                      </div>
+                      <div class="vsm-item">
+                        <a routerLinkActive="active-item" (click)="workflow_executions_selection('Failed')"
+                           class="vsm-link"><span class="vsm-title text-info">Failed</span></a>
+                      </div>
+                      <div class="vsm-item">
+                        <a routerLinkActive="active-item" (click)="workflow_executions_selection('Terminated')"
+                           class="vsm-link"><span class="vsm-title text-info">Terminated</span></a>
+                      </div>
+                      <div class="vsm-item">
+                        <a routerLinkActive="active-item" (click)="workflow_executions_selection('Timed Out')"
+                           class="vsm-link"><span class="vsm-title text-info">Timed-Out</span></a>
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </ngb-panel>
+              <ngb-panel>
+                <ng-template ngbPanelHeader>
+                  <div class="vsm-header text-info"><strong>Medatadata Management</strong></div>
+                </ng-template>
+              </ngb-panel>
+              <ngb-panel id="viewDefinitionsMenu">
+                <ng-template ngbPanelHeader>
+                  <button ngbPanelToggle class="vsm-link">
+                    <i class="vsm-icon pe-7s-glasses text-white"></i>
+                    <span class="vsm-title text-info"><strong>View Definitions</strong></span>
+                    <i class="vsm-arrow text-white"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngbPanelContent>
+                  <div class="vsm-dropdown">
+                    <div class="vsm-list">
+                      <div class="vsm-item">
+                        <a routerLinkActive="active-item" routerLink="/view/task-definitions" class="vsm-link"><span
+                          class="vsm-title text-info"><strong>Task Definitions</strong></span></a>
+                      </div>
+                      <div class="vsm-item">
+                        <a routerLinkActive="active-item" routerLink="/view/workflow-definitions" class="vsm-link"><span
+                          class="vsm-title text-info"><strong>Workflow Definitions</strong></span></a>
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </ngb-panel>
+              <ngb-panel id="createDefinitionsMenu">
+                <ng-template ngbPanelHeader>
+                  <button ngbPanelToggle class="vsm-link">
+                    <i class="vsm-icon pe-7s-note text-white"></i>
+                    <span class="vsm-title text-info"><strong>Create Definitions</strong></span>
+                    <i class="vsm-arrow text-white"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngbPanelContent>
+                  <div class="vsm-dropdown">
+                    <div class="vsm-list">
+                      <div class="vsm-item">
+                        <a routerLinkActive="active-item" routerLink="/create/new-task-definition" class="vsm-link"> <span
+                          class="vsm-title text-info"><strong>Task Definition</strong></span></a>
+                      </div>
+                      <!-- <div class="vsm-item">
+                        <a routerLinkActive="active-item" routerLink="/create/new-workflow-definition" class="vsm-link"> <span
+                          class="vsm-title text-info"><strong>Workflow Definition</strong></span></a>
+                      </div> -->
+                    </div>
+                  </div>
+                </ng-template>
+              </ngb-panel>
+<!--              <ngb-panel>
+                <ng-template ngbPanelHeader>
+                  <div class="vsm-header text-info"><strong>Event Management</strong></div>
+                </ng-template>
+              </ngb-panel>
+              <ngb-panel id="eventHandlersMenu">
+                <ng-template ngbPanelHeader>
+                  <button ngbPanelToggle class="vsm-link">
+                    <i class="vsm-icon pe-7s-gleam text-white"></i>
+                    <span class="vsm-title text-info"><strong>Event Handlers</strong></span>
+                    <i class="vsm-arrow text-white"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngbPanelContent>
+                  <div class="vsm-dropdown">
+                    <div class="vsm-list">
+                      <div class="vsm-item">
+                        <a routerLinkActive="active-item" disabled class="vsm-link disabled">
+                          <span class="vsm-title text-info"><strong>View All Event Handlers</strong></span></a>
+                      </div>
+                      <div class="vsm-item">
+                        <a routerLinkActive="active-item" disabled class="vsm-link disabled">
+                          <span class="vsm-title text-info"><strong>Create Event Handler</strong></span></a>
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </ngb-panel>
+              <ngb-panel id="eventQueuesMenu">
+                <ng-template ngbPanelHeader>
+                  <button ngbPanelToggle class="vsm-link">
+                    <i class="vsm-icon pe-7s-gleam text-white"></i>
+                    <span class="vsm-title text-info"><strong>Event Queues</strong></span>
+                    <i class="vsm-arrow text-white"></i>
+                  </button>
+                </ng-template>
+                <ng-template ngbPanelContent>
+                  <div class="vsm-dropdown">
+                    <div class="vsm-list">
+                      <div class="vsm-item">
+                        <a routerLinkActive="active-item" disabled class="vsm-link disabled">
+                          <span class="vsm-title text-info"><strong>Registered Queues</strong></span></a>
+                      </div>
+                      <div class="vsm-item">
+                        <a routerLinkActive="active-item" disabled class="vsm-link disabled">
+                          <span class="vsm-title text-info"><strong>Registered Queue Providers</strong></span></a>
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </ngb-panel> -->
+            </ngb-accordion>
+            <div class="vsm-header text-info">Admin</div>
+            <div class="vsm-item">
+              <a routerLink="/admin/runtime-configuration" routerLinkActive="active-item" class="vsm-link">
+                <i class="vsm-icon pe-7s-tools text-white"></i>
+                <span class="vsm-title text-info">Runtime Configuration</span>
+              </a>
+            </div>
+            <div class="vsm-item">
+              <a routerLink="/admin/queues-and-poll-data" routerLinkActive="active-item" class="vsm-link">
+                <i class="vsm-icon pe-7s-upload text-white"></i>
+                <span class="vsm-title text-info">Queues & Poll data</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </perfect-scrollbar>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,48 @@
+<div class="h-100 bg-asteroid bg-animation">
+  <div class="d-flex h-100 justify-content-center align-items-center">
+    <div *ngIf="loading" class="loading-custom">Loading...</div>
+    <div class="mx-auto app-login-box col-md-8">
+      <div class="modal-dialog w-100 mx-auto">
+        <div class="modal-content">
+          <div class="bg-secondary bg-animation modal-header">
+            <div class="logo-src mx-auto"></div>
+          </div>
+          <div class="bg-slick-carbon bg-animation text-white modal-body">
+            <div class="h5 modal-title text-center">
+              <h4 class="mt-2">
+                <div>Welcome back,</div>
+                <span>Please sign in to your account below.</span></h4>
+            </div>
+            <div id="exampleInputGroup1" role="group" aria-describedby="exampleInputGroup1__BV_description_"
+                 class="form-group">
+              <div><input id="exampleInput1" [(ngModel)]="username" type="email" placeholder="Enter email..." required="required"
+                          aria-required="true" class="form-control"
+                          aria-describedby="exampleInputGroup1__BV_description_">
+                <small tabindex="-1" id="exampleInputGroup1__BV_description_" class="form-text text-muted">We'll never
+                  share your email with anyone else.
+                </small>
+              </div>
+            </div>
+            <div id="exampleInputGroup2" role="group" class="form-group">
+              <div><input id="exampleInput2" [(ngModel)]="password" type="password" placeholder="Enter password..." required="required"
+                          aria-required="true" class="form-control"></div>
+            </div>
+          </div>
+          <div *ngIf="validation_error" class="text-center text-danger">
+            <div class="divider"></div>
+            {{validation_error}}
+          </div>
+          <div *ngIf="error_message" class="text-center alert alert-danger mt-2" role="alert">
+            {{error_message}}
+          </div>
+          <div class="modal-footer clearfix">
+            <button type="button" class="btn-block btn btn-primary btn-lg" (click)="perform_login()"><strong>LOGIN</strong></button>
+          </div>
+        </div>
+      </div>
+      <div class="text-center text-white opacity-8 mt-3">
+        Copyright © Conductor NG UI 2021
+      </div>
+    </div>
+  </div>
+</div>

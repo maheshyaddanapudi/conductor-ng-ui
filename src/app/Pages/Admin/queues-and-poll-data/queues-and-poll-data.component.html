@@ -1,0 +1,53 @@
+<div class="container-fluid bg-dark card">
+  <div class="card-header bg-primary text-center text-white">
+      <h5><b>Task Queue and Poll Data</b></h5>
+  </div>
+</div>
+<div *ngIf="!task_queue_all_data && !error_message && !poll_queue_all_data" class="loading-custom">Loading...</div>
+<div class="container-fluid bg-secondary">
+  <div *ngIf="error_message" class="alert alert-warning mt-2 text-center" role="alert">
+      <strong>{{error_message}}</strong>
+  </div>
+</div>
+<div class="container-fluid bg-secondary card mt-2">
+  <div class="card-header bg-dark">
+      <h6 class="title text-center text-white">Queue Depth Details</h6>
+  </div>
+  <table *ngIf="task_queue_all_data && task_queue_all_data.length > 0 ; else no_task_queue_all_data_found_template" class="table table-secondary table-bordered border-light">
+      <tbody class="tbody">
+          <tr *ngFor="let item of task_queue_all_data | keyvalue; index as item_counter">
+              <td class="text-center">{{item_counter+1}}</td>
+              <th class="text-center">{{item.key}}</th>
+              <td class="text-center">{{item.value}}</td>
+          </tr>
+      </tbody>
+  </table>
+  <ng-template #no_task_queue_all_data_found_template>
+    <div class="container-fluid bg-secondary">
+      <div class="alert alert-info mt-2 text-center" role="alert">
+          <strong>No Task Queues data found !!!</strong>
+      </div>
+    </div>
+  </ng-template>
+</div>
+<div class="container-fluid bg-secondary card mt-2">
+  <div class="card-header bg-dark">
+      <h6 class="title text-center text-white">Poll Data Details</h6>
+  </div>
+  <table *ngFor="let poll_data of poll_queue_all_data" class="table table-dark table-bordered border-light mt-2">
+      <tbody class="tbody">
+        <perfect-scrollbar style="height: 500px">
+          <tr *ngFor="let item of poll_data | keyvalue; index as item_counter">
+              <td class="text-center">{{item_counter+1}}</td>
+              <th class="text-center">{{item.key}}</th>
+              <td class="text-center">{{do_transformation_if_needed(item.key, item.value)}}</td>
+          </tr>
+        </perfect-scrollbar>
+      </tbody>
+  </table>
+  <div *ngIf="!poll_queue_all_data || poll_queue_all_data.length < 1" class="container-fluid bg-secondary">
+    <div class="alert alert-info mt-2 text-center" role="alert">
+        <strong>No Polling data found !!!</strong>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,163 @@
+<div class="container-fluid bg-secondary card mb-2">
+  <div class="card-header bg-dark text-center text-white">
+      <h5><b>Analytics</b></h5>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div *ngIf="loading" class="loading-custom">Loading...</div>
+  <div *ngIf="error_message && error_message.length > 0">
+    <div *ngFor="let error_content of error_message" class="alert alert-warning mt-2" role="alert">{{error_content}}</div>
+  </div>
+
+  <div *ngIf="API_HITS_COUNTER_ANALYTICS_IFRAME_URL"  class="card bg-light mb-1">
+    <div class="card-header bg-dark text-white text-center">
+      <h5><strong>API Hits Counter</strong></h5>
+    </div>
+    <iframe [src]="API_HITS_COUNTER_ANALYTICS_IFRAME_URL | safe" height="400" class="card-body container-fluid mx-0 my-0"></iframe>
+  </div>
+
+  <div class="card bg-light mt-0 mb-1">
+    <div class="card-header bg-dark text-white text-center">
+      <h5><strong>Workflow Execution Analytics</strong></h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="card-body col-md-6">
+          <app-conductor-execution-polar-chart *ngIf="polarAreaChartData.length > 0"  [polarAreaChartLabels]="chartLabels" [chartData]="polarAreaChartData"></app-conductor-execution-polar-chart>
+        </div>
+        <div class="card-body col-md-6">
+          <app-conductor-execution-pie-chart *ngIf="chartData.length > 0" [pieChartLabels]="chartLabels" [pieChartData]="chartData"></app-conductor-execution-pie-chart>
+        </div>
+      </div>
+      <div class="row">
+        <div class="card-body col-md-6">
+          <app-conductor-execution-scatter-chart *ngIf="scatterChartData.length > 0" [scatterChartLabels]="chartLabels" [scatterChartData]="scatterChartData"></app-conductor-execution-scatter-chart>
+        </div>
+        <div class="card-body col-md-6">
+          
+          <app-conductor-execution-radar-chart *ngIf="radarChartData.length > 0" [radarChartLabels]="chartLabels" [radarChartData]="radarChartData"></app-conductor-execution-radar-chart>
+        </div>
+      </div>
+      <table class="card-body table table-bordered mb-0">
+        <thead class="thead bg-dark text-white">
+          <th class="text-center">#</th>
+          <th class="text-center">Status</th>
+          <th class="text-center">Count</th>
+          <th class="text-center">Action</th>
+        </thead>
+        <tbody class="tbody bg-premium-dark text-white table-striped">
+          <tr>
+            <td class="text-center">1</td>
+            <td class="text-center">
+              <div class="badge badge-pill badge-focus"><strong>Running</strong></div>
+            </td>
+            <td class="text-center">{{dashboardDataHolderService.get_running()}}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-alternate text-white">View</button>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-center">2</td>
+            <td class="text-center">
+              <div class="badge badge-pill badge-warning"><strong>Paused</strong></div>
+            </td>
+            <td class="text-center">{{dashboardDataHolderService.get_paused()}}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-alternate text-white">View</button>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-center">3</td>
+            <td class="text-center">
+              <div class="badge badge-pill badge-success"><strong>Completed</strong></div>
+            </td>
+            <td class="text-center">{{dashboardDataHolderService.get_completed()}}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-alternate text-white">View</button>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-center">4</td>
+            <td class="text-center">
+              <div class="badge badge-pill badge-danger"><strong>Failed</strong></div>
+            </td>
+            <td class="text-center">{{dashboardDataHolderService.get_failed()}}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-alternate text-white">View</button>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-center">5</td>
+            <td class="text-center">
+              <div class="badge badge-pill badge-info"><strong>Terminated</strong></div>
+            </td>
+            <td class="text-center">{{dashboardDataHolderService.get_terminated()}}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-alternate text-white">View</button>
+            </td>
+          </tr>
+          <tr>
+            <td class="text-center">6</td>
+            <td class="text-center">
+              <div class="badge badge-pill badge-secondary"><strong>Timed-Out</strong></div>
+            </td>
+            <td class="text-center">{{dashboardDataHolderService.get_timedout()}}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-alternate text-white">View</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="card-footer text-center btn btn-lg btn-block btn-primary mx-0 my-0" (click)="workflow_executions_selection('All')">
+        <strong>View All Workflow Executions (Total - {{dashboardDataHolderService.get_total()}})</strong>
+      </button>
+    </div>
+  </div>  
+
+  <div class="card my-1">
+    <div class="card-header text-center bg-dark">
+      <h6 class="card-title text-white"><strong>Definitions Registry Statistics</strong></h6>
+    </div>
+    <table class="card-body table table-hover table-bordered mb-0">
+      <thead class="thead table-primary">
+        <th class="text-center">#</th>
+        <th class="text-center">Component</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Action</th>
+      </thead>
+      <tbody class="tbody">
+        <tr>
+          <td class="text-center">1</td>
+          <td class="text-center">Task Definitions</td>
+          <td class="text-center">{{total_task_defs}}</td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-focus text-white">View</button>
+          </td>
+        </tr>
+        <tr>
+          <td class="text-center">2</td>
+          <td class="text-center">Workflow Definitions</td>
+          <td class="text-center">{{total_workflow_defs}}</td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-focus text-white">View</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="card-footer">
+     <div class="row mx-0 my-0">
+       <div class="col-md-6">
+        <button class="btn btn-lg btn-block btn-info" routerLink="/view/task-definitions">
+          <strong>View Task Definitions</strong>
+        </button>
+       </div>
+       <div class="col-md-6">
+        <button class="btn btn-lg btn-block btn-primary" routerLink="/view/workflow-definitions">
+          <strong>View Workflow Definitions</strong>
+        </button>
+       </div>
+     </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,589 @@
+<div class="container-fluid bg-secondary card mt-2">
+  <div class="card-header bg-dark text-center text-white">
+      <h5><b>Workflow Executions</b></h5>
+  </div>
+</div>
+<div class="container-fluid">
+
+  <div *ngIf="!error_message && !search_results" class="loading-custom">Loading...</div>
+
+  <div *ngIf="error_message" class="alert alert-warning mt-2" role="alert">
+      {{error_message}}
+  </div>
+  
+  <div *ngIf="!error_message && search_results" class="alert alert-primary mt-2 text-center" role="alert">
+      Total of {{search_results.totalHits}} Workflow Executions Found
+  </div>
+  
+  <div class="container-fluid d-flex text-center justify-content-center">
+
+    <div class="col-md-4">
+      <div class="custom-control custom-switch">
+        <input type="checkbox" class="custom-control-input" id="autorefresh" [checked]="auto_refresh" (click)="set_auto_refresh($event)">
+        <label class="custom-control-label text-white" for="autorefresh"><strong>Auto-Refresh</strong></label>
+      </div>
+    </div>
+
+    <div class="col-md-4 text-center">
+      <div class="container-fluid">
+        <p *ngIf="auto_refresh_message ; else auto_refresh_message_paused" style="color: green;">
+          {{auto_refresh_message}}
+        </p>
+        <ng-template #auto_refresh_message_paused>
+          <p style="color: orange;">
+            Auto-Refresh is Paused ...
+          </p>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <button type="button" class="btn btn-focus btn-sm" (click)="refresh()"><strong>Refresh</strong></button>
+    </div>
+  </div>
+
+  <ul class="pagination justify-content-center" style="margin:20px 0">
+    <li *ngIf="current_page_selected > 1 ; else previous_deactivated_template" class="page-item"><a class="page-link" (click)="set_current_page_selected(current_page_selected - 1)"><strong>Previous</strong></a></li>
+    <ng-template #previous_deactivated_template>
+      <li class="page-item disabled"><a class="page-link">Previous</a></li>
+    </ng-template>
+    <li *ngFor="let page_number of numbers" class="page-item">
+      <a *ngIf="is_active_page(page_number) ; else non_current_page_template" class="page-link bg-primary text-white"><strong>{{page_number}}</strong></a>
+      <ng-template #non_current_page_template>
+        <a class="page-link" (click)="set_current_page_selected(page_number)">{{page_number}}</a>
+      </ng-template>
+    </li>
+    <li *ngIf="current_page_selected < total_pages ; else next_deactivated_template" class="page-item"><a class="page-link" (click)="set_current_page_selected(current_page_selected + 1)"><strong>Next</strong></a></li>
+    <ng-template #next_deactivated_template>
+      <li class="page-item disabled"><a class="page-link">Next</a></li>
+    </ng-template>
+  </ul>
+
+  <div class="container-fluid dropdown text-center text-white">
+    <label for="dropdownMenuOffset">Results per page</label>
+    &nbsp;:&nbsp;
+    <button type="button" class="btn btn-dark dropdown-toggle" id="dropdownMenuOffset" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-offset="10,20">
+      <strong>{{page_size}}</strong>
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuOffset">
+      <a class="dropdown-item" (click)="update_page_size(10)">10</a>
+      <a class="dropdown-item" (click)="update_page_size(25)">25</a>
+      <a class="dropdown-item" (click)="update_page_size(50)">50</a>
+      <a class="dropdown-item" (click)="update_page_size(100)">100</a>
+    </div>
+  </div>
+<div *ngIf="action_response && action_response.bulkSuccessfulResults && action_response.bulkSuccessfulResults.length > 0" class="container-fluid card-body border-dark mt-2">
+  <div class="modal-header bg-success text-white border-light">
+      <div class="card-body text-center mx-auto"><h6 class="card-title">Successfully performed action below workflow IDs ...</h6></div>
+      <button type="button" class="close text-white" aria-label="Close" (click)="dismiss_action_response_success_results()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  <table class="table table-bordered border-success">
+      <thead class="thead bg-success">
+          <th class="text-center text-white">#</th>
+          <th class="text-center text-white">Workflow ID</th>
+      </thead>
+      <tbody class="tbody">
+          <tr *ngFor="let a_success of action_response.bulkSuccessfulResults ; index as success_workflow_id_counter">
+              <td class="text-center">#{{success_workflow_id_counter+1}}</td>
+              <td class="text-center text-success">{{a_success}}</td>
+          </tr>
+      </tbody>
+  </table>
+</div>
+
+  <form *ngIf="workflow_status == 'Running'" class="container-fluid text-center form-inline my-2">
+    <div class="form-group col-md-6">
+        <button *ngIf="selected_workflow_execution_indexes && selected_workflow_execution_indexes.length > 0 ; else pause_all_deactivated_template" type="button" class="btn btn-lg btn-block btn-warning" (click)="pause_all_selected_workflows()">Pause Selected</button>
+        <ng-template #pause_all_deactivated_template>
+          <button type="button" class="btn btn-lg btn-block btn-outline-warning disabled" disabled>Pause Selected</button>
+        </ng-template>
+    </div>
+    <div class="form-group col-md-6">
+        <button *ngIf="selected_workflow_execution_indexes && selected_workflow_execution_indexes.length > 0 ; else terminate_all_deactivated_template" type="button" class="btn btn-lg btn-block btn-danger" (click)="set_terminate_index(-1); openLarge(terminate_confirmation_template)">Terminate Selected</button>
+        <ng-template #terminate_all_deactivated_template>
+          <button type="button" class="btn btn-lg btn-block btn-outline-danger disabled" disabled>Terminate Selected</button>
+        </ng-template>
+    </div>
+  </form>
+
+  <form *ngIf="workflow_status == 'Paused'" class="container-fluid text-center form-inline my-2">
+    <div class="form-group col-md-6">
+      <button *ngIf="selected_workflow_execution_indexes && selected_workflow_execution_indexes.length > 0 ; else resume_all_deactivated_template" type="button" class="btn btn-lg btn-block btn-secondary" (click)="resume_all_selected_workflows()">Resume Selected</button>
+      <ng-template #resume_all_deactivated_template>
+        <button type="button" class="btn btn-lg btn-block btn-outline-secondary disabled" disabled>Resume Selected</button>
+      </ng-template>
+    </div>
+    <div class="form-group col-md-6">
+        <button *ngIf="selected_workflow_execution_indexes && selected_workflow_execution_indexes.length > 0 ; else terminate_all_deactivated_template" type="button" class="btn btn-lg btn-block btn-danger" (click)="set_terminate_index(-1); openLarge(terminate_confirmation_template)">Terminate Selected</button>
+        <ng-template #terminate_all_deactivated_template>
+          <button type="button" class="btn btn-lg btn-block btn-outline-danger disabled" disabled>Terminate Selected</button>
+        </ng-template>
+    </div>
+  </form>
+
+  <form *ngIf="workflow_status == 'Completed'" class="container-fluid text-center form-inline my-2">
+    <div class="form-group col-md-4">
+      <button *ngIf="selected_workflow_execution_indexes && selected_workflow_execution_indexes.length > 0 ; else restart_all_deactivated_template" type="button" class="btn btn-lg btn-block btn-primary" (click)="restart_all_selected_workflows()">Restart Selected</button>
+      <ng-template #restart_all_deactivated_template>
+        <button type="button" class="btn btn-lg btn-block btn-outline-primary disabled" disabled>Restart Selected</button>
+      </ng-template>
+    </div>
+    <div class="form-group col-md-4">
+      <button *ngIf="selected_workflow_execution_indexes && selected_workflow_execution_indexes.length > 0 ; else archive_all_deactivated_template" type="button" class="btn btn-lg btn-block btn-warning" (click)="archive_all_selected_workflows()">Archive Selected</button>
+      <ng-template #archive_all_deactivated_template>
+        <button type="button" class="btn btn-lg btn-block btn-outline-warning disabled" disabled>Archive Selected</button>
+      </ng-template>
+    </div>
+    <div class="form-group col-md-4">
+      <button *ngIf="selected_workflow_execution_indexes && selected_workflow_execution_indexes.length > 0 ; else delete_all_deactivated_template" type="button" class="btn btn-lg btn-block btn-danger" (click)="delete_all_selected_workflows()">Delete Selected</button>
+      <ng-template #delete_all_deactivated_template>
+        <button type="button" class="btn btn-lg btn-block btn-outline-danger disabled" disabled>Delete Selected</button>
+      </ng-template>
+    </div>
+  </form>
+
+  <form *ngIf="workflow_status == 'Failed' || workflow_status == 'Terminated' || workflow_status == 'Timed Out'" class="container-fluid text-center form-inline my-2">
+    <div class="form-group col-md-3">
+      <button *ngIf="selected_workflow_execution_indexes && selected_workflow_execution_indexes.length > 0 ; else retry_all_deactivated_template" type="button" class="btn btn-lg btn-block btn-info" (click)="retry_all_selected_workflows()">Retry Selected</button>
+      <ng-template #retry_all_deactivated_template>
+        <button type="button" class="btn btn-lg btn-block btn-outline-info disabled" disabled>Retry Selected</button>
+      </ng-template>
+    </div>
+    <div class="form-group col-md-3">
+      <button *ngIf="selected_workflow_execution_indexes && selected_workflow_execution_indexes.length > 0 ; else restart_all_deactivated_template" type="button" class="btn btn-lg btn-block btn-primary" (click)="restart_all_selected_workflows()">Restart Selected</button>
+      <ng-template #restart_all_deactivated_template>
+        <button type="button" class="btn btn-lg btn-block btn-outline-primary disabled" disabled>Restart Selected</button>
+      </ng-template>
+    </div>
+    <div class="form-group col-md-3">
+      <button *ngIf="selected_workflow_execution_indexes && selected_workflow_execution_indexes.length > 0 ; else archive_all_deactivated_template" type="button" class="btn btn-lg btn-block btn-warning" (click)="archive_all_selected_workflows()">Archive Selected</button>
+      <ng-template #archive_all_deactivated_template>
+        <button type="button" class="btn btn-lg btn-block btn-outline-warning disabled" disabled>Archive Selected</button>
+      </ng-template>
+    </div>
+    <div class="form-group col-md-3">
+      <button *ngIf="selected_workflow_execution_indexes && selected_workflow_execution_indexes.length > 0 ; else delete_all_deactivated_template" type="button" class="btn btn-lg btn-block btn-danger" (click)="delete_all_selected_workflows()">Delete Selected</button>
+      <ng-template #delete_all_deactivated_template>
+        <button type="button" class="btn btn-lg btn-block btn-outline-danger disabled" disabled>Delete Selected</button>
+      </ng-template>
+    </div>
+  </form>
+</div>
+<div class="main-card mb-3 card">
+  <div class="table-responsive">
+    <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+      <thead class="table-primary">
+        <th class="text-center">
+          <input type="checkbox" [checked]="all_selected" [(ngModel)]="all_selected" (change)="manage_select_all_switch()">
+        </th>
+        <th class="text-center">#</th>
+        <th class="text-center">Workflow Details</th>
+        <th>Workflow Id</th>
+         <th class="text-center">Status</th>
+        <th class="text-center">I/O</th>
+        <th class="text-center">JSON</th>
+        <th class="text-center">Execution Action</th>
+        <th class="text-center">Terminal Action</th>
+        <th class="text-center">Details</th>
+        <th class="text-center">Start Time</th>
+        <th class="text-center">Update Time</th>
+      </thead>
+      <tbody *ngIf="undefined!=search_results">
+      <tr *ngFor="let workflowExecution of search_results.results ; index as workflowExecutionCounter">
+        <td class="text-center">
+          <input *ngIf="check_selection_contains_index(((current_page_selected-1)*page_size) + workflowExecutionCounter) ; else checkbox_unselected_template" type="checkbox" checked (click)="add_remove_selection(((current_page_selected-1)*page_size) + workflowExecutionCounter)">
+          <ng-template #checkbox_unselected_template>
+              <input type="checkbox" (click)="add_remove_selection(((current_page_selected-1)*page_size) + workflowExecutionCounter)">
+          </ng-template>
+      </td>
+        <td class="text-center text-muted">#{{ ((current_page_selected-1)*page_size) + workflowExecutionCounter+1}}</td>
+        <td class="text-center">
+          <div class="widget-content p-0">
+            <div class="widget-content-left flex2">
+              <div class="widget-heading">{{workflowExecution.workflowType}}</div>
+              <div class="widget-subheading opacity-7">Version:: {{workflowExecution.version}}</div>
+            </div>
+          </div>
+        </td>
+        <td>{{workflowExecution.workflowId}}</td>
+        <td class="text-center">
+            <div *ngIf="workflowExecution.status == 'RUNNING' ; else workflowExecutionStatusSecondCheck" class="badge badge-pill badge-info">{{workflowExecution.status}}</div>
+            <ng-template #workflowExecutionStatusSecondCheck>
+                <div *ngIf="workflowExecution.status == 'COMPLETED' ; else workflowExecutionStatusWarningOrDanger" class="badge badge-pill badge-success">{{workflowExecution.status}}</div>
+                <ng-template #workflowExecutionStatusWarningOrDanger>
+                  <div *ngIf="workflowExecution.status == 'FAILED' || workflowExecution.status == 'TERMINATED' ; else workflowExecutionStatusWarning" class="badge badge-pill badge-danger">{{workflowExecution.status}}</div>
+                  <ng-template #workflowExecutionStatusWarning>
+                    <div class="badge badge-pill badge-warning">{{workflowExecution.status}}</div>
+                  </ng-template>  
+                </ng-template>
+            </ng-template>
+        </td>
+        <td class="text-center">
+          <div class="btn-group btn-group-sm">
+            <ng-template #workflowExecutionInput let-c="close" let-d="dismiss">
+            <div class="modal-header bg-dark text-white">
+              <div class="card-body text-center mx-auto"><h4 class="card-title">Input Parameter(s)</h4></div>
+              <button type="button" class="close text-white" aria-label="Close" (click)="d('Cross click')">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body bg-secondary">
+              <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                  <div class="card-body">
+                    <table class="mb-0 table table-dark">
+                      <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Parameter Name</th>
+                        <th>Parameter Value</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let an_item of convert_string_to_json(workflowExecution.input) | keyvalue; index as item_counter">
+                          <th scope="row">{{item_counter+1}}</th>
+                          <td>{{an_item.key}}</td>
+                          <td>{{an_item.value}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+              </perfect-scrollbar>
+            </div>
+            <div class="modal-footer bg-dark">
+              <button type="button" class="btn btn-light" (click)="c('Close click')">Close</button>
+            </div>
+          </ng-template>
+          <button *ngIf="undefined != workflowExecution.input ; else inputKeysDisabled" (click)="openLarge(workflowExecutionInput)" type="button" class="btn btn-primary btn-sm">Input</button>
+          <ng-template #inputKeysDisabled>
+              <button type="button" class="btn btn-primary btn-sm disabled">Input</button>
+          </ng-template>
+          <ng-template #workflowExecutionOutput let-c="close" let-d="dismiss">
+              <div class="modal-header bg-dark text-white">
+                <div class="card-body text-center mx-auto"><h4 class="card-title">Output Parameter(s)</h4></div>
+                <button type="button" class="close text-white" aria-label="Close" (click)="d('Cross click')">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body bg-secondary">
+                <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                    <div class="card-body">
+                      <table class="mb-0 table table-dark">
+                        <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Parameter Name</th>
+                          <th>Parameter Value</th>
+                        </tr>
+                        </thead>
+                        <tbody *ngIf="workflowExecution.status == 'RUNNING' ; else display_output_from_def">
+                          <tr *ngFor="let an_item of get_workflow_output_params_from_definition(workflowExecution.workflowType, workflowExecution.version) | keyvalue; index as outputParamCounter">
+                            <th scope="row">{{outputParamCounter+1}}</th>
+                            <td>{{an_item.key}}</td>
+                            <td>{{an_item.value}}</td>
+                          </tr>
+                        </tbody>
+                        <ng-template #display_output_from_def>
+                          <tbody>
+                          <tr *ngFor="let an_item of convert_string_to_json(workflowExecution.output) | keyvalue; index as outputParamCounter">
+                              <th scope="row">{{outputParamCounter+1}}</th>
+                              <td>{{an_item.key}}</td>
+                              <td>{{an_item.value}}</td>
+                            </tr>
+                            </tbody>
+                        </ng-template>
+                      </table>
+                    </div>
+                </perfect-scrollbar>
+              </div>
+              <div class="modal-footer bg-dark">
+                <button type="button" class="btn btn-light" (click)="c('Close click')">Close</button>
+              </div>
+            </ng-template>
+            <button *ngIf="undefined != workflowExecution.output && workflowExecution.status != 'RUNNING' && workflowExecution.status != 'PAUSED' ; else outputKeysDisabled" (click)="openLarge(workflowExecutionOutput)" type="button" class="btn btn-success btn-sm">Output</button>
+            <ng-template #outputKeysDisabled>
+                <button type="button" class="btn btn-success btn-sm disabled" disabled>Output</button>
+            </ng-template>
+            </div>
+        </td>
+        <td class="text-center">
+            <ng-template #workflowExecutionJsonContent let-c="close" let-d="dismiss">
+              <div class="modal-header bg-dark">
+                <h4 class="modal-title text-white text-center">Workflow Execution JSON</h4>
+                <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body bg-secondary">
+                  <div class="card-border card card-body">
+                      <perfect-scrollbar style="height: 150px">
+                          {{conver_json_to_string(workflowExecution)}}
+                      </perfect-scrollbar>
+                  </div>
+              </div>
+              <div class="modal-footer bg-dark">
+                <button type="button" class="btn btn-secondary btn-light" (click)="c('Close click')">Close</button>
+              </div>
+            </ng-template>
+          <button type="button" class="btn btn-outline-focus btn-sm" (click)="openLarge(workflowExecutionJsonContent)">JSON</button>
+        </td>
+        <td class="text-center">
+          <div class="btn-group btn-group-sm">
+            <ng-template #pause_confirmation_individual_template let-c="close" let-d="dismiss">
+              <div class="card-body" style="background-color: rgb(51, 51, 51); border-color: rgb(51, 51, 51);">
+                <div class="card-header bg-warning border-light text-center text-white">
+                    <b style="font-size: 20px; font-weight: bolder;">Action Confirmation</b>
+                </div>
+                <table class="table-light table-striped table-hover table-bordered border-dark col-md-12 mt-2">
+                  <thead class="thead">
+                    <th class="text-center" style="color: red;">Workflow IDs for Pause</th>
+                  </thead>
+                  <tbody class="tbody">
+                    <tr>
+                      <td class="text-center">{{workflowExecution.workflowId}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <h5 class="my-2 text-white text-center">Are you sure you want to proceed with the pause action ?</h5>
+                <div class="d-block text-center card-footer">
+                  <form class="form-inline mb-2">
+                      <div class="form-group col-md-6">
+                          <button type="button" class="btn btn-light btn-lg btn-block" (click)="c('Cancel click')">Close</button>
+                      </div>
+                      <div class="form-group col-md-6">
+                          <button type="button" class="btn btn-danger btn-lg btn-block text-white" (click)="pause_workflow(workflowExecution.workflowId); d('Confirm click')">Confirm</button>
+                      </div>
+                  </form>
+                </div>
+              </div>
+            </ng-template>
+            <button (click)="openLarge(pause_confirmation_individual_template)" *ngIf="workflowExecution.status == 'RUNNING' ; else check_retry_possibility_template" type="button" class="btn btn-secondary">Pause</button>
+            <ng-template #check_retry_possibility_template>
+              <ng-template #resume_confirmation_individual_template let-c="close" let-d="dismiss">
+                <div class="card-body" style="background-color: rgb(51, 51, 51); border-color: rgb(51, 51, 51);">
+                  <div class="card-header bg-warning border-light text-center text-white">
+                      <b style="font-size: 20px; font-weight: bolder;">Action Confirmation</b>
+                  </div>
+                  <table class="table-light table-striped table-hover table-bordered border-dark col-md-12 mt-2">
+                    <thead class="thead">
+                      <th class="text-center" style="color: red;">Workflow IDs for Resume</th>
+                    </thead>
+                    <tbody class="tbody">
+                      <tr>
+                        <td class="text-center">{{workflowExecution.workflowId}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <h5 class="my-2 text-white text-center">Are you sure you want to proceed with the resume action ?</h5>
+                  <div class="d-block text-center card-footer">
+                    <form class="form-inline mb-2">
+                        <div class="form-group col-md-6">
+                            <button type="button" class="btn btn-light btn-lg btn-block" (click)="c('Cancel click')">Close</button>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <button type="button" class="btn btn-danger btn-lg btn-block text-white" (click)="resume_workflow(workflowExecution.workflowId); d('Confirm click')">Confirm</button>
+                        </div>
+                    </form>
+                  </div>
+                </div>
+              </ng-template>
+              <button (click)="openLarge(resume_confirmation_individual_template)" *ngIf="workflowExecution.status == 'PAUSED' ; else pause_disabled_template" type="button" class="btn btn-secondary">Resume</button>
+              <ng-template #pause_disabled_template>
+                <button type="button" class="btn btn-secondary disabled" disabled>Pause</button>
+              </ng-template>
+            </ng-template>
+            <ng-template #retry_confirmation_individual_template let-c="close" let-d="dismiss">
+              <div class="card-body" style="background-color: rgb(51, 51, 51); border-color: rgb(51, 51, 51);">
+                <div class="card-header bg-warning border-light text-center text-white">
+                    <b style="font-size: 20px; font-weight: bolder;">Action Confirmation</b>
+                </div>
+                <table class="table-light table-striped table-hover table-bordered border-dark col-md-12 mt-2">
+                  <thead class="thead">
+                    <th class="text-center" style="color: red;">Workflow IDs for Retry</th>
+                  </thead>
+                  <tbody class="tbody">
+                    <tr>
+                      <td class="text-center">{{workflowExecution.workflowId}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <h5 class="my-2 text-white text-center">Are you sure you want to proceed with the retry action ?</h5>
+                <div class="d-block text-center card-footer">
+                  <form class="form-inline mb-2">
+                      <div class="form-group col-md-6">
+                          <button type="button" class="btn btn-light btn-lg btn-block" (click)="c('Cancel click')">Close</button>
+                      </div>
+                      <div class="form-group col-md-6">
+                          <button type="button" class="btn btn-danger btn-lg btn-block text-white" (click)="retry_workflow(workflowExecution.workflowId); d('Confirm click')">Confirm</button>
+                      </div>
+                  </form>
+                </div>
+              </div>
+            </ng-template>
+            <button (click)="openLarge(retry_confirmation_individual_template)" *ngIf="workflowExecution.status == 'FAILED' || workflowExecution.status == 'TERMINATED' || workflowExecution.status == 'TIMED_OUT' ; else retry_disabled_template" type="button" class="btn btn-info">Retry</button>
+            <ng-template #retry_disabled_template>
+              <button type="button" class="btn btn-info disabled" disabled>Retry</button>
+            </ng-template>
+            <ng-template #restart_confirmation_individual_template let-c="close" let-d="dismiss">
+              <div class="card-body" style="background-color: rgb(51, 51, 51); border-color: rgb(51, 51, 51);">
+                <div class="card-header bg-warning border-light text-center text-white">
+                    <b style="font-size: 20px; font-weight: bolder;">Action Confirmation</b>
+                </div>
+                <table class="table-light table-striped table-hover table-bordered border-dark col-md-12 mt-2">
+                  <thead class="thead">
+                    <th class="text-center" style="color: red;">Workflow IDs for Restart</th>
+                  </thead>
+                  <tbody class="tbody">
+                    <tr>
+                      <td class="text-center">{{workflowExecution.workflowId}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <h5 class="my-2 text-white text-center">Are you sure you want to proceed with the restart action ?</h5>
+                <div class="d-block text-center card-footer">
+                  <form class="form-inline mb-2">
+                      <div class="form-group col-md-6">
+                          <button type="button" class="btn btn-light btn-lg btn-block" (click)="c('Cancel click')">Close</button>
+                      </div>
+                      <div class="form-group col-md-6">
+                          <button type="button" class="btn btn-danger btn-lg btn-block text-white" (click)="restart_workflow(workflowExecution.workflowId); d('Confirm click')">Confirm</button>
+                      </div>
+                  </form>
+                </div>
+              </div>
+            </ng-template>
+            <button (click)="openLarge(restart_confirmation_individual_template)" *ngIf="workflowExecution.status == 'COMPLETED' || workflowExecution.status == 'FAILED' || workflowExecution.status == 'TERMINATED' || workflowExecution.status == 'TIMED_OUT' ; else restart_disabled_template" type="button" class="btn btn-primary">Restart</button>
+            <ng-template #restart_disabled_template>
+              <button type="button" class="btn btn-primary disabled" disabled>Restart</button>
+            </ng-template>
+          </div>
+        </td>
+        <td class="text-center">
+          <div class="btn-group btn-group-sm">
+            <ng-template #terminate_confirmation_individual_template let-c="close" let-d="dismiss">
+              <div class="card-body" style="background-color: rgb(51, 51, 51); border-color: rgb(51, 51, 51);">
+                <div class="card-header bg-warning border-light text-center text-white">
+                    <b style="font-size: 20px; font-weight: bolder;">Action Confirmation</b>
+                </div>
+                <table class="table-light table-striped table-hover table-bordered border-dark col-md-12 mt-2">
+                  <thead class="thead">
+                    <th class="text-center" style="color: red;">Workflow IDs for Termination</th>
+                  </thead>
+                  <tbody class="tbody">
+                    <tr>
+                      <td class="text-center">{{workflowExecution.workflowId}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <textarea class="modal-body bg-light card-border mt-3 mb-3 card card-body border-light col-md-12" style="height: 150px;" [(ngModel)]="terminate_reason" placeholder="Optional terminate reason ..."></textarea>
+                <div class="d-block text-center card-footer">
+                  <form class="form-inline mb-2">
+                      <div class="form-group col-md-6">
+                          <button type="button" class="btn btn-light btn-lg btn-block" (click)="reset_terminate_reason(); c('Cancel click')">Close</button>
+                      </div>
+                      <div class="form-group col-md-6">
+                          <button type="button" class="btn btn-danger btn-lg btn-block text-white" (click)="terminate_workflow(workflowExecution.workflowId); d('Confirm click')">Confirm Terminate</button>
+                      </div>
+                  </form>
+                </div>
+              </div>
+            </ng-template>
+            <button *ngIf="workflowExecution.status == 'RUNNING' || workflowExecution.status == 'PAUSED' ; else terminate_disabled_template" type="button" class="btn btn-warning" (click)="openLarge(terminate_confirmation_individual_template)">Terminate</button>
+            <ng-template #terminate_disabled_template>
+              <button type="button" class="btn btn-warning disabled" disabled>Terminate</button>
+            </ng-template>
+            <ng-template #delete_confirmation_individual_template let-c="close" let-d="dismiss">
+              <div class="card-body" style="background-color: rgb(51, 51, 51); border-color: rgb(51, 51, 51);">
+                <div class="card-header bg-warning border-light text-center text-white">
+                    <b style="font-size: 20px; font-weight: bolder;">Action Confirmation</b>
+                </div>
+                <table class="table-light table-striped table-hover table-bordered border-dark col-md-12 mt-2">
+                  <thead class="thead">
+                    <th class="text-center" style="color: red;">Workflow IDs for delete</th>
+                  </thead>
+                  <tbody class="tbody">
+                    <tr>
+                      <td class="text-center">{{workflowExecution.workflowId}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <h5 class="my-2 text-white text-center">Are you sure you want to proceed with the delete / archive action ?</h5>
+                <div class="d-block text-center card-footer">
+                  <form class="form-inline mb-2">
+                      <div class="form-group col-md-4">
+                          <button type="button" class="btn btn-light btn-lg btn-block" (click)="c('Cancel click')">Close</button>
+                      </div>
+                      <div class="form-group col-md-4">
+                          <button *ngIf="workflowExecution.status == 'COMPLETED' || workflowExecution.status == 'FAILED' || workflowExecution.status == 'TERMINATED' || workflowExecution.status == 'TIMED_OUT' ; else archive_disabled_template" type="button" class="btn btn-warning btn-lg btn-block" (click)="delete_workflow(workflowExecution.workflowId, true); d('Confirm click')">Archive</button>
+                          <ng-template #archive_disabled_template>
+                            <button type="button" class="btn btn-warning btn-lg btn-block disabled" disabled>Archive</button>
+                          </ng-template>
+                      </div>
+                      <div class="form-group col-md-4">
+                          <button type="button" class="btn btn-danger btn-lg btn-block text-white" (click)="delete_workflow(workflowExecution.workflowId, false); d('Confirm click')">Remove</button>
+                      </div>
+                  </form>
+                </div>
+              </div>
+            </ng-template>
+            <button (click)="openLarge(delete_confirmation_individual_template)" type="button" class="btn btn-danger">Delete</button>
+          </div>
+        </td>
+        <td class="text-center">
+          <button type="button" class="btn btn-dark btn-sm" (click)="viewWorkflowExecutionDetails(workflowExecution.workflowType, workflowExecution.version, workflowExecution.workflowId)">Details</button>
+        </td>
+        <td class="text-center">{{workflowExecution.startTime}}</td>
+        <td class="text-center">{{workflowExecution.updateTime}}</td>            
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <ul class="pagination justify-content-center" style="margin:20px 0">
+    <li *ngIf="current_page_selected > 1 ; else previous_deactivated_template" class="page-item"><a class="page-link" (click)="set_current_page_selected(current_page_selected - 1)">Previous</a></li>
+    <ng-template #previous_deactivated_template>
+      <li class="page-item disabled"><a class="page-link">Previous</a></li>
+    </ng-template>
+    <li *ngFor="let page_number of numbers" class="page-item">
+      <a *ngIf="is_active_page(page_number) ; else non_current_page_template" class="page-link bg-primary text-white">{{page_number}}</a>
+      <ng-template #non_current_page_template>
+        <a class="page-link" (click)="set_current_page_selected(page_number)">{{page_number}}</a>
+      </ng-template>
+    </li>
+    <li *ngIf="current_page_selected < total_pages ; else next_deactivated_template" class="page-item"><a class="page-link" (click)="set_current_page_selected(current_page_selected + 1)">Next</a></li>
+    <ng-template #next_deactivated_template>
+      <li class="page-item disabled"><a class="page-link">Next</a></li>
+    </ng-template>
+  </ul>
+</div>
+<ng-template #terminate_confirmation_template let-c="close" let-d="dismiss">
+<div class="card-body" style="background-color: rgb(51, 51, 51); border-color: rgb(51, 51, 51);">
+  <div class="card-header bg-warning border-light text-center text-white">
+      <b style="font-size: 20px; font-weight: bolder;">Action Confirmation</b>
+  </div>
+  <table class="table-light table-striped table-hover table-bordered border-dark col-md-12 mt-2">
+    <thead class="thead">
+      <th class="text-center" style="color: red;">Workflow IDs for Termination</th>
+    </thead>
+    <tbody class="tbody">
+      <tr>
+        <td *ngIf="terminate_index == -1 && selected_workflow_execution_indexes.length == workflow_ids.length ; else selected_workflow_ids_tempalte" class="text-center">All</td>
+        <ng-template #selected_workflow_ids_tempalte>
+          <td class="text-center">{{get_selected_workflow_ids()}}</td>
+        </ng-template>
+      </tr>
+    </tbody>
+  </table>
+  <textarea class="modal-body bg-light card-border mt-3 mb-3 card card-body border-light col-md-12" style="height: 150px;" [(ngModel)]="terminate_reason" placeholder="Optional terminate reason ..."></textarea>
+  <div class="d-block text-center card-footer">
+    <form class="form-inline mb-2">
+        <div class="form-group col-md-6">
+            <button type="button" class="btn btn-light btn-lg btn-block" (click)="reset_terminate_reason(); c('Cancel click')">Close</button>
+        </div>
+        <div class="form-group col-md-6">
+            <button type="button" class="btn btn-danger btn-lg btn-block text-white" (click)="terminate_all_selected_workflows(); d('Confirm click')">Confirm Terminate</button>
+        </div>
+    </form>
+  </div>
+</div>
+</ng-template>

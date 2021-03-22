@@ -1,0 +1,6 @@
+<div *ngIf="LOG_AGGREGATOR_ANALYTICS_IFRAME_URL" class="main-card bg-secondary">
+  <div class="card-header bg-dark text-white text-center">
+    <h5><strong>Log Aggregation Analytics</strong></h5>
+  </div>
+  <iframe [src]="LOG_AGGREGATOR_ANALYTICS_IFRAME_URL | safe" height="1000" class="container-fluid mx-0 my-0"></iframe>
+</div>

@@ -1,0 +1,7 @@
+.myCustomModalClass .modal-dialog {
+    max-width: calc(100vw - 100px);
+  }
+
+  .modal-xl .modal-lg {
+    max-width: 90%;
+  }

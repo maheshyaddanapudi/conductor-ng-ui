@@ -1,0 +1,321 @@
+<div class="container-fluid bg-secondary card mt-2">
+  <div class="card-header bg-dark text-center text-white">
+      <h5><b>Workflow Definitions</b></h5>
+  </div>
+</div>
+<div class="container-fluid">
+  <div *ngIf="!error_message && !workflowDefs" class="loading">Loading...</div>
+
+  <div *ngIf="error_message" class="alert alert-warning mt-2" role="alert">
+      {{error_message}}
+  </div>
+  
+  <div *ngIf="!error_message && workflowDefs" class="alert alert-primary mt-2 text-center" role="alert">
+      Total of {{workflowDefs.length}} Workflow Definitions Found
+  </div>
+  <ul class="pagination justify-content-center" style="margin:20px 0">
+    <li *ngIf="current_page_selected > 1 ; else previous_deactivated_template" class="page-item"><a class="page-link" (click)="set_current_page_selected(current_page_selected - 1)"><strong>Previous</strong></a></li>
+    <ng-template #previous_deactivated_template>
+      <li class="page-item disabled"><a class="page-link">Previous</a></li>
+    </ng-template>
+    <li *ngFor="let paginated_workflows_list of paginated_workflow_defs ; index as page_number" class="page-item">
+      <a *ngIf="is_active_page(page_number) ; else non_current_page_template" class="page-link bg-primary text-white"><strong>{{page_number+1}}</strong></a>
+      <ng-template #non_current_page_template>
+        <a class="page-link" (click)="set_current_page_selected(page_number+1)">{{page_number+1}}</a>
+      </ng-template>
+    </li>
+    <li *ngIf="current_page_selected < number_of_pages ; else next_deactivated_template" class="page-item"><a class="page-link" (click)="set_current_page_selected(current_page_selected + 1)"><strong>Next</strong></a></li>
+    <ng-template #next_deactivated_template>
+      <li class="page-item disabled"><a class="page-link">Next</a></li>
+    </ng-template>
+    <li><button type="button" class="page-item ml-2 btn btn-focus" (click)="initiate()"><strong>Refresh</strong></button></li>
+  </ul>
+
+  <div *ngIf="page_size>0 ; else all_items_page_template" class="container-fluid dropdown text-center text-white">
+    <label for="dropdownMenuOffset">Results per page</label>
+    &nbsp;:&nbsp;
+    <button type="button" class="btn btn-dark dropdown-toggle" id="dropdownMenuOffset" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-offset="10,20">
+      <strong>{{page_size}}</strong>
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuOffset">
+      <a class="dropdown-item" (click)="update_page_size(10)">10</a>
+      <a class="dropdown-item" (click)="update_page_size(25)">25</a>
+      <a class="dropdown-item" (click)="update_page_size(50)">50</a>
+      <a class="dropdown-item" (click)="update_page_size(100)">100</a>
+      <a class="dropdown-item" (click)="update_page_size(0)">All</a>
+    </div>
+  </div>
+  <ng-template #all_items_page_template>
+    <div class="container-fluid dropdown text-center text-white">
+      <label for="dropdownMenuOffset">Results per page</label>
+      &nbsp;:&nbsp;
+      <button type="button" class="btn btn-dark dropdown-toggle" id="dropdownMenuOffset" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-offset="10,20">
+        <strong>All</strong>
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuOffset">
+        <a class="dropdown-item" (click)="update_page_size(10)">10</a>
+        <a class="dropdown-item" (click)="update_page_size(25)">25</a>
+        <a class="dropdown-item" (click)="update_page_size(50)">50</a>
+        <a class="dropdown-item" (click)="update_page_size(100)">100</a>
+        <a class="dropdown-item" (click)="update_page_size(0)">All</a>
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="main-card mb-3 card mt-2">
+    
+    <div class="table-responsive">
+      <table class="align-middle mb-0 table table-borderless table-striped table-hover">
+          <thead class="thead table-primary">
+            <th class="text-center">#</th>
+            <th class="text-center">Name</th>
+            <th>Description</th>
+            <th class="text-center">Version</th>
+            <th class="text-center">Input Keys</th>
+            <th class="text-center">Output Keys</th>
+            <th class="text-center">JSON</th>
+            <th class="text-center">Actions</th>
+            <th class="text-center">Currently Running</th>
+            <th class="text-center">All History</th>
+            <th class="text-center">Details</th>
+          </thead>
+          <tbody>
+          <tr *ngFor="let workflowDef of paginated_workflow_defs[current_page_selected-1]; index as workflowDefCounter">
+            <td class="text-center text-muted">#{{ ((current_page_selected-1)*page_size) + workflowDefCounter+1}}</td>
+            <td class="text-center">
+              <div class="widget-content p-0">
+                <div class="widget-content-left flex2">
+                  <div class="widget-heading">{{workflowDef.name}}</div>
+                  <div class="widget-subheading opacity-7 text-muted">Restartable:: {{workflowDef.restartable}}</div>
+                </div>
+              </div>
+            </td>
+            <td>{{workflowDef.description}}</td>
+            <td class="text-center">{{workflowDef.version}}</td>
+            <td class="text-center">
+                <ng-template #inputParametersContent let-c="close" let-d="dismiss">
+                  <div class="modal-header bg-dark text-white">
+                    <div class="card-body text-center mx-auto"><h4 class="card-title">Input Parameter(s)</h4></div>
+                    <button type="button" class="close text-white" aria-label="Close" (click)="d('Cross click')">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body bg-secondary">
+                    <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                        <div class="card-body">
+                          <div *ngIf="workflowDef.inputParameters" class="alert alert-primary text-center" role="alert">
+                            Total of {{workflowDef.inputParameters.length}} Params Found
+                          </div>
+                          <table class="mb-0 table table-dark">
+                            <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>Parameter Name</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let anInputParam of workflowDef.inputParameters; index as inputParamCounter">
+                              <th scope="row">{{inputParamCounter+1}}</th>
+                              <td>{{anInputParam}}</td>
+                            </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                    </perfect-scrollbar>
+                  </div>
+                  <div class="modal-footer bg-dark">
+                    <button type="button" class="btn btn-light" (click)="c('Close click')">Close</button>
+                  </div>
+                </ng-template>
+              <button *ngIf="undefined != workflowDef.inputParameters && workflowDef.inputParameters.length > 0 ; else inputParametersDisabled" (click)="openLarge(inputParametersContent)" type="button" class="btn btn-primary btn-sm">Input</button>
+              <ng-template #inputParametersDisabled>
+                  <button type="button" class="btn btn-primary btn-sm disabled">Input</button>
+              </ng-template>
+            </td>
+            <td class="text-center">
+                <ng-template #outputParametersContent let-c="close" let-d="dismiss">
+                  <div class="modal-header bg-dark text-white">
+                    <div class="card-body text-center mx-auto"><h4 class="card-title">Output Parameter(s)</h4></div>
+                    <button type="button" class="close text-white" aria-label="Close" (click)="d('Cross click')">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body bg-secondary">
+                    <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                        <div class="card-body">
+                          <table class="mb-0 table table-dark">
+                            <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>Parameter Name</th>
+                              <th>Parameter Mapping</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let anOutputParam of workflowDef.outputParameters | keyvalue; index as outputParamCounter">
+                              <th scope="row">{{outputParamCounter+1}}</th>
+                              <td>{{anOutputParam.key}}</td>
+                              <td>{{anOutputParam.value}}</td>
+                            </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                    </perfect-scrollbar>
+                  </div>
+                  <div class="modal-footer bg-dark">
+                    <button type="button" class="btn btn-light" (click)="c('Close click')">Close</button>
+                  </div>
+                </ng-template>
+              <button *ngIf="undefined != workflowDef.outputParameters; else outputParametersDisabled" (click)="openLarge(outputParametersContent)" type="button" class="btn btn-success btn-sm">Output</button>
+              <ng-template #outputParametersDisabled>
+                  <button type="button" class="btn btn-success btn-sm disabled">Output</button>
+              </ng-template>
+            </td>
+            <td class="text-center">
+                <ng-template #workflowDefJsonContent let-c="close" let-d="dismiss">
+                  <div class="modal-header bg-dark text-white">
+                    <div class="card-body text-center mx-auto"><h4 class="card-title">WorkflowDef JSON</h4></div>
+                    <button type="button" class="close text-white" aria-label="Close" (click)="setworkflowDefJsonTemp(''); d('Cross click')">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body bg-secondary">
+                      <div class="card-border mb-3 card card-body border-light bg-light">
+                          <perfect-scrollbar style="height: 150px">
+                              {{workflowDefJsonTemp}}
+                          </perfect-scrollbar>
+                      </div>
+                  </div>
+                  <div class="modal-footer bg-dark">
+                    <button type="button" class="btn btn-light" (click)="setworkflowDefJsonTemp(''); c('Close click')">Close</button>
+                  </div>
+                </ng-template>
+              <button type="button" class="btn btn-outline-focus btn-sm" (click)="setworkflowDefJsonTemp(workflowDef); openLarge(workflowDefJsonContent)">JSON</button>
+            </td>
+            <td class="text-center">
+              <div class="btn-group btn-group-sm">
+                <ng-template #trigger_workflow_template let-c="close" let-d="dismiss">
+                  <div class="modal-header bg-dark text-white">
+                    <div class="card-body text-center mx-auto"><h4 class="card-title">Workflow Trigger</h4></div>
+                    <button type="button" class="close text-white" aria-label="Close" (click)="reset_input_parameter_with_div(); d('Cross click')">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body bg-secondary">
+                    <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                      <div *ngIf="error_message" class="alert alert-warning mt-2" role="alert">
+                          {{error_message}}
+                      </div>
+                  
+                      <div *ngIf="workflow_run_id" class="alert alert-success mt-2" role="alert">
+                          Workflow triggered successfully. Run ID: {{workflow_run_id}}
+                      </div>
+                      
+                      <div class="main-card mb-3 card bg-light mt-2" style="border: 0px">
+              
+                          <div *ngIf="!error_message && workflowDef" class="alert alert-primary text-center mb-0" role="alert">
+                              Total of {{workflowDef.inputParameters.length}} Workflow Input Parameter(s) Found
+                          </div>
+                          <div class="card-body bg-secondary">
+                          <form class="col-md-6 mx-auto my-auto">
+                              <div *ngIf="workflowDef && workflowDef.inputParameters">
+                                  <div *ngFor="let a_workflow_input of workflowDef.inputParameters; index as inputCounter" class="position-relative form-group">
+                                      <label class="text-white" for="a_workflow_input">{{a_workflow_input}}</label>
+                                      <input id="a_workflow_input" name="a_workflow_input" (keyup)="updateInputValues(workflowDef, inputCounter, $event.target.value)" placeholder="Enter the Input value" type="text" class="form-control">
+                                  </div>
+                              </div>
+                          </form>
+                          </div>
+                      </div>
+                  
+                     
+                    </perfect-scrollbar>
+                  </div>
+                  <div class="d-block text-center card-footer bg-dark">
+                      <form class="form-inline mb-2">
+                          <div class="form-group col-md-6">
+                              <button type="button" class="btn btn-light btn-lg btn-block" (click)="reset_input_parameter_with_div(); d('Cross click')">Close</button>
+                          </div>
+                          <div class="form-group col-md-6">
+                              <button *ngIf="!workflow_run_id && !error_message; else execute_workflow_disabled_template" type="button" class="btn btn-info btn-lg btn-block" (click)="start_workflow(workflowDef.name, workflowDef.version)">Execute Workflow</button>
+                              <ng-template #execute_workflow_disabled_template>
+                                  <button type="button" class="btn btn-info btn-lg btn-block disabled" disabled>Execute Workflow</button>
+                              </ng-template>
+                          </div>
+                      </form>
+                  </div>
+                </ng-template>
+                <button type="button" class="btn btn-info" (click)="openLarge(trigger_workflow_template)">Execute</button>
+                <button type="button" class="btn btn-warning disabled" disabled>Update</button>
+                <ng-template #delete_comfirmation_template let-c="close" let-d="dismiss">
+                  <div class="card-body text-white" style="background-color: rgb(51, 51, 51); border-color: rgb(51, 51, 51);">
+                      <div class="card-header bg-secondary text-center text-white">
+                          <b class="text-white" style="font-size: 20px; font-weight: bolder;">Action Confirmation</b>
+                      </div>
+                    <div class="card-body">
+                      <perfect-scrollbar style="height: 300px">
+                          <h3 class="text-center">Are you sure you want to delete the Workflow Definition ?</h3>
+                          <br>
+                          <p><b><u>NOTE:</u></b> The workflow definition will not be checked for the workflow execution history and the impact is not considered while deleting the workflow definition. It is left to user discretion.</p>
+                          <div class="container-fluid mt-2">
+                            <div class="card-header bg-dark text-white text-center">
+                              <h5>Workflow Details</h5>
+                            </div>
+                            <table class="table table-dark">
+                              <tbody class="tbody">
+                                <tr>
+                                  <th class="text-center text-white">Workflow Name</th>
+                                  <td class="text-center text-white">{{workflowDef.name}}</td>
+                                </tr>
+                                <tr>
+                                  <th class="text-center text-white">Workflow Version</th>
+                                  <td class="text-center text-white">{{workflowDef.version}}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                      </perfect-scrollbar>
+                      <div *ngIf="error_message" class="alert alert-warning mt-2 text-center" role="alert">
+                          {{error_message}}
+                      </div>
+                      
+                      <div *ngIf="result" class="alert alert-success mt-2 text-center" role="alert">
+                          {{result}}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="d-block text-center card-footer">
+                      <form class="form-inline mb-2">
+                          <div class="form-group col-md-6">
+                              <button *ngIf="delete_succesful && (result || error_message) ; else cancel_only_template" type="button" class="btn btn-dark btn-lg btn-block" (click)="reset_delete_succesful(); c('Cancel click')">Close</button>
+                              <ng-template #cancel_only_template>
+                                <button type="button" class="btn btn-dark btn-lg btn-block" (click)="c('Cancel click')">Cancel</button>
+                              </ng-template>
+                          </div>
+                          <div class="form-group col-md-6">
+                              <button *ngIf="!error_message && !result && !delete_succesful ; else delete_disabled_template" type="button" class="btn btn-danger btn-lg btn-block" (click)="delete(workflowDef.name, workflowDef.version)">Confirm Delete</button>
+                              <ng-template #delete_disabled_template>
+                                  <button type="button" class="btn btn-danger btn-lg btn-block disabled" disabled>Confirm Delete</button>
+                              </ng-template>
+                          </div>
+                      </form>
+                  </div>
+              </ng-template>
+                <button type="button" class="btn btn-danger" (click)="openLarge(delete_comfirmation_template)">Delete</button>
+              </div>
+            </td>
+            <td class="text-center">
+              <button type="button" class="btn btn-secondary btn-sm" (click)="show_current_executions(workflowDef.name, workflowDef.version)">Running</button>
+            </td>
+            <td class="text-center">
+              <button type="button" class="btn btn-outline-dark btn-sm" (click)="show_all_executions(workflowDef.name, workflowDef.version)">History</button>
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-dark btn-sm" (click)="viewWorkflowDetails(workflowDef.name, workflowDef.version)">Details</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+</div>

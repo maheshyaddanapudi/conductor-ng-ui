@@ -1,0 +1,27 @@
+<div *ngIf="display_warning" class="text-center alert alert-danger mt-2" role="alert">
+    <strong>One time view only !!!</strong> Refreshing the page / opening the link in another window will not work.
+</div>
+
+<div class="modal-header bg-dark text-white" style="height: 100%;">
+  <div class="card-body text-center mx-auto">
+      <table class="table">
+          <tbody>
+              <tr>
+                  <th class="text-white">Wokflow Name</th>
+                  <td class="text-white">{{workflow_name}}</td>
+                  <th class="text-white">Workflow Version</th>
+                  <td class="text-white">{{workflow_version}}</td>
+              </tr>
+              <tr>
+                  <th class="text-white">Parent Task Ref Name</th>
+                  <td class="text-white">{{parent_task_ref_name}}</td>
+                  <th class="text-white">Total Branches</th>
+                  <td class="text-white">{{branch_task_list.length}}</td>
+              </tr>
+          </tbody>
+      </table>
+  </div>
+</div>
+<div class="modal-body bg-secondary">
+  <app-display-tasks-list *ngFor="let sub_tasks_list of branch_task_list ; index as branch_counter" [tasks_list]="sub_tasks_list" [workflow_name]="workflow_name" [workflow_version]="workflow_version" [tasks_execution_list]="tasks_execution_list" [workflow_status]="workflow_status"></app-display-tasks-list>
+</div>

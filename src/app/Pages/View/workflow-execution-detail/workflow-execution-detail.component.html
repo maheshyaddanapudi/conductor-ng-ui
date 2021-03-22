@@ -1,0 +1,289 @@
+<div class="container-fluid bg-secondary card mt-2">
+  <div class="card-header bg-dark text-center text-white">
+      <h5><b>Workflow Execution Detail</b></h5>
+  </div>
+</div>
+
+<div *ngIf="show_loading" class="loading">Loading...</div>
+
+<div class="container-fluid">
+
+  <div *ngIf="error_message" class="alert alert-warning mt-2" role="alert">
+      {{error_message}}
+  </div>
+</div>
+
+<div *ngIf="workflow_execution && workflow_def" class="container-fluid mt-2">
+  <div class="card-header bg-happy-fisher">
+      <h5 class="text-center my-auto"><strong>Workflow Execution Basic Info</strong></h5>
+  </div>
+  <table class="mb-0 table table-striped table-bordered text-white">
+      <tbody>
+      <tr>
+          <th>Name</th>
+          <td>{{workflow_def.name}}</td>
+          <th>Description</th>
+          <td>{{workflow_def.description}}</td>
+      </tr>
+      <tr>
+          <th>Version</th>
+          <td>{{workflow_def.version}}</td>
+          <th>Owner App</th>
+          <td>{{workflow_def.ownerApp}}</td>
+      </tr>
+      <tr>
+          <th>Workflow Id</th>
+          <td>{{workflow_execution.workflowId}}</td>
+          <th>Status</th>
+          <td>{{workflow_execution.status}}</td>
+      </tr>
+      <tr>
+        <th>Start Time</th>
+        <td>{{workflow_execution.startTime | date :  "MMM dd,yyyy HH:mm:ss.SSS" : timezone}}</td>
+        <th>End Time</th>
+        <td>{{workflow_execution.endTime | date :  "MMM dd,yyyy HH:mm:ss.SSS"}}</td>
+    </tr>
+      </tbody>
+    </table>
+</div>
+
+<div *ngIf="graph_def_array" class="accordion container-fluid mt-2" id="graph_def_accordion">
+  <div class="card">
+      
+      <div class="modal-header bg-royal collapsed" style="height: 50px;" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+          <h6 class="text-center container-fluid text-white"><strong>Workflow Execution Diagram</strong></h6>
+            <p class="text-white" style="width: 130px">
+                <span aria-hidden="true"><strong><u>(Click to Toggle)</u></strong></span>
+            </p>
+      </div>
+
+      <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#graph_def_accordion">
+          <div class="card-body card-border text-center bg-dark text-white">
+              <p>Scroll horizontal / veritcal as per your screen size</p>
+              <perfect-scrollbar class="bg-secondary" style="height: 450px; padding-bottom: 10px;" [config]="{useBothWheelAxes: true, suppressScrollX: false, suppressScrollY: false}">
+                  <app-view-mermaid-workflow-execution-diagram [graph_def_array]="graph_def_array"></app-view-mermaid-workflow-execution-diagram>
+              </perfect-scrollbar>
+          </div>
+          <a class="btn bg-royal btn-block btn-lg text-white" (click)="open_diagram_in_new_window()"><strong>Open in New Window - Full Screen</strong></a>
+      </div>
+  </div>
+</div>
+
+<div *ngIf="workflow_def && workflow_execution" class="accordion container-fluid mt-2" id="workflow_def_tasks_accordion">
+  <div class="card">
+      
+      <div class="modal-header bg-white collapsed" style="height: 50px;" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          <h6 class="text-center container-fluid"><strong>Workflow Tasks</strong></h6>
+            <p style="width: 130px">
+                <span aria-hidden="true"><strong><u>(Click to Toggle)</u></strong></span>
+            </p>
+      </div>
+
+      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#workflow_def_tasks_accordion">
+          <app-display-tasks-list [tasks_list]="workflow_def.tasks" [workflow_name]="workflow_def.name" [workflow_version]="workflow_def.version" [workflow_status]="workflow_execution.status" [tasks_execution_list]="workflow_execution.tasks"></app-display-tasks-list>
+      </div>
+  </div>
+</div>
+<div *ngIf="workflow_def && workflow_execution" class="accordion container-fluid mt-2" id="workflow_def_io_accordion">
+  <div class="card">
+      
+      <div class="modal-header bg-info collapsed" style="height: 50px;" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          <h6 class="text-center container-fluid text-white"><strong>Workflow I/O</strong></h6>
+            <p class="text-white" style="width: 130px">
+                <span aria-hidden="true"><strong><u>(Click to Toggle)</u></strong></span>
+            </p>
+      </div>
+
+      <div id="collapseThree" class="collapse bg-dark" aria-labelledby="headingThree" data-parent="#workflow_def_io_accordion">
+        <div class="card container-fluid mt-2 bg-dark">
+            <div class="card-header text-white bg-primary">
+                <h6 class="text-white text-center"><strong>Input Parameters</strong></h6>
+            </div>
+            <table class="table table-striped">
+                <tbody class="tbody table-secondary">
+                    <tr *ngFor="let anInput of workflow_execution.input | keyvalue ; index as input_counter">
+                        <td class="text-center text-muted">#{{input_counter+1}}</td>
+                        <td class="text-center">
+                            <strong>{{anInput.key}}</strong>
+                        </td>
+                        <td class="text-center">
+                            {{anInput.value}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+          </div>
+
+          <div class="card container-fluid bg-dark">
+            <div class="card-header bg-royal text-center text-white">
+                <h6 class="text-white text-center"><strong>Output Parameters</strong></h6>
+            </div>
+            <table class="table table-striped">
+                <tbody *ngIf="!workflow_execution || !workflow_execution.output ; else workflow_execution_output_template" class="tbody table-secondary">
+                    <tr *ngFor="let anOutput of workflow_def.outputParameters | keyvalue ; index as output_counter">
+                        <td class="text-center text-muted">#{{output_counter+1}}</td>
+                        <td class="text-center">
+                            <strong>{{anOutput.key}}</strong>
+                        </td>
+                        <td class="text-center">
+                            {{anOutput.value}}
+                        </td>
+                    </tr>
+                </tbody>
+                <ng-template #workflow_execution_output_template>
+                    <tbody class="tbody table-secondary">
+                        <tr *ngFor="let anOutput of workflow_execution.output | keyvalue ; index as output_counter">
+                            <td class="text-center text-muted">#{{output_counter+1}}</td>
+                            <td class="text-center">
+                                <strong>{{anOutput.key}}</strong>
+                            </td>
+                            <td class="text-center">
+                                {{anOutput.value}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </ng-template>
+            </table>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div *ngIf="workflow_execution_json" class="accordion container-fluid mt-2" id="workflow_execution_json_accordion">
+  <div class="card">
+      
+      <div class="modal-header bg-white collapsed" style="height: 50px;" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+          <h6 class="text-center container-fluid"><strong>Workflow Execution Raw JSON</strong></h6>
+            <p style="width: 130px">
+                <span aria-hidden="true"><strong><u>(Click to Toggle)</u></strong></span>
+            </p>
+      </div>
+
+      <div id="collapseFour" class="collapse bg-dark" aria-labelledby="headingFour" data-parent="#workflow_execution_json_accordion">
+         <div class="card-border card card-body bg-dark">
+               <perfect-scrollbar style="height: 150px">
+                  <app-display-json [workflow_def_json]="workflow_execution_json"></app-display-json>
+               </perfect-scrollbar>
+           </div>
+           <a class="btn btn-secondary btn-lg btn-block text-dark" (click)="open_json_in_new_window('EXECUTION')"><strong>Open in New Window - Full Screen</strong></a>
+      </div>
+  </div>
+</div>
+<div *ngIf="workflow_def_json" class="accordion container-fluid mt-2" id="workflow_def_json_accordion">
+  <div class="card">
+      <div class="modal-header bg-info collapsed text-center" style="height: 50px;" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+        <h6 class="text-center container-fluid text-white"><strong>Workflow Definition Raw JSON</strong></h6>
+            <p class="text-white" style="width: 130px">
+                <span aria-hidden="true"><strong><u>(Click to Toggle)</u></strong></span>
+            </p>
+      </div>
+      <div id="collapseFive" class="collapse bg-dark" aria-labelledby="headingFour" data-parent="#workflow_def_json_accordion">
+         <div class="card-border card card-body bg-dark">
+               <perfect-scrollbar style="height: 150px">
+                  <app-display-json [workflow_def_json]="workflow_def_json"></app-display-json>
+               </perfect-scrollbar>
+           </div>
+           <a class="btn btn-info btn-lg btn-block text-white" (click)="open_json_in_new_window('DEFINITION')"><strong>Open in New Window - Full Screen</strong></a>
+      </div>
+  </div>
+</div>
+<div *ngIf="workflow_execution" class="accordion container-fluid mt-2" id="workflow_execution_misc_accordion">
+  <div class="card">
+      
+      <div class="modal-header bg-secondary collapsed" style="height: 50px;" data-toggle="collapse" data-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+          <h6 class="text-center container-fluid"><strong>Workflow Metadata</strong></h6>
+            <p style="width: 130px">
+                <span aria-hidden="true"><strong><u>(Click to Toggle)</u></strong></span>
+            </p>
+      </div>
+
+      <div id="collapseSix" class="collapse" aria-labelledby="headingFive" data-parent="#workflow_execution_misc_accordion">
+         <div class="card-border mb-2 card card-body bg-dark">
+               <perfect-scrollbar style="height: 510px">
+                   <table class="table table-light">
+                       <tbody class="tbody">
+                           <tr *ngFor="let item of workflow_execution | keyvalue">
+                              <th *ngIf="item.key != 'input' && item.key != 'output' && item.key != 'workflowDefinition' && item.key != 'tasks' && item.key != 'variables' && item.key != 'taskToDomain'" class="text-center border-dark">{{item.key}}</th>
+                              <td *ngIf="item.key != 'input' && item.key != 'output' && item.key != 'workflowDefinition' && item.key != 'tasks' && item.key != 'variables' && item.key != 'taskToDomain'" class="text-center border-dark">{{do_transformation_if_needed(item.key, item.value)}}</td>
+                           </tr>
+                       </tbody>
+                   </table>
+               </perfect-scrollbar>
+           </div>
+      </div>
+  </div>
+</div>
+
+<form class="form-inline mt-2">
+  <div class="form-group col-md-6">
+      <button (click)="retry_workflow()" *ngIf="workflow_execution && (workflow_execution.status == 'FAILED' || workflow_execution.status == 'TIMED_OUT' || workflow_execution.status == 'TERMINATED') ; else disable_retry_template" type="button" class="btn btn-success btn-lg btn-block">Retry</button>
+      <ng-template #disable_retry_template>
+          <button type="button" class="btn btn-success btn-lg btn-block disabled" disabled>Retry</button>
+      </ng-template>
+  </div>
+  <div class="form-group col-md-6">
+      <button (click)="restart_workflow()" *ngIf="workflow_execution && (workflow_execution.status == 'COMPLETED' || workflow_execution.status == 'FAILED' || workflow_execution.status == 'TIMED_OUT' || workflow_execution.status == 'TERMINATED') ; else disable_restart_template" type="button" class="btn btn-primary btn-lg btn-block">Restart</button>
+      <ng-template #disable_restart_template>
+          <button type="button" class="btn btn-primary btn-lg btn-block disabled" disabled>Restart</button>
+      </ng-template>
+  </div>
+</form>
+<form class="form-inline mt-2">
+  <div class="form-group col-md-6">
+      <button (click)="pause_workflow()" *ngIf="workflow_execution && workflow_execution.status == 'RUNNING' ; else disable_pause_template" type="button" class="btn btn-secondary active btn-lg btn-block">Pause</button>
+      <ng-template #disable_pause_template>
+          <button type="button" class="btn btn-secondary btn-lg btn-block disabled" disabled>Pause</button>
+      </ng-template>
+  </div>
+  <div class="form-group col-md-6">
+      <button (click)="resume_workflow()" *ngIf="workflow_execution && workflow_execution.status == 'PAUSED' ; else disable_resume_template" type="button" class="btn btn-focus btn-lg btn-block text-white">Resume</button>
+      <ng-template #disable_resume_template>
+          <button type="button" class="btn btn-focus btn-lg btn-block disabled text-white" disabled>Resume</button>
+      </ng-template>
+  </div>
+</form>
+<form class="form-inline my-2">
+  <div class="form-group col-md-4">
+      <ng-template #terminate_confirmation_template let-c="close" let-d="dismiss">
+          <div class="card-body" style="background-color: rgb(51, 51, 51); border-color: rgb(51, 51, 51);">
+            <div class="card-header bg-warning border-light text-center">
+                <b style="font-size: 20px; font-weight: bolder;">Action Confirmation</b>
+            </div>
+            <table class="table-light table-striped table-hover table-bordered border-dark col-md-12 mt-2">
+              <thead class="thead">
+                <th class="text-center" style="color: red;">Workflow IDs for Termination</th>
+              </thead>
+              <tbody class="tbody">
+                <tr>
+                  <td class="text-center">{{workflow_id}}</td>
+                </tr>
+              </tbody>
+            </table>
+            <textarea class="modal-body bg-light card-border mt-3 mb-3 card card-body border-light col-md-12" style="height: 150px;" [(ngModel)]="terminate_reason" [ngModelOptions]="{standalone: true}" placeholder="Optional terminate reason ..."></textarea>
+            <div class="d-block text-center card-footer">
+              <form class="form-inline mb-2">
+                  <div class="form-group col-md-6">
+                      <button type="button" class="btn btn-light btn-lg btn-block" (click)="reset_terminate_reason(); c('Cancel click')">Close</button>
+                  </div>
+                  <div class="form-group col-md-6">
+                      <button type="button" class="btn btn-danger btn-lg btn-block text-white" (click)="terminate_workflow(); d('Confirm click')">Confirm Terminate</button>
+                  </div>
+              </form>
+            </div>
+          </div>
+        </ng-template>
+      <button *ngIf="workflow_execution && (workflow_execution.status == 'RUNNING' || workflow_execution.status == 'PAUSED') ; else disable_terminate_template" type="button" class="btn btn-warning btn-lg btn-block" (click)="openLarge(terminate_confirmation_template)">Terminate</button>
+      <ng-template #disable_terminate_template>
+          <button type="button" class="btn btn-warning btn-lg btn-block disabled" disabled>Terminate</button>
+      </ng-template>
+  </div>
+  <div class="form-group col-md-4">
+      <button (click)="delete_workflow(true)" *ngIf="workflow_execution && (workflow_execution.status == 'COMPLETED' || workflow_execution.status == 'FAILED' || workflow_execution.status == 'TIMED_OUT' || workflow_execution.status == 'TERMINATED') ; else disable_archive_template" type="button" class="btn btn-outline-secondary btn-lg btn-block text-white">Archive</button>
+      <ng-template #disable_archive_template>
+          <button type="button" class="btn btn-outline-secondary text-white btn-lg btn-block disabled" disabled>Archive</button>
+      </ng-template>
+  </div>
+  <div class="form-group col-md-4">
+      <button (click)="delete_workflow(false)" *ngIf="!show_loading" type="button" class="btn btn-danger btn-lg btn-block">Delete</button>
+  </div>
+</form>

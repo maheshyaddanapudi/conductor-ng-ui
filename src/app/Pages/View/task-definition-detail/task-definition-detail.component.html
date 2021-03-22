@@ -1,0 +1,149 @@
+<div class="container-fluid bg-secondary card mt-2">
+    <div class="card-header bg-dark text-center text-white">
+      <h5><b>Task Detail / Management</b></h5>
+  </div>
+</div>
+
+<div *ngIf="task_def" class="container-fluid mt-2 mb-2">
+  <div class="card-header bg-dark">
+      <h5 class="text-center text-white my-auto">Task Definition Info</h5>
+  </div>
+  <table class="mb-2 table table-bordered bg-light table-sm">
+      <tbody>
+      <tr class="bg-secondary text-primary">
+          <th><strong>Name</strong></th>
+          <td><strong>{{task_def.name}}</strong></td>
+      </tr>
+      <tr class="bg-secondary text-primary">
+          <th>Description</th>
+          <td>{{task_def.description}}</td>
+      </tr>
+      <tr *ngFor="let task of task_def | keyvalue">
+          <th *ngIf="task.key != 'name' && task.key != 'description' && task.key != 'inputKeys' && task.key != 'outputKeys' && task.key != 'inputTemplate'">{{task.key}}</th>
+          <td *ngIf="task.key != 'name' && task.key != 'description' && task.key != 'inputKeys' && task.key != 'outputKeys' && task.key != 'inputTemplate'">{{do_transformation_if_needed(task.key, task.value)}}</td>
+      </tr>
+      </tbody>
+    </table>
+    <div class="row mb-2 mx-1">
+      <div class="border text-center border-success" style="width: 50%;">
+          <div class="card-header text-white bg-success">
+          <b class="text-white text-center" style="font-size: 20px; font-weight: bolder;">Input Keys</b>
+
+          </div>
+          <div class="modal-body">
+              <div class="form-row">
+                  <div *ngFor="let anInput of task_def.inputKeys" class="col-md-4 text-white">
+                      {{anInput}}
+                      </div>
+              </div>
+          </div>
+      </div>
+      <div class="border text-center border-info" style="width: 50%;">
+          <div class="card-header bg-info text-white">
+          <b class="text-white text-center" style="font-size: 20px; font-weight: bolder;">Output Keys</b>
+
+          </div>
+          <div class="modal-body">
+              <div class="form-row">
+                  <div *ngFor="let anOutput of task_def.outputKeys" class="col-md-4 text-white">
+                      {{anOutput}}
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+    <form *ngIf="!error_message && !result" class="form-inline mb-2">
+      <div class="form-group col-md-6">
+          <ng-template #delete_comfirmation_template let-c="close" let-d="dismiss">
+              <div class="card-body text-white" style="background-color: rgb(51, 51, 51); border-color: rgb(51, 51, 51);">
+                  <div class="card-header bg-secondary text-center text-white">
+                      <b class="text-white" style="font-size: 20px; font-weight: bolder;">Action Confirmation</b>
+                  </div>
+                <div class="card-body">
+                  <perfect-scrollbar style="height: 300px">
+                      <h3 class="text-center">Are you sure you want to delete the Task Definition ?</h3>
+                      <br>
+                      <p><b><u>NOTE:</u></b> The task definition will not be checked for the workflows it is part of and the impact is not considered while deleting the task definition. It is left to user discretion.</p>
+                  </perfect-scrollbar>
+                  <div *ngIf="error_message" class="alert alert-warning mt-2" role="alert">
+                      {{error_message}}
+                  </div>
+                  
+                  <div *ngIf="result" class="alert alert-success mt-2" role="alert">
+                      {{result}}
+                  </div>
+                </div>
+              </div>
+              <div class="d-block text-center card-footer">
+                  <form class="form-inline mb-2">
+                      <div class="form-group col-md-6">
+                          <button *ngIf="!result ; else cancel_disabled_template" type="button" class="btn btn-dark btn-lg btn-block" (click)="c('Cancel click')">Cancel</button>
+                          <ng-template #cancel_disabled_template>
+                              <button type="button" class="btn btn-dark btn-lg btn-block disabled" disabled>Cancel</button>
+                          </ng-template>
+                      </div>
+                      <div class="form-group col-md-6">
+                          <button *ngIf="!error_message && !result ; else delete_disabled_template" type="button" class="btn btn-danger btn-lg btn-block" (click)="delete()">Confirm Delete</button>
+                          <ng-template #delete_disabled_template>
+                              <button type="button" class="btn btn-danger btn-lg btn-block disabled" disabled>Confirm Delete</button>
+                          </ng-template>
+                      </div>
+                  </form>
+              </div>
+          </ng-template>
+          <button type="button" class="btn btn-danger btn-lg btn-block" (click)="openLarge(delete_comfirmation_template)">Delete</button>
+      </div>
+      <div class="form-group col-md-6">
+          <button type="button" class="btn btn-warning btn-lg btn-block" (click)="update()">Update</button>
+      </div>
+     
+  </form>
+  <div *ngIf="error_message" class="alert alert-warning mt-2" role="alert">
+      {{error_message}}
+  </div>
+  
+  <div *ngIf="result" class="alert alert-success mt-2" role="alert">
+      {{result}}
+  </div>
+  <form *ngIf="!error_message && !result" class="form-inline mb-2">
+      <div class="form-group col-md-4">
+          <button type="button" class="btn btn-secondary btn-lg btn-block" (click)="requeue()">Requeue Task</button>
+      </div>
+      <div class="form-group col-md-4">
+          <ng-template #task_poll_data_template let-c="close" let-d="dismiss">
+              <div class="card-body text-white" style="background-color: rgb(51, 51, 51); border-color: rgb(51, 51, 51);">
+                  <div class="card-header bg-secondary text-center text-white">
+                      <b class="text-white" style="font-size: 20px; font-weight: bolder;">Poll Data Summary</b>
+                  </div>
+                <div class="card-body">
+                  <perfect-scrollbar *ngIf="!error_message" style="height: 300px">
+                      <table *ngFor="let poll_data of task_poll_data" class="table table-bordered table-dark table-striped">
+                          <tr *ngFor="let item of poll_data | keyvalue">
+                              <th>{{item.key}}</th>
+                              <td>{{do_transformation_if_needed(item.key, item.value)}}</td>
+                          </tr>
+                      </table>
+                  </perfect-scrollbar>
+                  <div *ngIf="error_message" class="alert alert-warning mt-2" role="alert">
+                      {{error_message}}
+                  </div>
+                  <div *ngIf="result" class="alert alert-success mt-2" role="alert">
+                      {{result}}
+                  </div>
+                </div>
+              </div>
+              <div class="d-block text-center card-footer">
+                  <form class="form-inline mb-2">
+                      <div class="form-group col-md-12">
+                          <button type="button" class="btn btn-dark btn-lg btn-block" (click)="dismiss_results(); c('Close click')">Close</button>
+                      </div>
+                  </form>
+              </div>
+          </ng-template>
+          <button type="button" class="btn btn-info btn-lg btn-block" (click)="get_poll_data(); openLarge(task_poll_data_template)">Show Poll Data Details</button>
+      </div>
+      <div class="form-group col-md-4">
+          <button type="button" class="btn btn-primary btn-lg btn-block" (click)="view_tasks_in_progress()">Show In Progress Tasks (Beta)</button>
+      </div>
+  </form>
+</div>

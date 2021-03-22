@@ -1,0 +1,253 @@
+<div class="container-fluid bg-secondary card mt-2">
+    <div class="card-header bg-dark text-center text-white">
+      <h5><b>Update Task Definition</b></h5>
+  </div>
+</div>
+<div class="container-fluid">
+  <div class="main-card mb-3 card">
+      <div class="card-body bg-vicious-stance text-white">
+          <form>
+              <div class="form-row">
+              <div class="col-md-4">
+                  <div class="position-relative form-group"><label for="Name">Name</label><input [(ngModel)]="name" style="border-radius: 15px" name="Name"
+                                                                                                          id="Name"
+                                                                                                          placeholder="Enter Task Definition Name"
+                                                                                                          type="text"
+                                                                                                          class="form-control border border-danger" readonly>
+                  </div>
+              </div>
+              <div class="col-md-4">
+                  <div class="position-relative form-group"><label for="Owner App">Owner App</label><input
+                          name="Owner App" id="Owner App" placeholder="Enter the Owner App Name" type="text"
+                          class="form-control border border-danger" style="border-radius: 15px" value="Fillory UI" [(ngModel)]="ownerApp"></div>
+              </div>
+              <div class="col-md-4">
+                  <div class="position-relative form-group"><label for="Owner Email">Owner Email</label><input
+                          name="Owner Email" id="Owner Email" placeholder="Enter the Owner Email" type="email"
+                          class="form-control border border-danger" style="border-radius: 15px" [(ngModel)]="ownerEmail"></div>
+              </div>
+              </div>
+              <div class="position-relative form-group"><label for="Description">Description</label><textarea [(ngModel)]="description" style="border-radius: 15px" name="Description"
+                                                                                                          id="Description"
+                                                                                                          placeholder="Enter the Task Description"
+                                                                                                          type="text"
+                                                                                                          class="form-control border border-danger"></textarea>
+              </div>
+              <div class="form-row">
+              <div class="col-md-6">
+                  <div class="position-relative form-group"><label for="Concurrent Execution Limit">Concurrent Execution Limit</label><input [(ngModel)]="concurrentExecLimit" style="border-radius: 15px" name="Concurrent Execution Limit"
+                                                                                                          id="Concurrent Execution Limit"
+                                                                                                          placeholder="Enter concurrent execution threads limit."
+                                                                                                          type="number"
+                                                                                                          class="form-control border border-warning">
+                  </div>
+              </div>
+              <div class="col-md-6">
+                  <div class="position-relative form-group"><label for="Isolation Group Id">Isolation Group Id</label><input
+                  [(ngModel)]="isolationGroupId" name="Isolation Group Id" id="Isolation Group Id" placeholder="Leave blank to default." type="text"
+                          class="form-control"></div>
+              </div>
+              </div>
+              <div class="form-row">
+              <div class="col-md-4">
+                  <div class="position-relative form-group"><label for="Created By">Created By</label><input name="Created By"
+                  [(ngModel)]="createdBy" id="Created By"
+                                                                                                          placeholder="Enter Creator Name"
+                                                                                                          type="text"
+                                                                                                          class="form-control border border-success" value="Fillory UI">
+                  </div>
+              </div>
+              <div class="col-md-4">
+                  <div class="position-relative form-group"><label for="Updated By">Updated By</label><input name="Updated By"
+                  [(ngModel)]="updatedBy" id="Updated By"
+                                                                                                          placeholder="Enter Updater's Name"
+                                                                                                          type="text"
+                                                                                                          class="form-control border border-success" value="Fillory UI">
+                  </div>
+              </div>
+              <div class="col-md-4">
+                  <div class="position-relative form-group"><label for="Execution Name Space">Execution Name Space</label><input
+                  [(ngModel)]="executionNameSpace" name="Execution Name Space" id="Execution Name Space" placeholder="Leave blank to default." type="text"
+                          class="form-control"></div>
+              </div>
+              </div>
+              <div class="form-row">
+              <div class="col-md-4">
+                  <div class="position-relative form-group"><label for="Timeout Seconds">Timeout Seconds</label><input style="border-radius: 15px" name="Timeout Seconds"
+                  [(ngModel)]="timeoutSeconds" id="Timeout Seconds"
+                                                                                                      type="number"
+                                                                                                      class="form-control border border-warning" placeholder="Enter time out in seconds">
+                  </div>
+              </div>
+              <div class="col-md-4">
+                  <div class="position-relative form-group"><label for="Response Timeout Seconds">Response Timeout Seconds</label><input style="border-radius: 15px" name="Response Timeout Seconds"
+                  [(ngModel)]="responseTimeoutSeconds" id="Response Timeout Seconds"
+                                                                                                          type="number"
+                                                                                                          class="form-control border border-warning" placeholder="Enter response time out in seconds">
+                  </div>
+              </div>
+              <div class="col-md-4">
+                  <div class="position-relative form-group"><label for="Timeout Policy">Timeout Policy</label>
+                      <div id="Timeout Policy" name="Timeout Policy" class="btn-group container-fluid">
+                          <button type="button" class="btn btn-secondary btn-block dropdown-toggle" data-toggle="dropdown">
+                             <strong>{{timeoutPolicy}}</strong>
+                          </button>
+                          <div class="dropdown-menu text-center container-fluid">
+                            <a class="dropdown-item" (click)="set_timeout_policy('RETRY')">RETRY</a>
+                            <a class="dropdown-item" (click)="set_timeout_policy('TIME_OUT_WF')">TIME_OUT_WF</a>
+                            <a class="dropdown-item" (click)="set_timeout_policy('ALERT_ONLY')">ALERT_ONLY</a>
+                          </div>
+                        </div>
+                  </div>
+              </div>
+              </div>
+              <div class="form-row">
+              <div class="col-md-4">
+                  <div class="position-relative form-group"><label for="Retry Count">Retry Count</label><input style="border-radius: 15px" name="Retry Count"
+                  [(ngModel)]="retryCount" id="Retry Count"
+                                                                                                      type="number"
+                                                                                                      class="form-control border border-warning" placeholder="Enter the number of retries">
+                  </div>
+              </div>
+              <div class="col-md-4">
+                  <div class="position-relative form-group"><label for="Retry Logic">Retry Logic</label>
+                      <div id="Retry Logic" name="Retry Logic" class="btn-group container-fluid">
+                          <button type="button" class="btn btn-secondary btn-block dropdown-toggle" data-toggle="dropdown">
+                             <strong>{{retryLogic}}</strong>
+                          </button>
+                          <div class="dropdown-menu text-center container-fluid">
+                            <a class="dropdown-item" (click)="set_retry_logic('FIXED')">FIXED</a>
+                            <a class="dropdown-item" (click)="set_retry_logic('EXPONENTIAL_BACKOFF')">EXPONENTIAL_BACKOFF</a>
+                          </div>
+                        </div>
+                  </div>
+              </div>
+              <div class="col-md-4">
+                  <div class="position-relative form-group"><label for="Retry Delay Seconds">Retry Delay Seconds</label><input style="border-radius: 15px" name="Retry Delay Seconds"
+                  [(ngModel)]="retryDelaySeconds" id="Retry Delay Seconds"
+                                                                                                      type="number"
+                                                                                                      class="form-control border border-warning" placeholder="Enter retry delay in seconds.">
+                  </div>
+              </div>
+              </div>
+              <div class="form-row">
+              <div class="col-md-6">
+                  <div class="position-relative form-group"><label for="Rate Limit Per Frequency">Rate Limit Per Frequency</label><input name="Rate Limit Per Frequency"
+                  [(ngModel)]="rateLimitPerFrequency" id="Rate Limit Per Frequency"
+                                                                                                          placeholder="Enter Rate Limit Per Frequency."
+                                                                                                          type="number"
+                                                                                                          class="form-control">
+                  </div>
+              </div>
+              <div class="col-md-6">
+                  <div class="position-relative form-group"><label for="Rate Limit Frequency In Seconds">Rate Limit Frequency In Seconds</label><input
+                  [(ngModel)]="rateLimitFrequencyInSeconds" name="Rate Limit Frequency In Seconds" id="Rate Limit Frequency In Seconds" placeholder="Enter the Rate Limit Frequency In Seconds" type="number"
+                          class="form-control"></div>
+              </div>
+              </div>
+              <br>
+
+              <div class="row">
+                  <div class="border text-center border-success" style="width: 50%;">
+                      <div class="card-header text-white bg-success">
+                      <b class="text-white text-center" style="font-size: 20px; font-weight: bolder;">Input Keys</b>
+
+                      <ng-template class="text-center bg-premium-dark" style="padding-bottom: 0px" #inputParamPopUp let-c="close" let-d="dismiss">
+                          <div class="modal-header text-center bg-premium-dark">
+                              <h4 class="modal-title text-center text-white">Add new Workflow Input Param</h4>
+                          </div>
+                          <p *ngIf="newInputValidationMessage != ''">{{newInputValidationMessage}}</p>
+                          <div class="modal-body bg-premium-dark">
+                              <table class="mb-0 table table-dark">
+                              <thead>
+                                  <th scope="row">
+                                  Input Param
+                                  </th>
+                                  <th>
+                                  <input class="text-center" type="text" (keyup)="addInput($event.target.value)" (focusout)="addInput($event.target.value)" placeholder="Enter param name">
+                                  </th>
+                                  <th>
+                                      <button *ngIf="newInput !='' ; else addInputDisabled" (click)="manageInput(null); c('Close click')" class="btn btn-success btn-sm">Add</button> 
+                                      <ng-template #addInputDisabled>
+                                          <button class="btn btn-success btn-sm disabled">Add</button> 
+                                      </ng-template>
+                                  </th>
+                              </thead>
+                              </table>
+                          </div>
+                          </ng-template> 
+                          <i class="fa fa-plus-circle" style="padding-left: 50px; font-size: 20px; font-weight: bolder;" (click)="addInput(''); openLarge(inputParamPopUp)" aria-hidden="true"> </i>
+                      </div>
+                      <div class="modal-body">
+                          <div class="form-row">
+                              <div *ngFor="let anInput of inputKeys" class="col-md-4">
+                                  {{anInput}} &nbsp;<i (click)="manageInput(anInput)" class="fa fa-minus"> </i>
+                                  </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="border text-center border-info" style="width: 50%;">
+                      <div class="card-header bg-info text-white">
+                      <b class="text-white text-center" style="font-size: 20px; font-weight: bolder;">Output Keys</b>
+
+                      <ng-template class="text-center bg-premium-dark" style="padding-bottom: 0px" #outputParamPopUp let-c="close" let-d="dismiss">
+                          <div class="modal-header text-center bg-premium-dark">
+                              <h4 class="modal-title text-center text-white">Add new Output Param</h4>
+                          </div>
+                          <p *ngIf="newOutputValidationMessage != ''">{{newOutputValidationMessage}}</p>
+                          <div class="modal-body bg-premium-dark">
+                              <table class="mb-0 table table-dark">
+                              <thead>
+                                  <th scope="row">
+                                  Output Param
+                                  </th>
+                                  <th>
+                                  <input class="text-center" type="text" (keyup)="addOutput($event.target.value)" (focusout)="addOutput($event.target.value)" placeholder="Enter param name">
+                                  </th>
+                                  <th>
+                                      <button *ngIf="newOutput !='' ; else addOutputDisabled" (click)="manageOutput(null); c('Close click')" class="btn btn-success btn-sm">Add</button> 
+                                      <ng-template #addOutputDisabled>
+                                          <button class="btn btn-success btn-sm disabled">Add</button> 
+                                      </ng-template>
+                                  </th>
+                              </thead>
+                              </table>
+                          </div>
+                          </ng-template>  
+                      <i class="fa fa-plus-circle" style="padding-left: 50px; font-size: 20px; font-weight: bolder;" (click)="addOutput(''); openLarge(outputParamPopUp)" aria-hidden="true"> </i>
+                      </div>
+                      <div class="modal-body">
+                          <div class="form-row">
+                              <div *ngFor="let anOutput of outputKeys" class="col-md-4">
+                                  {{anOutput}} &nbsp;<i (click)="manageOutput(anOutput)" class="fa fa-minus"> </i>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+<div *ngIf="error_message" class="alert alert-warning mt-2" role="alert">
+  {{error_message}}
+</div>
+
+<div *ngIf="result" class="alert alert-success mt-2" role="alert">
+  {{result}}
+</div>
+<div class="form-row mb-2 container-fluid text-center">
+  <div class="col-md-6">
+      <button class="mb-2 mr-2 btn btn-secondary btn-lg btn-block" (click)="reset_all_inputs_to_defaults()">Reset
+      </button>  
+  </div>
+  <div class="col-md-6">
+      <button *ngIf="!error_message && !result && ownerApp!=undefined && createdBy!=undefined && name!=undefined && description!=undefined && timeoutSeconds!=undefined && responseTimeoutSeconds!=undefined && concurrentExecLimit!=undefined && retryCount!=undefined && ownerEmail!=undefined ; else disableUpdateTaskDef" (click)="updateTaskDefn()" class="mb-2 mr-2 btn btn-primary btn-lg btn-block"><b>Update TaskDef</b>
+      </button>
+      <ng-template #disableUpdateTaskDef>
+          <button class="mb-2 mr-2 btn btn-primary btn-lg btn-block disabled"><b>Update TaskDef</b>
+          </button>
+      </ng-template>
+  </div>
+  <button type="button" class="btn btn-outline-info btn-lg btn-block mt-2 mb-2" (click)="back_to_task_detail()"><strong>Back - Task Detail</strong></button>
+</div>

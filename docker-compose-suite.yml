@@ -1,0 +1,275 @@
+version: '2.2'
+
+services:
+  postgres:
+      image: postgres
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      environment:
+        POSTGRES_DB: keycloak
+        POSTGRES_USER: keycloak
+        POSTGRES_PASSWORD: Keycloak@1234
+        LOGSPOUT: ignore
+      mem_limit: "512000000"
+      ports:
+        - 5432:5432
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+        interval: 30s
+        timeout: 15s
+        retries: 10
+      networks:
+        keycloak-nw:
+          aliases:
+            - postgres
+  keycloak:
+      image: quay.io/keycloak/keycloak:latest
+      healthcheck:
+        test: ["CMD", "curl", "-I", "-XGET", "http://localhost:8080/auth/realms/master"]
+        interval: 30s
+        timeout: 30s
+        retries: 15
+      mem_limit: "1024000000"
+      environment:
+        DB_VENDOR: POSTGRES
+        DB_ADDR: postgres
+        DB_DATABASE: keycloak
+        DB_USER: keycloak
+        DB_SCHEMA: public
+        DB_PASSWORD: Keycloak@1234
+        KEYCLOAK_USER: admin
+        KEYCLOAK_PASSWORD: Admin@1234
+        LOGSPOUT: ignore
+        # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
+        #JDBC_PARAMS: "ssl=true"
+      volumes:
+        - keycloak_realm_data:/tmp/migration
+      command:
+        - "-b 0.0.0.0"
+        - "-Dkeycloak.migration.action=import"
+        - "-Dkeycloak.migration.provider=singleFile"
+        - "-Dkeycloak.migration.file=/tmp/migration/master-realm.json"
+        - "-Dkeycloak.migration.strategy=IGNORE_EXISTING"
+        - "-Dkeycloak.profile.feature.upload_scripts=enabled"
+      ports:
+        - 9990:8080
+      depends_on:
+        postgres:
+          condition: service_healthy
+      networks:
+        keycloak-nw:
+          aliases:
+            - keycloak
+        conductor-boot-nw:
+          aliases:
+            - keycloak
+  mysql:
+      image: mysql:5.7
+      restart: on-failure
+      networks:
+        conductor-boot-nw:
+          aliases:
+            - mysql
+      ports:
+        - 3306:3306
+        - 33060:33060
+      environment:
+        MYSQL_ROOT_PASSWORD: Root@1234
+        MYSQL_DATABASE: conductor
+        MYSQL_USER: conductor
+        MYSQL_PASSWORD: Conductor@1234
+        MYSQL_INITDB_SKIP_TZINFO: NONE
+        LOGSPOUT: ignore
+      healthcheck:
+        test: [ "CMD-SHELL", 'mysqladmin ping' ]
+        interval: 60s
+        timeout: 30s
+        retries: 15
+      mem_limit: "512000000"
+      volumes:
+        - mysql_data:/var/lib/mysql
+  elasticsearch:
+      image: elasticsearch:5.6
+      restart: on-failure
+      networks:
+        conductor-boot-nw:
+          aliases:
+            - elasticsearch
+        kibana-nw:
+          aliases:
+            - elasticsearch
+      ports:
+        - 9200:9200
+        - 9300:9300
+      healthcheck:
+        test: ["CMD", "curl","-I" ,"-XGET", "http://localhost:9200/_cat/health"]
+        interval: 30s
+        timeout: 30s
+        retries: 15
+      depends_on:
+        mysql:
+          condition: service_healthy
+      mem_limit: "3096000000"
+      volumes:
+        - es_data:/var/lib/elasticsearch
+  conductor-boot:
+      image: zzzmahesh/conductorboot:latest
+      restart: on-failure
+      links:
+        - elasticsearch
+        - mysql
+        - keycloak
+      depends_on:
+        mysql:
+          condition: service_healthy
+        elasticsearch:
+          condition: service_healthy
+        keycloak:
+          condition: service_healthy
+      networks:
+        conductor-boot-nw:
+          aliases:
+            - conductor-boot
+        keycloak-nw:
+          aliases:
+            - conductor-boot
+      ports:
+        - 8080:8080
+      environment:
+        MYSQL_DATABASE_HOST: mysql
+        MYSQL_DATABASE_PORT: 3306
+        MYSQL_DATABASE: conductor
+        MYSQL_USER: conductor
+        MYSQL_PASSWORD: Conductor@1234
+        ELASTICSEARCH_URL: http://elasticsearch:9200
+        OAUTH2_USER_INFO_URL: http://keycloak:8080/auth/realms/master/protocol/openid-connect/userinfo
+        SPRING_PROFILES_ACTIVE: basic,mysql,external-elasticsearch,external-oauth2,security,conductor
+      healthcheck:
+        test: ["CMD", "curl","-I" ,"-XGET", "http://localhost:8080/api/health"]
+        interval: 60s
+        timeout: 30s
+        retries: 15
+      mem_limit: "1536000000"
+  kibana:
+      image: kibana:5.6.16
+      restart: on-failure
+      links:
+        - elasticsearch
+      environment:
+        ELASTICSEARCH_URL: http://elasticsearch:9200
+        LOGSPOUT: ignore
+      ports:
+        - 5601:5601
+      #healthcheck:
+      #  test: [ "CMD", "curl","-I", "-XGET", "http://localhost:5601/status" ]
+      #  interval: 60s
+      #  timeout: 30s
+      #  retries: 15
+      depends_on:
+        elasticsearch:
+          condition: service_healthy
+      mem_limit: "512000000"
+      networks:
+        kibana-nw:
+          aliases:
+            - kibana
+  logstash:
+      image: logstash:5.6.8
+      restart: on-failure
+      environment:
+        STDOUT: "true"
+        LOGSPOUT: ignore
+        http.host: 0.0.0.0
+      ports:
+        - 5000:5000
+        - 9600:9600
+      links:
+        - elasticsearch
+      depends_on:
+        elasticsearch:
+          condition: service_healthy
+      command: 'logstash -e "input { udp { port => 5000 } } filter { grok { match => { message => \"\A\[%{LOGLEVEL:LOG_LEVEL}%{SPACE}]%{SPACE}%{TIMESTAMP_ISO8601:LOG_TIMESTAMP}%{SPACE}%{NOTSPACE:JAVA_CLASS}%{SPACE}-%{SPACE}%{GREEDYDATA:LOG_MESSAGE}\" } } } output { elasticsearch { hosts => elasticsearch } }"'
+      mem_limit: "512000000"
+      networks:
+        conductor-boot-nw:
+          aliases:
+            - logstash
+  logspout:
+      image: gliderlabs/logspout:v3
+      restart: on-failure
+      command: 'udp://logstash:5000'
+      links:
+        - logstash
+      volumes:
+        - '/var/run/docker.sock:/tmp/docker.sock'
+      environment:
+        LOGSPOUT: ignore
+      depends_on:
+        elasticsearch:
+          condition: service_healthy
+        logstash:
+          condition: service_started
+        conductor-boot:
+          condition: service_healthy
+      mem_limit: "512000000"
+      networks:
+        conductor-boot-nw:
+          aliases:
+            - logspout
+  conductor-ng-ui:
+      image: zzzmahesh/conductor-ng-ui:latest
+      restart: on-failure
+      mem_limit: "512000000"
+      environment:
+        WF_SERVER: http://localhost:8080/api
+        OAUTH_ENABLED: Y
+        OAUTH_TOKEN_URL: http://localhost:9990/auth/realms/master/protocol/openid-connect/token
+        OAUTH_USER_INFO_URL: http://localhost:9990/auth/realms/master/protocol/openid-connect/userinfo
+        OAUTH_LOGOUT_URL: http://localhost:9990/auth/realms/master/protocol/openid-connect/logout
+        OAUTH_CLIENT_ID: conductor_user_client
+        OAUTH_CLIENT_SECRET: 8782ca99-decc-441a-8988-736350fafe67
+        LOGSPOUT: ignore
+      ports:
+        - 80:80
+      depends_on:
+        keycloak:
+          condition: service_healthy
+        conductor-boot:
+          condition: service_healthy
+      mem_limit: "512000000"
+      networks:
+        conductor-boot-nw:
+          aliases:
+            - conductor-ng-ui
+        keycloak-nw:
+          aliases:
+            - conductor-ng-ui
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/container/persistence/postgres
+      o: bind
+  es_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/container/persistence/elasticsearch
+      o: bind
+  mysql_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/container/persistence/mysql
+      o: bind
+  keycloak_realm_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/keycloak/migration
+      o: bind
+networks:
+  keycloak-nw:
+  conductor-boot-nw:
+  kibana-nw:

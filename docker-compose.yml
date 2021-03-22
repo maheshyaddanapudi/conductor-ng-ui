@@ -1,0 +1,114 @@
+version: '2.2'
+
+services:
+  elasticsearch:
+      image: elasticsearch:5.6
+      restart: on-failure
+      networks:
+        conductor-ng-ui-nw:
+          aliases:
+            - elasticsearch
+      ports:
+        - 9200:9200
+        - 9300:9300
+      healthcheck:
+        test: ["CMD", "curl","-I" ,"-XGET", "http://localhost:9200/_cat/health"]
+        interval: 30s
+        timeout: 30s
+        retries: 15
+      depends_on:
+        keycloak:
+          condition: service_healthy
+      mem_limit: "3096000000"
+      volumes:
+        - es_data:/var/lib/elasticsearch
+  mysql:
+      image: mysql:5.7
+      restart: on-failure
+      networks:
+        conductor-ng-ui-nw:
+          aliases:
+            - mysql
+      ports:
+        - 3306:3306
+        - 33060:33060
+      environment:
+        MYSQL_ROOT_PASSWORD: Root@1234
+        MYSQL_DATABASE: conductor
+        MYSQL_USER: conductor
+        MYSQL_PASSWORD: Conductor@1234
+        MYSQL_INITDB_SKIP_TZINFO: NONE
+        LOGSPOUT: ignore
+      healthcheck:
+        test: [ "CMD-SHELL", 'mysqladmin ping' ]
+        interval: 60s
+        timeout: 30s
+        retries: 15
+      depends_on:
+        keycloak:
+          condition: service_healthy
+      mem_limit: "512000000"
+      volumes:
+        - mysql_data:/var/lib/mysql
+  conductor-boot:
+      image: zzzmahesh/conductorboot:latest
+      restart: on-failure
+      depends_on:
+        mysql:
+          condition: service_healthy
+        elasticsearch:
+          condition: service_healthy
+      networks:
+        conductor-ng-ui-nw:
+          aliases:
+            - conductor-boot
+      ports:
+        - 8080:8080
+      environment:
+        MYSQL_DATABASE_HOST: mysql
+        MYSQL_DATABASE_PORT: 3306
+        MYSQL_DATABASE: conductor
+        MYSQL_USER: conductor
+        MYSQL_PASSWORD: Conductor@1234
+        ELASTICSEARCH_URL: http://elasticsearch:9200
+        SPRING_PROFILES_ACTIVE: basic,mysql,external-elasticsearch,conductor
+      healthcheck:
+        test: ["CMD", "curl","-I" ,"-XGET", "http://localhost:8080/api/health"]
+        interval: 60s
+        timeout: 30s
+        retries: 15
+      mem_limit: "1536000000"
+  conductor-ng-ui:
+      image: zzzmahesh/conductor-ng-ui:latest
+      restart: on-failure
+      mem_limit: "512000000"
+      environment:
+        WF_SERVER: http://localhost:8080/api
+        OAUTH_ENABLED: N
+      ports:
+        - 80:80
+      depends_on:
+        keycloak:
+          condition: service_healthy
+        conductor-boot:
+          condition: service_healthy
+      mem_limit: "512000000"
+      networks:
+        conductor-ng-ui-nw:
+          aliases:
+            - conductor-ng-ui
+volumes:
+  es_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/container/persistence/elasticsearch
+      o: bind
+  mysql_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/container/persistence/mysql
+      o: bind
+networks:
+  conductor-ng-ui-nw:

@@ -1,0 +1,32 @@
+<div class="app-footer">
+    <div class="app-footer__inner text-white bg-dark">
+      <div class="app-footer-left col-md-4">
+        <span class="pl-2">Server: <a href="{{server_swagger_url}}" style="color: aqua;" target="_blank">{{server_url}}</a></span>
+      </div>
+      <span *ngIf="recheck_timer_message" class="pl-2 text-center col-md-4">{{recheck_timer_message}}</span>
+      <div class="app-footer-right">
+          <div *ngIf="!health_check_started ; else health_check_result_template">
+              Health Status: <span class="badge badge-primary ml-2">Verifying</span>
+          </div>
+          <ng-template #health_check_result_template>
+              <div *ngIf=" hc_status != undefined && hc_status.healthy ; else health_check_result_failed_template">
+                  Health Status: <span class="badge badge-success ml-2 mr-2">Healthy</span>
+                  <button *ngIf="!hc_paused" (click)="pause_health_check()" type="button" class="btn btn-info btn-sm mr-2">Pause</button>
+              </div>
+              <ng-template #health_check_result_failed_template>
+                  <div *ngIf="hc_status != undefined && !hc_status.healthy ; else health_check_result_cannot_connect_template">
+                      Health Status: <span *ngIf="!hc_paused" class="badge badge-warning ml-2 mr-2">Un-healthy</span> <span *ngIf="hc_paused" class="badge badge-warning ml-2 mr-2">Paused</span>
+                      <button *ngIf="!hc_paused" (click)="pause_health_check()" type="button" class="btn btn-info btn-sm mr-2">Pause</button>
+                      <button *ngIf="!hc_paused" (click)="retry_health_check()" type="button" class="btn btn-warning btn-sm">Retry</button>
+                      <button *ngIf="hc_paused" (click)="retry_health_check()" type="button" class="btn btn-warning btn-sm">Resume</button>
+                  </div>
+                  <ng-template #health_check_result_cannot_connect_template>
+                      Health Status: <span class="badge badge-danger ml-2 mr-2 my-auto">No Connection</span>
+                      <button *ngIf="!hc_paused" (click)="pause_health_check()" type="button" class="btn btn-info btn-sm mr-2">Pause</button>
+                      <button (click)="retry_health_check()" type="button" class="btn btn-warning btn-sm">Retry</button>
+                  </ng-template>
+              </ng-template>
+          </ng-template>
+      </div>
+    </div>
+  </div>

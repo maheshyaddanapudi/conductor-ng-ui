@@ -1,0 +1,28 @@
+<div class="container-fluid bg-secondary card mb-2">
+  <div class="card-header bg-dark text-center text-white">
+      <h5><b>System Runtime Configuration (Conductor Server)</b></h5>
+  </div>
+</div>
+<div *ngIf="!configuration_details && !error_message" class="loading-custom">Loading...</div>
+
+  <div *ngIf="error_message" class="alert alert-warning mt-2" role="alert">
+      {{error_message}}
+  </div>
+  
+  <div *ngIf="!error_message && configuration_details" class="alert alert-primary mt-2 text-center" role="alert">
+      Total of {{configuration_details_length}} Config Items Found
+  </div>
+
+<div class="container-fluid bg-secondary mb-0">
+  <table *ngIf="configuration_details" class="table table-dark table-striped table-hover table-bordered border-light">
+      <tbody class="tbody">
+        <perfect-scrollbar style="height: 700px">
+          <tr *ngFor="let item of configuration_details | keyvalue ; index as item_counter">
+              <td class="text-white">{{item_counter+1}}</td>
+              <th class="text-white">{{item.key}}</th>
+              <td class="text-white">{{item.value}}</td>
+          </tr>
+        </perfect-scrollbar>
+      </tbody>
+  </table>
+</div>

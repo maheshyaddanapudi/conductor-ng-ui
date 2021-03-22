@@ -1,0 +1,40 @@
+<div *ngIf="error_message" class="text-center alert alert-warning mt-2" role="alert">
+  {{error_message}}
+</div>
+
+<div class="container-fluid bg-secondary card mt-2">
+  <div class="card-header bg-dark text-center text-white">
+    <h5><b>User Profile</b></h5>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <table class="table table-bordered table-hover table-striped">
+      <thead class="thead table-primary">
+        <th class="text-center">First Name</th>
+        <th class="text-center">Last Name</th>
+        <th class="text-center">Email Address</th>
+      </thead>
+      <tbody class="tbody table-light">
+        <tr>
+          <td class="text-center">{{first_name}}</td>
+          <td class="text-center">{{last_name}}</td>
+          <td class="text-center">{{email}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<table class="container-fluid table table-bordered table-hover table-striped mt-2">
+  <thead class="thead table-primary">
+    <th class="text-center">#</th>
+    <th class="text-center">Role</th>
+  </thead>
+  <tbody class="tbody table-light">
+    <tr *ngFor="let role of roles; index as role_counter">
+      <td class="text-center">{{role_counter+1}}</td>
+      <td class="text-center">{{role['authority']}}</td>
+    </tr>
+  </tbody>
+</table>

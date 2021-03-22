@@ -1,0 +1,17 @@
+<div class="search-wrapper text-white" [class.active]="isActive">
+  <div class="input-holder text-white">
+    <ng-template #rt let-r="result" let-t="term">
+      <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight>
+      <div class="divider"></div>
+      <div>
+        {{r.description}}
+      </div>
+    </ng-template>
+    
+    <input id="typeahead-template" type="text" class="search-input text-white form-control" [(ngModel)]="search_string" [ngbTypeahead]="search" [resultTemplate]="rt"
+      [inputFormatter]="formatter" />
+    <button class="search-icon" style="color: aqua;" (click)="isActive = true"><span></span></button>
+  </div>
+  <button style="color: white;" class="close text-white" (click)="isActive = false"></button>
+</div>
+

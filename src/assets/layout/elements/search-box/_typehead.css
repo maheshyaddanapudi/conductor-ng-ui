@@ -1,0 +1,28 @@
+.ta-results.list-group{
+    max-width: 400px;
+    overflow: auto;
+    max-height: 75vh;
+    border: 1px solid #ccc;
+  }
+  .typeahead-wrap .list-group-item {    
+    width:100%;
+    text-align: left;
+    position: relative;
+    display: block;
+    padding: 5px 10px;
+    margin-bottom: -1px;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,.125);
+  }
+  
+  .typeahead-wrap .list-group-item{
+    width:100%;
+    text-align: left;
+  }
+  .typeahead-wrap .list-group-item.active{
+    background-color: #ccc;
+  }
+  
+  .typeahead-wrap .list-group-item .item-name {
+    font-weight: bold;
+  }
