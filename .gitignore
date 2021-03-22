@@ -5,6 +5,9 @@
 /tmp
 /out-tsc
 
+/.github
+.github
+
 # dependencies
 /node_modules
 
