@@ -61,7 +61,7 @@ export class LoginComponent implements OnInit {
         if((this.userInfoAndTokenDataHolderService && this.userInfoAndTokenDataHolderService.get_access_token() )|| !environment.OAUTH_ENABLED || 'Y'!=environment.OAUTH_ENABLED)
         {
           
-          this.router.navigateByUrl('dashboard/workflow-dashboard', { skipLocationChange: false },).then((fulfilled: boolean) => {
+          this.router.navigateByUrl('home', { skipLocationChange: false },).then((fulfilled: boolean) => {
             console.log('Routed')
             });
         }
