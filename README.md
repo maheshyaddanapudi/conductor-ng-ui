@@ -74,7 +74,7 @@ To pull the image :
 
     Replace your Conductor Server Endpoint accordingly
 
-#### Note: To avoid CORS issue while running on local host, open chrom with disabled security. Example (For Mac) is as below and should be similar on other OS too.
+#### Note: To avoid CORS issue while running on local host, open chrome with disabled security. Example (For Mac) is as below and should be similar on other OS too.
 
 	open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security
 
@@ -106,7 +106,7 @@ Few other examples / ways / configurations to run the container as:
 
     Note: If you are using Conductor Boot instead of pure conductor, then the userinfo url will http://<<conductor_server_url>>/userinfo . Here the conductor_server_url refers to the base url and not the API endpoint.
 
-#### Note: To avoid CORS issue while running on local host, open chrom with disabled security. Example (For Mac) is as below and should be similar on other OS too.
+#### Note: To avoid CORS issue while running on local host, open chrome with disabled security. Example (For Mac) is as below and should be similar on other OS too.
 
 	open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security
 
@@ -128,7 +128,7 @@ Few other examples / ways / configurations to run the container as:
 
 	mkdir container container/persistence container/persistence/mysql container/persistence/postgres container/persistence/elasticsearch
 	
-#### Note: To avoid CORS issue while running on local host, open chrom with disabled security. Example (For Mac) is as below and should be similar on other OS too.
+#### Note: To avoid CORS issue while running on local host, open chrome with disabled security. Example (For Mac) is as below and should be similar on other OS too.
 
 	open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security
 
