@@ -35,7 +35,10 @@ export class TokenInterceptor implements HttpInterceptor {
       error.status &&
       error.status === 401 &&
       error.error &&
-      error.error.message === "TokenExpired"
+      (error.error === "TokenExpired" || error.error === "invalid_token" 
+      || error.error.error === "TokenExpired" || error.error.error === "invalid_token"
+      || error.error.message === "TokenExpired" || error.error.message === "invalid_token"
+      )
     );
   }
 
@@ -57,7 +60,7 @@ export class TokenInterceptor implements HttpInterceptor {
                 })
               );
             } else {
-              return throwError(error);
+              throw error;
             }
           }
           return caught;

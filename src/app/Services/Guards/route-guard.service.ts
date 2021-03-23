@@ -13,12 +13,9 @@ export class RouteGuardService implements CanActivate{
    }
 
    canActivate(): boolean {
+     console.log('Checking canActive ...')
     if (environment.OAUTH_ENABLED && 'Y' == environment.OAUTH_ENABLED && !this.oauthApiCallerService.isAuthenticated()) {
       this.router.navigate(['login']);
-      //return false;
-    }
-    else{
-
     }
     return true;
   }

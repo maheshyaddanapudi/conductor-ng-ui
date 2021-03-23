@@ -38,74 +38,73 @@ const routes: Routes = [
   {
     path: '',
     component: BaseLayoutComponent,
-    canActivate: [RouteGuard],
     children: [
 
       // Home
 
-      {path: '', component: InitializingComponent, data: {extraParameter: ''}},
+      {path: '', component: InitializingComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
 
-      {path: 'buffer', component: BufferComponent, data: {extraParameter: ''}},
+      {path: 'buffer', component: BufferComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
 
-      {path: 'home', component: HomeComponent, data: {extraParameter: ''}},
+      {path: 'home', component: HomeComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
 
       // User
 
-      {path: 'user/user-info', component: UserInfoComponent, data: {extraParameter: ''}},
+      {path: 'user/user-info', component: UserInfoComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
 
       // Dashboads
 
-      {path: 'dashboard/workflow-dashboard', component: WorkflowDashboardComponent, data: {extraParameter: 'dashboardsMenu'}},
-      {path: 'dashboard/log-aggregation-dashboard', component: LogAggregationDashboardComponent, data: {extraParameter: 'dashboardsMenu'}},
+      {path: 'dashboard/workflow-dashboard', component: WorkflowDashboardComponent, data: {extraParameter: 'dashboardsMenu'}, canActivate: [RouteGuard]},
+      {path: 'dashboard/log-aggregation-dashboard', component: LogAggregationDashboardComponent, data: {extraParameter: 'dashboardsMenu'}, canActivate: [RouteGuard]},
 
       // Display
 
-      {path: 'display/json', component: DisplayJsonComponent, data: {extraParameter: ''}},
-      {path: 'display/workflow/task-branches', component: DisplayBranchesListComponent, data: {extraParameter: ''}},
+      {path: 'display/json', component: DisplayJsonComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
+      {path: 'display/workflow/task-branches', component: DisplayBranchesListComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
       
       // Events
 
 
       // View
 
-      {path: 'view/task-definitions', component: TaskDefinitionsComponent, data: {extraParameter: 'viewDefinitionsMenu'}},
-      {path: 'view/workflow-definitions', component: WorkflowDefinitionsComponent, data: {extraParameter: 'viewDefinitionsMenu'}},
+      {path: 'view/task-definitions', component: TaskDefinitionsComponent, data: {extraParameter: 'viewDefinitionsMenu'}, canActivate: [RouteGuard]},
+      {path: 'view/workflow-definitions', component: WorkflowDefinitionsComponent, data: {extraParameter: 'viewDefinitionsMenu'}, canActivate: [RouteGuard]},
 
-      {path: 'view/task-definition-detail', component: TaskDefinitionDetailComponent, data: {extraParameter: 'viewDefinitionsMenu'}},
-      {path: 'view/workflow-detail', component: WorkflowDetailComponent, data: {extraParameter: ''}},
-      {path: 'view/workflow-execution-detail', component: WorkflowExecutionDetailComponent, data: {extraParameter: ''}},
+      {path: 'view/task-definition-detail', component: TaskDefinitionDetailComponent, data: {extraParameter: 'viewDefinitionsMenu'}, canActivate: [RouteGuard]},
+      {path: 'view/workflow-detail', component: WorkflowDetailComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
+      {path: 'view/workflow-execution-detail', component: WorkflowExecutionDetailComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
 
-      {path: 'view/individual-workflow-running-executions', component: IndividualWorkflowRunningExecutionsComponent, data: {extraParameter: ''}},
-      {path: 'view/individual-workflow-executions', component: IndividualWorkflowExecutionsComponent, data: {extraParameter: ''}},
+      {path: 'view/individual-workflow-running-executions', component: IndividualWorkflowRunningExecutionsComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
+      {path: 'view/individual-workflow-executions', component: IndividualWorkflowExecutionsComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
 
       // Diagram
 
       // Workflow Details
-      { path: "view/workflow-diagram", component: ViewMermaidWorkflowDiagramComponent , data: {extraParameter: ''}},
+      { path: "view/workflow-diagram", component: ViewMermaidWorkflowDiagramComponent , data: {extraParameter: ''}, canActivate: [RouteGuard]},
 
       // Workflow Execution Details
-      { path: "view/workflow-execution-diagram", component: ViewMermaidWorkflowExecutionDiagramComponent , data: {extraParameter: ''}},
+      { path: "view/workflow-execution-diagram", component: ViewMermaidWorkflowExecutionDiagramComponent , data: {extraParameter: ''}, canActivate: [RouteGuard]},
 
 
       // Create
 
-      {path: 'create/new-task-definition', component: NewTaskDefinitionComponent, data: {extraParameter: 'createDefinitionsMenu'}},
-      {path: 'create/new-workflow-definition', component: InitiateNewWorkflowDefinitionComponent, data: {extraParameter: 'createDefinitionsMenu'}},
-      {path: 'create/define-new-workflow', component: DefineNewWorkflowDefinitionComponent, data: {extraParameter: ''}},
+      {path: 'create/new-task-definition', component: NewTaskDefinitionComponent, data: {extraParameter: 'createDefinitionsMenu'}, canActivate: [RouteGuard]},
+      {path: 'create/new-workflow-definition', component: InitiateNewWorkflowDefinitionComponent, data: {extraParameter: 'createDefinitionsMenu'}, canActivate: [RouteGuard]},
+      {path: 'create/define-new-workflow', component: DefineNewWorkflowDefinitionComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
 
 
       // Update
 
-      {path: 'update/update-task-definition', component: UpdateTaskDefinitionComponent, data: {extraParameter: 'createDefinitionsMenu'}},
+      {path: 'update/update-task-definition', component: UpdateTaskDefinitionComponent, data: {extraParameter: 'createDefinitionsMenu'}, canActivate: [RouteGuard]},
 
       // Reports
 
-      {path: 'reports/workflow-executions', component: WorkflowExecutionsComponent, data: {extraParameter: 'reportsMenu'}},
+      {path: 'reports/workflow-executions', component: WorkflowExecutionsComponent, data: {extraParameter: 'reportsMenu'}, canActivate: [RouteGuard]},
 
       // Admin
 
-      {path: 'admin/runtime-configuration', component: RuntimeConfigurationComponent, data: {extraParameter: ''}},
-      {path: 'admin/queues-and-poll-data', component: QueuesAndPollDataComponent, data: {extraParameter: ''}},
+      {path: 'admin/runtime-configuration', component: RuntimeConfigurationComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
+      {path: 'admin/queues-and-poll-data', component: QueuesAndPollDataComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
 
      
 

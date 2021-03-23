@@ -82,6 +82,7 @@ import { ConfirmNewWorkflowDefinitionComponent } from './Pages/Create/SimpleWork
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { SafePipe } from './Pipes/SafePipe';
 import { LogAggregationDashboardComponent } from './Pages/Dashboards/log-aggregation-dashboard/log-aggregation-dashboard.component';
+import { JwtModule } from "@auth0/angular-jwt";
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -167,6 +168,9 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 
     ChartsModule,
     DragDropModule,
+    JwtModule.forRoot({
+      config: {},
+    }),
 
     ToastrModule.forRoot()
   ],
@@ -182,7 +186,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
       useValue:
       DEFAULT_PERFECT_SCROLLBAR_CONFIG,
       // DEFAULT_DROPZONE_CONFIG,
-    },
+    }, 
     ConfigActions, 
   ],
   bootstrap: [AppComponent]

@@ -1,10 +1,10 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { UserInfoAndTokenDataHolderService } from '../Holders/user-info-and-token-data-holder.service';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
-const jwtHelper = new JwtHelperService ();
+const jwtHelperService = new JwtHelperService();
 
 @Injectable({
   providedIn: 'root'
@@ -16,8 +16,9 @@ export class OauthApiCallerService {
   private oauth_logout_url: string
   private client_id: string
   private client_secret: string
+  
 
-  constructor(private httpClient: HttpClient, private userInfoAndTokenDataHolderService: UserInfoAndTokenDataHolderService) { 
+  constructor(public jwtHelper: JwtHelperService, private httpClient: HttpClient, private userInfoAndTokenDataHolderService: UserInfoAndTokenDataHolderService) { 
 
     this.client_id = environment.OAUTH_CLIENT_ID
     this.client_secret = environment.OAUTH_CLIENT_SECRET
@@ -62,8 +63,17 @@ export class OauthApiCallerService {
 
   public isAuthenticated(): boolean {
     const token = this.userInfoAndTokenDataHolderService.get_access_token();
-    // Check whether the token is expired and return
-    // true or false
-    return !jwtHelper.isTokenExpired(token);
+    console.log('isAuthenticated Access Token', token)
+    console.log('Refresh Token Value', this.userInfoAndTokenDataHolderService.get_refresh_token())
+    if((!token || token == undefined) && jwtHelperService.isTokenExpired(token) && (!this.userInfoAndTokenDataHolderService.get_refresh_token() || this.userInfoAndTokenDataHolderService.get_refresh_token() == undefined))
+    {
+      return false
+    }
+    else
+    {
+
+      console.log('Refresh Token Value', this.userInfoAndTokenDataHolderService.get_refresh_token())
+      return true
+    }
   }
 }

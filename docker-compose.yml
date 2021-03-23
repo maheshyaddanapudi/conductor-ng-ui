@@ -59,9 +59,9 @@ services:
       ports:
         - 8080:8080
       environment:
-        mysql_db_dataBASE_HOST: mysql
-        mysql_db_dataBASE_PORT: 3306
-        mysql_db_dataBASE: conductor
+        MYSQL_DATABASE_HOST: mysql
+        MYSQL_DATABASE_PORT: 3306
+        MYSQL_DATABASE: conductor
         MYSQL_USER: conductor
         MYSQL_PASSWORD: Conductor@1234
         ELASTICSEARCH_URL: http://elasticsearch:9200

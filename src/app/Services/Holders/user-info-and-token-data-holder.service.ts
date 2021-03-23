@@ -102,12 +102,16 @@ export class UserInfoAndTokenDataHolderService {
   }
 
   get_access_token(): string{
+    console.log('Access Token Retrieval Start')
     if(localStorage.getItem('conductor_ng_ui-oauth-access_token'))
     {
+      console.log('Access Token Retrieval from localstorage')
       return localStorage.getItem('conductor_ng_ui-oauth-access_token')
     }
     else{
-      return this.access_token
+      console.log('Access Token Retrieval from var holder service')
+      //this.access_token
+      return undefined
     }
   }
 
@@ -138,7 +142,8 @@ export class UserInfoAndTokenDataHolderService {
       return localStorage.getItem('conductor_ng_ui-oauth-refresh_token')
     }
     else{
-      return this.refresh_token
+      //return this.refresh_token
+      return undefined
     }
   }
 
@@ -172,8 +177,9 @@ export class UserInfoAndTokenDataHolderService {
     this.roles = value
   }
 
-  set_access_token(value: string){
-    localStorage.setItem('conductor_ng_ui-oauth-access_token', value);
+  async set_access_token(value: string){
+    console.log('Access Token Saved')
+    await localStorage.setItem('conductor_ng_ui-oauth-access_token', value);
     this.access_token = value
   }
 
