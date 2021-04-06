@@ -334,7 +334,7 @@ export class DisplayTasksListComponent implements OnInit {
     localStorage.setItem('fillory_ui_buffer_branch_task_list', JSON.stringify(this.branch_task_list))
     localStorage.setItem('fillory_ui_buffer_parent_task_ref_name', parent_task_ref_name)
 
-    let url = this.router.createUrlTree(['display/workflow/task-branches'], { skipLocationChange: false})
+    let url = this.router.createUrlTree(['display/workflow/task-branches'])
     window.open(url.toString(), '_blank')
   }
 

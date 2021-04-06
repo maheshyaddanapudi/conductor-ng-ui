@@ -15,12 +15,12 @@ import {AppComponent} from './app.component';
 
 // BOOTSTRAP COMPONENTS
 
-import {AngularFontAwesomeModule} from 'angular-font-awesome';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {PerfectScrollbarModule} from 'ngx-perfect-scrollbar';
 import {PERFECT_SCROLLBAR_CONFIG} from 'ngx-perfect-scrollbar';
 import {PerfectScrollbarConfigInterface} from 'ngx-perfect-scrollbar';
 import {ChartsModule} from 'ng2-charts';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 // LAYOUT
 
@@ -42,7 +42,6 @@ import {LogoComponent} from './Layout/Components/sidebar/elements/logo/logo.comp
 // FOOTER
 
 import {FooterComponent} from './Layout/Components/footer/footer.component';
-
 
 import { APIS, BASE_PATH } from './Rest/Conductor';
 import { environment } from 'src/environments/environment';
@@ -159,7 +158,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 
     PerfectScrollbarModule,
     NgbModule,
-    AngularFontAwesomeModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,

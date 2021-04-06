@@ -135,13 +135,13 @@ export class WorkflowDetailComponent implements OnInit {
   }
 
   async open_diagram_in_new_window(){
-    let url = this.router.createUrlTree(['/view/workflow-diagram'], { skipLocationChange: false})
+    let url = this.router.createUrlTree(['/view/workflow-diagram'])
     window.open(url.toString()+'?workflow_name='+this.workflow_name+'&workflow_version='+this.workflow_version, '_blank')
   }
 
   async open_json_in_new_window(){
 
-    let url = this.router.createUrlTree(['/display/json'], { skipLocationChange: false})
+    let url = this.router.createUrlTree(['/display/json'])
     window.open(url.toString()+'?workflow_name='+this.workflow_name+'&workflow_version='+this.workflow_version, '_blank')
   }
 

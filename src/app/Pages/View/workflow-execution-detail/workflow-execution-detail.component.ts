@@ -37,6 +37,7 @@ export class WorkflowExecutionDetailComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.show_loading = true
 
     await this.route.queryParams.subscribe(params => {
       console.log(params)
@@ -56,6 +57,8 @@ export class WorkflowExecutionDetailComponent implements OnInit {
     else{
       await this.init();
     }
+
+    this.show_loading = false
     
   }
 
@@ -135,12 +138,12 @@ export class WorkflowExecutionDetailComponent implements OnInit {
 
     if(json_data_type == 'DEFINITION')
     {
-      let url = this.router.createUrlTree(['/display/json'], { skipLocationChange: false})
+      let url = this.router.createUrlTree(['/display/json'])
       window.open(url.toString()+'?workflow_name='+this.workflow_name+'&workflow_version='+this.workflow_version, '_blank')
     }
     if(json_data_type == 'EXECUTION')
     {
-      let url = this.router.createUrlTree(['/display/json'], { skipLocationChange: false})
+      let url = this.router.createUrlTree(['/display/json'])
       window.open(url.toString()+'?workflow_id='+this.workflow_id, '_blank')
     }
     
@@ -241,7 +244,7 @@ export class WorkflowExecutionDetailComponent implements OnInit {
   }
 
   async open_diagram_in_new_window(){
-    let url = this.router.createUrlTree(['/view/workflow-execution-diagram'], { skipLocationChange: false})
+    let url = this.router.createUrlTree(['/view/workflow-execution-diagram'])
     window.open(url.toString()+'?workflow_name='+this.workflow_name+'&workflow_version='+this.workflow_version+'&workflow_id='+this.workflow_id, '_blank')
   }
 }
