@@ -5,10 +5,11 @@ const targetPathProd = './src/environments/environment.prod.ts';
 // Load node modules
 const colors = require('colors');
 require('dotenv').load();
-
+//const dotenv = require('dotenv')
+//dotenv.load()
 let DOCKER_MODE: boolean = false;
 let WF_SERVER: string = 'http://localhost:8080/api'; 
-let OAUTH_ENABLED: string = 'Y';
+let OAUTH_ENABLED: string = 'N';
 let OAUTH_TOKEN_URL: string = 'http://localhost:9990/auth/realms/master/protocol/openid-connect/token';
 //let OAUTH_USER_INFO_URL: string = 'http://localhost:9990/auth/realms/master/protocol/openid-connect/userinfo';
 let OAUTH_USER_INFO_URL: string = 'http://localhost:8080/userinfo';
@@ -82,6 +83,9 @@ else
         if(process.env.OAUTH_ENABLED == 'Y')
         {
             OAUTH_ENABLED = 'Y'
+        }
+        else{
+            OAUTH_ENABLED = 'N'
         }
     }
 }
