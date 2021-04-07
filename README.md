@@ -30,7 +30,7 @@ To avoid the pain points of
 
       --> Docker Image to host the Angular Web UI. 
 	  			
-      --> Angular 7 
+      --> Angular 11
 
             Used an existing "Architect UI" template for development
 
