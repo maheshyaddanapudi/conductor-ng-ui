@@ -74,7 +74,7 @@ services:
       mem_limit: "1536000000"
   conductor-ng-ui:
       image: conductor-ng-ui:latest
-      build:
+      build: 
         context: .
       restart: on-failure
       mem_limit: "512000000"
