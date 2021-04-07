@@ -47,6 +47,12 @@ SonarQube: [![Quality Gate Status](https://sonarcloud.io/api/project_badges/meas
 		
 	The node build should place the build content inside the target dist/conductor-ng-ui folder.
 
+## Node CI 
+
+| CI Provider | Status          |
+| ------- | ------------------ |
+| Node.js CI  | [![Node.js CI](https://github.com/maheshyaddanapudi/conductor-ng-ui/actions/workflows/node.js.yml/badge.svg)](https://github.com/maheshyaddanapudi/conductor-ng-ui/actions/workflows/node.js.yml)
+
 ## Containerization CI (Continuous Integration)
 
 | CI Provider | Status          |
