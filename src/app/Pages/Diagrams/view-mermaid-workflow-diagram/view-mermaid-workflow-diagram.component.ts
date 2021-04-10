@@ -12,7 +12,7 @@ import { WorkflowJsonMermaidConverterService } from 'src/app/Services/Converters
 })
 export class ViewMermaidWorkflowDiagramComponent implements AfterContentInit {
 
-  @ViewChild("mermaid")
+  @ViewChild("mermaid", { static: true })
   public mermaidDiv;
 
   @Input()
