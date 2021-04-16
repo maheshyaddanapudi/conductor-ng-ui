@@ -37,9 +37,9 @@ To avoid the pain points of
 
 ## Integrations 
 
-      --> OAuth2.0 Integrated - (Keycloak Tested) 
+OAuth2.0 Integrated - (Keycloak Tested) 
 	  			
-      --> <a href="https://github.com/maheshyaddanapudi/APICallsScheduler/blob/main/README.md">API Calls Scheduler</a> : Planned (4.0.0) 
+<a href="https://github.com/maheshyaddanapudi/APICallsScheduler/blob/main/README.md">API Calls Scheduler</a> : Planned (4.0.0) 
 	      For scheduling conductor workflows
 
 ## Code quality
