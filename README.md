@@ -3,6 +3,7 @@
 ## Workflow Execution Management
 ## Analytic Dashboards
 
+##### Versions < 3.0.0 are prone to vulnerabilities and bugs.
 
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/dashboard?id=maheshyaddanapudi_conductor-ng-ui)
 
@@ -33,6 +34,13 @@ To avoid the pain points of
       --> Angular 11
 
             Used an existing "Architect UI" template for development
+
+## Integrations 
+
+      --> OAuth2.0 Integrated - (Keycloak Tested) 
+	  			
+      --> <a href="https://github.com/maheshyaddanapudi/APICallsScheduler/blob/main/README.md">API Calls Scheduler</a> : Planned (4.0.0) 
+	      For scheduling conductor workflows
 
 ## Code quality
 
