@@ -19,6 +19,9 @@ export class WireNewWorkflowDefinitionComponent implements OnInit {
 
   public inputKeys: string[] = []
 
+  public newInput: string
+  public newInputValidationMessage: string
+
   constructor(private navigatorVarHolderService: NavigatorVarHolderService, private router: Router, private modalService: NgbModal) {}
 
   async ngOnInit() {
@@ -61,8 +64,6 @@ export class WireNewWorkflowDefinitionComponent implements OnInit {
 
   get_input_mapping_options_available(task_index: number, param_name?: string): string[]{
 
-    console.log('Getting input mapping options for ', this.workflow_tasks[task_index].type, param_name)
-
     if(param_name && param_name == 'version' && this.workflow_tasks[task_index].type && this.workflow_tasks[task_index].type == 'SUB_WORKFLOW')
     {
       let options:string[] = []
@@ -71,13 +72,11 @@ export class WireNewWorkflowDefinitionComponent implements OnInit {
           options.push('${workflow.input.'+option+'}')
         })
       }
-      console.log('Returning input mapping options', options)
       return options
     }
     else if(param_name && param_name == 'terminationStatus' && this.workflow_tasks[task_index].type && this.workflow_tasks[task_index].type == 'TERMINATE')
     {
       let options: string[] = ["COMPLETED", "FAILED"]
-      console.log('Returning input mapping options', options)
       return options
     }
     else if(param_name && param_name == 'asyncComplete' && this.workflow_tasks[task_index].type && this.workflow_tasks[task_index].type == 'KAFKA_PUBLISH')
@@ -88,7 +87,6 @@ export class WireNewWorkflowDefinitionComponent implements OnInit {
           options.push('${workflow.input.'+option+'}')
         })
       }
-      console.log('Returning input mapping options', options)
       return options
     }
     else{
@@ -122,7 +120,6 @@ export class WireNewWorkflowDefinitionComponent implements OnInit {
       }
 
       this.output_options_buffer.set(task_index, options)
-      console.log('Returning input mapping options', options)
       return options;
       }
     }
@@ -132,5 +129,78 @@ export class WireNewWorkflowDefinitionComponent implements OnInit {
 
   map_input(task_index:number, input_key: string, input_value: string){
     this.workflow_tasks[task_index].inputParameters[input_key] = input_value
+  }
+
+  async addInput(newInput: string)
+  {
+    console.log('Setting newInput --> ', newInput);
+    
+    let regexp = new RegExp('^[a-zA-Z0-9_]*$')
+
+    if(regexp.test(newInput))
+    {
+      let isDuplicate: boolean = false;
+      await this.inputKeys.forEach( (anInput: any) => {
+        if(anInput == newInput)
+        {
+          isDuplicate = true;
+        }
+      });
+
+      if(!isDuplicate)
+      {
+        this.newInput = newInput;
+        console.log('Finished Setting newInput --> ', this.newInput); 
+      }
+      else{
+      this.newInput = "";
+      this.newInputValidationMessage = "Duplicate value not allowed !!!"
+      
+      const inputValidationTimeout = setTimeout(()=> {
+        this.newInputValidationMessage = "";
+        clearTimeout(inputValidationTimeout);
+      }, 5000);
+
+      console.log('Duplicate Validation Failed. Finished Setting newInput --> ', this.newInput);
+      }
+    }
+    else
+    {
+      this.newInput = "";
+      this.newInputValidationMessage = "Only Alphanumeric and Underscore are allowed."
+      
+      const inputValidationTimeout = setTimeout(()=> {
+        this.newInputValidationMessage = "";
+        clearTimeout(inputValidationTimeout);
+      }, 5000);
+
+      console.log('Regex Validation Failed. Finished Setting newInput --> ', this.newInput);
+    }
+  }
+
+  async manageInput(option?: string)
+  {
+
+    if(undefined==option && undefined!=this.newInput && ""!+this.newInput)
+    {
+      this.inputKeys.push(this.newInput);
+    }
+    else
+    {
+      let indexForRemoval: number = -1;
+
+      let duplicateCheckCounter: number = 0;
+      this.inputKeys.forEach((anInput: string) =>{
+        if(anInput == option)
+        {
+          indexForRemoval = duplicateCheckCounter;
+          }
+
+          duplicateCheckCounter = duplicateCheckCounter + 1;
+      })
+
+      await this.inputKeys.splice(indexForRemoval, 1);
+
+    }
   }
 }
