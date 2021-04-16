@@ -9,6 +9,8 @@
 
 Before starting, for details on Conductor Boot, refer to <a href="https://github.com/maheshyaddanapudi/conductor-boot/blob/main/README.md">Conductor Boot Documentation</a>
 
+Added PR to Netflic/Conductor Repository --> <a href="https://github.com/Netflix/conductor/pull/2184">PR 2184</a>
+
 ## Overview
 
 The idea is to build a single production grade Angular Web UI, to let the user interact with Conductor API, for the following
