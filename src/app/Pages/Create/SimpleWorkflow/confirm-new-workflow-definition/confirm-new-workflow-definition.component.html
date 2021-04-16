@@ -1,3 +1,195 @@
-<p>
-  confirm-new-workflow-definition works!
-</p>
+<div class="container-fluid text-center">
+  <div class="row">
+      <div class="col-md-12">
+          <div class="page-header">
+              <div class="container-fluid bg-secondary card mt-2">
+                  <div class="card-header bg-dark text-center text-white">
+                      <h5><b>Simple Conductor Workflow Creation</b></h5>
+                  </div>
+              </div>
+          </div>
+          <div style="display:inline-block;width:100%;overflow-y:auto;">
+          <ul class="timeline timeline-horizontal">
+              <li class="timeline-item">
+                  <div class="timeline-badge success">1</div>
+                  <div class="timeline-panel bg-success text-white">
+                      <div class="timeline-heading">
+                          <h4 class="timeline-title">Task Pool Selection</h4>
+                      </div>
+                      <div class="timeline-body">
+                          <p>
+                              Select all the necessary tasks for the workflow, in any order, to create the workflow level tasks pool.
+                          </p>
+                      </div>
+                  </div>
+              </li>
+              <li class="timeline-item">
+                  <div class="timeline-badge success">2</div>
+                  <div class="timeline-panel bg-success text-white">
+                      <div class="timeline-heading">
+                          <h4 class="timeline-title">Task Order Finalization</h4>
+                      </div>
+                      <div class="timeline-body">
+                          <p>
+                              Re-order the selected tasks, by drag-drop to finalize the order in which they will be executed.
+                          </p>
+                      </div>
+                  </div>
+              </li>
+              <li class="timeline-item">
+                  <div class="timeline-badge success">3</div>
+                  <div class="timeline-panel bg-success text-white">
+                      <div class="timeline-heading">
+                          <h4 class="timeline-title">Task I/O Wiring</h4>
+                      </div>
+                      <div class="timeline-body">
+                          <p>
+                              Define and wire the input and output parameters for all the selected and order fixated tasks.
+                          </p>
+                      </div>
+                  </div>
+              </li>
+              <li class="timeline-item">
+                  <div class="timeline-badge info">4</div>
+                  <div class="timeline-panel bg-info text-white">
+                      <div class="timeline-heading">
+                          <h4 class="timeline-title">Workflow Creation</h4>
+                      </div>
+                      <div class="timeline-body">
+                          <p>
+                              Provide the workflow metadata like name, version, description to create the workflow with the defined tasks.
+                          </p>
+                      </div>
+                  </div>
+              </li>
+          </ul>
+      </div>
+      </div>
+  </div>
+</div>
+
+<div *ngIf="show_loading" class="loading-custom">Loading...</div>
+
+<div *ngIf="error_message" class="alert alert-warning mt-2 text-center" role="alert">
+  {{error_message}}
+</div>
+
+<div class="container-fluid text-center mb-2">
+  <div class="card">
+    <div class="card-header bg-info text-white">
+      <h6><strong>Workflow Metadata</strong></h6>
+    </div>
+    <div class="card-body bg-premium-dark text-white">
+      <form>
+        <div class="form-row">
+            <div class="col-md-4">
+                <div class="position-relative form-group"><label for="Name">Name</label><input [(ngModel)]="name" (keyup)="workflow_name_validity_check()" style="border-radius: 15px" name="Name"
+                                                                                                        id="Name"
+                                                                                                        placeholder="Enter Workflow Definition Name"
+                                                                                                        type="text"
+                                                                                                        class="form-control border border-danger">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="position-relative form-group"><label for="Version">Version</label><input (keyup)="workflow_name_validity_check()"
+                        name="Version" id="Version" placeholder="Enter the Workflow Version" type="number"
+                        class="form-control border border-danger" style="border-radius: 15px" [(ngModel)]="version"></div>
+            </div>
+            <div class="col-md-4">
+                <div class="position-relative form-group"><label for="Owner Email">Owner Email</label><input
+                        name="Owner Email" id="Owner Email" placeholder="Enter the Owner Email" type="email"
+                        class="form-control border border-danger" style="border-radius: 15px" [(ngModel)]="ownerEmail"></div>
+            </div>
+        </div>
+        <div class="position-relative form-group"><label for="Description">Description</label><textarea [(ngModel)]="description" style="border-radius: 15px" name="Description"
+          id="Description"
+          placeholder="Enter the Task Description"
+          type="text"
+          class="form-control border border-danger"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="col-md-4">
+              <div class="position-relative form-group"><label for="Schema Version">Schema Version</label><input [(ngModel)]="schemaVersion" style="border-radius: 15px" name="Schema Version"
+                                                                                                      id="schemaVersion"
+                                                                                                      placeholder="Enter Schema Version"
+                                                                                                      type="number"
+                                                                                                      class="form-control border border-danger">
+              </div>
+          </div>
+          <div class="col-md-4">
+            <div class="position-relative form-group"><label for="Timeout Policy">Timeout Policy</label>
+              <div id="Timeout Policy" name="Timeout Policy" class="btn-group container-fluid">
+                <button type="button" class="btn btn-secondary btn-block dropdown-toggle" data-toggle="dropdown">
+                     {{timeout_policy}}
+                  </button>
+                  <div class="dropdown-menu text-center container-fluid">
+                    <a class="dropdown-item" (click)="set_timeout_policy('ALERT_ONLY')">ALERT_ONLY</a>
+                    <a class="dropdown-item" (click)="set_timeout_policy('TIME_OUT_WF')">TIME_OUT_WF</a>
+                  </div>
+                </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="position-relative form-group"><label for="Timeout Policy">Workflow Listener Enabled</label>
+              <div id="Timeout Policy" name="Timeout Policy" class="btn-group container-fluid">
+                <button type="button" class="btn btn-secondary btn-block dropdown-toggle" data-toggle="dropdown">
+                     {{workflow_status_listener_enabled}}
+                  </button>
+                  <div class="dropdown-menu text-center container-fluid">
+                    <a class="dropdown-item" (click)="set_workflow_listener_enabled(true)">true</a>
+                    <a class="dropdown-item" (click)="set_workflow_listener_enabled(false)">false</a>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-md-4">
+            <div class="position-relative form-group"><label for="Timeout Policy">Failure Workflow</label>
+              <div id="Timeout Policy" name="Timeout Policy" class="btn-group container-fluid">
+                <button type="button" class="btn btn-secondary btn-block dropdown-toggle" data-toggle="dropdown">
+                     {{failure_workflow}}
+                  </button>
+                  <div class="dropdown-menu text-center container-fluid">
+                    <a *ngFor="let a_workflow of workflowNamesList" class="dropdown-item" (click)="set_failure_workflow(a_workflow)">{{a_workflow}}</a>
+                  </div>
+                </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="position-relative form-group"><label for="Restartable">Restartable</label>
+              <div id="Restartable" name="Restartable" class="btn-group container-fluid">
+                <button type="button" class="btn btn-secondary btn-block dropdown-toggle" data-toggle="dropdown">
+                  {{restartable}}
+                  </button>
+                  <div class="dropdown-menu text-center container-fluid">
+                    <a class="dropdown-item" (click)="set_restartable(true)">true</a>
+                    <a class="dropdown-item" (click)="set_restartable(false)">false</a>
+                  </div>
+                </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="position-relative form-group"><label for="Timeout Seconds">Timeout Seconds</label><input [(ngModel)]="timeoutSeconds" style="border-radius: 15px" name="Timeout Seconds"
+                                                                                                    id="timeoutSeconds"
+                                                                                                    placeholder="Enter Timeout Seconds"
+                                                                                                    type="number"
+                                                                                                    class="form-control border border-danger">
+            </div>
+        </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="success_message" class="alert alert-success mt-2 text-center" role="alert">
+  {{success_message}}
+</div>
+
+<div class="container-fluid mb-2">
+  <button *ngIf="!error_message && !success_message ; disable_workflow_creation_template" class="btn btn-info btn-lg btn-block" (click)="workflow_creation()" skipLocationChange><strong>Create Workflow</strong></button>
+  <ng-template #disable_workflow_creation_template>
+    <button class="btn btn-outline-info btn-lg btn-block disabled" skipLocationChange><strong>Create Workflow</strong></button>
+  </ng-template>
+</div>

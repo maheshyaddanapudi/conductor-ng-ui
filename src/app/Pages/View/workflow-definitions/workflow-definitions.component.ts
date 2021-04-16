@@ -4,6 +4,7 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { NavigatorVarHolderService } from 'src/app/Services/Holders/navigator-var-holder.service';
+import { JSONFlattenerService } from 'src/app/Services/Helpers/jsonflattener.service';
 
 @Component({
   selector: 'app-workflow-definitions',
@@ -40,7 +41,7 @@ export class WorkflowDefinitionsComponent implements OnInit {
 
   private startWorkflowRequest: StartWorkflowRequest
 
-  constructor(private workflowManagementService: WorkflowManagementService, private router: Router, private navigatorVarHolderService: NavigatorVarHolderService, private metadataManagementService: MetadataManagementService, private modalService: NgbModal) { 
+  constructor(private jsonFlattenerService: JSONFlattenerService, private workflowManagementService: WorkflowManagementService, private router: Router, private navigatorVarHolderService: NavigatorVarHolderService, private metadataManagementService: MetadataManagementService, private modalService: NgbModal) { 
 
     this.workflowDefs = [];
     this.paginated_workflow_defs = [];
@@ -72,7 +73,7 @@ export class WorkflowDefinitionsComponent implements OnInit {
     this.startWorkflowRequest = {
       name: workflow_name,
       version: workflow_version,
-      input: this.input_parameter
+      input: this.jsonFlattenerService.unflatten(this.input_parameter)
     }
 
     console.log(this.startWorkflowRequest)

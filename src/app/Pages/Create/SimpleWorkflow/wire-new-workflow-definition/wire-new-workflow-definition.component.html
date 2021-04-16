@@ -1,3 +1,295 @@
-<p>
-  wire-new-workflow-definition works!
-</p>
+<div class="container-fluid text-center">
+  <div class="row">
+      <div class="col-md-12">
+          <div class="page-header">
+              <div class="container-fluid bg-secondary card mt-2">
+                  <div class="card-header bg-dark text-center text-white">
+                      <h5><b>Simple Conductor Workflow Creation</b></h5>
+                  </div>
+              </div>
+          </div>
+          <div style="display:inline-block;width:100%;overflow-y:auto;">
+          <ul class="timeline timeline-horizontal">
+              <li class="timeline-item">
+                  <div class="timeline-badge success">1</div>
+                  <div class="timeline-panel bg-success text-white">
+                      <div class="timeline-heading">
+                          <h4 class="timeline-title">Task Pool Selection</h4>
+                      </div>
+                      <div class="timeline-body">
+                          <p>
+                              Select all the necessary tasks for the workflow, in any order, to create the workflow level tasks pool.
+                          </p>
+                      </div>
+                  </div>
+              </li>
+              <li class="timeline-item">
+                  <div class="timeline-badge success">2</div>
+                  <div class="timeline-panel bg-success text-white">
+                      <div class="timeline-heading">
+                          <h4 class="timeline-title">Task Order Finalization</h4>
+                      </div>
+                      <div class="timeline-body">
+                          <p>
+                              Re-order the selected tasks, by drag-drop to finalize the order in which they will be executed.
+                          </p>
+                      </div>
+                  </div>
+              </li>
+              <li class="timeline-item">
+                  <div class="timeline-badge info">3</div>
+                  <div class="timeline-panel bg-info text-white">
+                      <div class="timeline-heading">
+                          <h4 class="timeline-title">Task I/O Wiring</h4>
+                      </div>
+                      <div class="timeline-body">
+                          <p>
+                              Define and wire the input and output parameters for all the selected and order fixated tasks.
+                          </p>
+                      </div>
+                  </div>
+              </li>
+              <li class="timeline-item">
+                  <div class="timeline-badge dark">4</div>
+                  <div class="timeline-panel">
+                      <div class="timeline-heading">
+                          <h4 class="timeline-title">Workflow Creation</h4>
+                      </div>
+                      <div class="timeline-body">
+                          <p>
+                              Provide the workflow metadata like name, version, description to create the workflow with the defined tasks.
+                          </p>
+                      </div>
+                  </div>
+              </li>
+          </ul>
+      </div>
+      </div>
+  </div>
+</div>
+
+<div *ngIf="show_loading" class="loading">Loading...</div>
+
+<div class="container-fluid">
+  <div class="alert alert-warning text-center text-strong" role="alert">
+      Click on Input button of each task and map the necessary values !!!
+  </div>
+  <div class="alert alert-info text-center text-strong" role="alert">
+    The workflow input parameters are pre-determined to be the same as the input parameters for Task 1 !!!
+</div>
+</div>
+
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header bg-premium-dark border-info text-center">
+      <b class="text-white text-center" style="font-size: 20px; font-weight: bolder;">Workflow Input Parameters</b>
+
+        <ng-template class="text-center bg-secondary" style="padding-bottom: 0px" #inputParamPopUp let-c="close" let-d="dismiss">
+            <div class="card-header text-center bg-dark">
+                <h4 class="modal-title text-center text-white">Add new Workflow Input Param</h4>
+            </div>
+            <p *ngIf="newInputValidationMessage != ''">{{newInputValidationMessage}}</p>
+            <div class="modal-body bg-secondary">
+                <table class="mb-0 table table-dark">
+                <thead>
+                    <th scope="row">
+                    Input Param
+                    </th>
+                    <th>
+                    <input class="text-center" type="text" (keyup)="addInput($event.target.value)" (focusout)="addInput($event.target.value)" placeholder="Enter param name">
+                    </th>
+                    <th>
+                        <button *ngIf="newInput !='' ; else addInputDisabled" (click)="manageInput(null); c('Close click')" class="btn btn-success btn-sm">Add</button> 
+                        <ng-template #addInputDisabled>
+                            <button class="btn btn-success btn-sm disabled">Add</button> 
+                        </ng-template>
+                    </th>
+                </thead>
+                </table>
+            </div>
+            </ng-template> 
+            <i class="fa fa-plus-circle" style="padding-left: 50px; font-size: 20px; font-weight: bolder;" (click)="addInput(''); openLarge(inputParamPopUp)" aria-hidden="true"> </i>
+    </div>
+    <div class="card-body text-center border-primary">
+        <div class="form-row">
+            <div *ngFor="let anInput of inputKeys" class="col-md-4">
+                {{anInput}} &nbsp;<i (click)="manageInput(anInput)" class="fa fa-minus"> </i>
+                </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid mt-2">
+  <table class="container-fluid table table-striped table-hover table-bordered">
+      <thead class="thead bg-info text-white">
+          <th class="text-center">#</th>
+          <th class="text-center">Task Type</th>
+          <th class="text-center">Worker</th>
+          <th class="text-center">Task Name</th>
+          <th class="text-center">Task Description</th>
+          <th class="text-center">Task Custom Name</th>
+          <th class="text-center">I/O</th>
+          <th class="text-center">Optional?</th>
+          <th class="text-center">Action</th>
+      </thead>
+      <tbody class="tbody table-light table-striped table-hover table-bordered bordered border-info">
+          <tr *ngFor="let workflow_task of workflow_tasks ; index as workflow_task_counter">
+              <td class="text-center text-muted">
+                {{workflow_task_counter+1}}
+              </td>
+              
+              <td class="text-center">
+                  <button *ngIf=" workflow_task.taskDefinition.ownerApp ; else system_task_type_template" type="button" class="btn btn-outline-dark btn-sm">Worker Task</button>
+                  <ng-template #system_task_type_template>
+                      <button type="button" class="btn btn-outline-dark btn-sm">System Task</button>
+                  </ng-template>
+              </td>
+
+
+              <td class="text-center">
+                  <button *ngIf=" workflow_task.taskDefinition.ownerApp ; else system_task_owner_app_template" type="button" class="btn btn-outline-dark btn-sm">{{workflow_task.taskDefinition.ownerApp}}</button>
+                  <ng-template #system_task_owner_app_template>
+                    <button type="button" class="btn btn-secondary disabled" disabled>N/A</button>
+                  </ng-template>
+              </td>
+              <td class="text-center">
+                  <button type="button" class="btn btn-outline-dark btn-sm">{{workflow_task.name}}</button>
+              </td>
+              <td class="text-center">{{workflow_task.taskDefinition.description}}</td>
+              <td class="text-center">
+                  <button type="button" class="btn btn-outline-info btn-sm">{{workflow_task.description}}</button>
+              </td>
+              <td class="text-center">
+                <div *ngIf="workflow_task.taskDefinition ; else na_i_o_template" class="btn-group btn-group-sm">
+                  <ng-template #inputParametersContentTemplate let-c="close" let-d="dismiss">
+                    <div class="modal-header bg-dark text-white">
+                      <div class="card-body text-center mx-auto"><h4 class="card-title">Input Parameter(s)</h4></div>
+                      <button type="button" class="close text-white" aria-label="Close" (click)="d('Cross click')">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div> 
+                    <div class="modal-body bg-secondary">
+                      <perfect-scrollbar style="height: 650px; padding-bottom: 10px">
+                          <div class="card-body">
+                            <div *ngIf="workflow_task.taskDefinition.inputKeys" class="alert alert-primary text-center" role="alert">
+                              Total of {{workflow_task.taskDefinition.inputKeys.length}} Params Found
+                            </div>
+                            <table class="mb-0 table table-dark text-center">
+                              <thead class="thead">
+                              <tr>
+                                <th class="text-center">#</th>
+                                <th style="width: 5%">Parameter Name</th>
+                                <th>Mapped Value</th>
+                                <th>Static Value</th>
+                              </tr>
+                              </thead>
+                              <tbody class="tbody">
+                              <tr *ngFor="let anInputParam of workflow_task.taskDefinition.inputKeys; index as inputParamCounter">
+                                <td class="text-center">{{inputParamCounter+1}}</td>
+                                <td style="width: 5%">{{anInputParam}}</td>
+                                <td>
+                                  <div *ngIf="workflow_task.inputParameters && workflow_task.inputParameters[anInputParam] ; else default_selection_input_option_template" class="dropdown">
+                                      <button class="btn btn-dark btn-rounded dropdown-toggle" type="button" id="dropdownMenuButtonTaskType" data-toggle="dropdown">
+                                          {{workflow_task.inputParameters[anInputParam]}}
+                                      </button>
+                                      <div class="dropdown-menu scrollable-menu overflow-auto" aria-labelledby="dropdownMenuButtonTaskType">
+                                        <button class="dropdown-item" type="button" (click)="map_input(workflow_task_counter, anInputParam, undefined)">--Optional--</button>
+                                        <button class="dropdown-item" type="button" (click)="map_input(workflow_task_counter, anInputParam, '--Static--')">--Static--</button>
+                                        <button *ngFor="let option of get_input_mapping_options_available(workflow_task_counter, anInputParam)" class="dropdown-item" type="button" (click)="map_input(workflow_task_counter, anInputParam, option)">{{option}}</button>
+                                      </div>
+                                    </div>
+                                    <ng-template #default_selection_input_option_template>
+                                      <div class="dropdown">
+                                        <button class="btn btn-secondary btn-rounded dropdown-toggle" type="button" id="dropdownMenuButtonTaskType" data-toggle="dropdown">
+                                            Select
+                                        </button>
+                                        <div class="dropdown-menu scrollable-menu overflow-auto" aria-labelledby="dropdownMenuButtonTaskType">
+                                          <button class="dropdown-item" type="button" (click)="map_input(workflow_task_counter, anInputParam, undefined)">--Optional--</button>
+                                          <button class="dropdown-item" type="button" (click)="map_input(workflow_task_counter, anInputParam, '--Static--')">--Static--</button>
+                                          <button *ngFor="let option of get_input_mapping_options_available(workflow_task_counter, anInputParam)" class="dropdown-item" type="button" (click)="map_input(workflow_task_counter, anInputParam, option)">{{option}}</button>
+                                        </div>
+                                      </div>
+                                    </ng-template>
+                                </td>
+                                <td class="text-center">
+                                  <input class="autofocus" *ngIf="workflow_task.inputParameters[anInputParam] && '--Static--' == workflow_task.inputParameters[anInputParam] ; else no_static_value_template" type="text" (focusout)="map_input(workflow_task_counter, anInputParam, $event.target.value)" autofocus>
+                                  <ng-template #no_static_value_template>
+                                    <input type="text" class="disabled" readonly>
+                                  </ng-template>
+                                </td>
+                              </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                      </perfect-scrollbar>
+                    </div>
+                    </ng-template>
+                  <button *ngIf="workflow_task.taskDefinition.inputKeys && workflow_task.taskDefinition.inputKeys.length > 0 ; else na_task_input_template" type="button" class="btn btn-primary btn-sm" (click)="openLarge(inputParametersContentTemplate)">Input</button>
+                  <ng-template #na_task_input_template>
+                      <button type="button" class="btn btn-primary btn-sm disabled" disabled>Input</button>
+                  </ng-template>
+                  <ng-template #outputputParametersContentTemplate let-c="close" let-d="dismiss">
+                      <div class="modal-header bg-dark text-white">
+                        <div class="card-body text-center mx-auto"><h4 class="card-title">Output Parameter(s)</h4></div>
+                        <button type="button" class="close text-white" aria-label="Close" (click)="d('Cross click')">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body bg-secondary">
+                        <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                            <div class="card-body">
+                              <div *ngIf="workflow_task.taskDefinition.outputKeys" class="alert alert-primary text-center" role="alert">
+                                Total of {{workflow_task.taskDefinition.outputKeys.length}} Params Found
+                              </div>
+                              <table class="mb-0 table table-dark">
+                                <thead>
+                                <tr>
+                                  <th>#</th>
+                                  <th>Parameter Name</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let anOutputParam of workflow_task.taskDefinition.outputKeys; index as outputParamCounter">
+                                  <th scope="row">{{outputParamCounter+1}}</th>
+                                  <td>{{anOutputParam}}</td>
+                                </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                        </perfect-scrollbar>
+                      </div>
+                      <div class="modal-footer bg-dark">
+                        <button type="button" class="btn btn-light" (click)="c('Close click')">Close</button>
+                      </div>
+                    </ng-template>
+                  <button *ngIf="undefined != workflow_task.taskDefinition.outputKeys && workflow_task.taskDefinition.outputKeys.length > 0 ; else outputKeysDisabledTemplate" (click)="openLarge(outputputParametersContentTemplate)" type="button" class="btn btn-success btn-sm">Output</button>
+                  <ng-template #outputKeysDisabledTemplate>
+                      <button type="button" class="btn btn-success btn-sm disabled">Output</button>
+                  </ng-template>
+              </div>
+              <ng-template #na_i_o_template>
+                  <button type="button" class="btn btn-secondary disabled" disabled>N/A</button>
+              </ng-template>
+              </td>
+              <td class="text-center">
+                  <label class="switch text-center">
+                      <input type="checkbox" [(ngModel)]="workflow_task.optional"
+                      [ngModelOptions]="{standalone: true}" class="warning disabled" disabled>
+                      <span class="slider rectangle"></span>
+                  </label>
+              </td>
+              <td class="text-center">
+                  <button *ngIf="workflow_tasks.length > 1 ; else disable_delete_template" class="btn btn-sm btn-danger" (click)="delete_task_from_selection(workflow_task_counter)">Delete</button>
+                  <ng-template #disable_delete_template>
+                      <button class="btn btn-sm btn-danger disabled" disabled>Delete</button>
+                  </ng-template>
+              </td>
+          </tr>
+      </tbody>
+  </table>
+</div>
+
+<div class="container-fluid mb-2">
+<button class="btn btn-info btn-lg btn-block" (click)="proceed_to_next_stage()" skipLocationChange><strong>Proceed to Workflow Finalization</strong></button>
+</div>

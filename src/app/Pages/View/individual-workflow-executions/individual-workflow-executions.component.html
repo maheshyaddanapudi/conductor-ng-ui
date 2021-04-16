@@ -5,7 +5,7 @@
 </div>
 <div class="container-fluid">
 
-  <div *ngIf="!error_message && !search_results" class="loading-custom">Loading...</div>
+  <div *ngIf="(!error_message && !search_results) || show_loading" class="loading-custom">Loading...</div>
 
   <div *ngIf="error_message" class="alert alert-warning mt-2" role="alert">
       {{error_message}}
@@ -138,7 +138,7 @@
                           </tr>
                           </thead>
                           <tbody>
-                            <tr *ngFor="let an_item of convert_string_to_json(workflowExecution.input) | keyvalue; index as item_counter">
+                            <tr *ngFor="let an_item of get_workflow_input_parameters(workflowExecution.workflowId) | keyvalue; index as item_counter">
                               <th scope="row">{{item_counter+1}}</th>
                               <td>{{an_item.key}}</td>
                               <td>{{an_item.value}}</td>
@@ -177,7 +177,7 @@
                           </tr>
                           </thead>
                           <tbody>
-                            <tr *ngFor="let an_item of convert_string_to_json(workflowExecution.output) | keyvalue; index as item_counter">
+                            <tr *ngFor="let an_item of get_workflow_output_parameters(workflowExecution.workflowId) | keyvalue; index as item_counter">
                               <th scope="row">{{item_counter+1}}</th>
                               <td>{{an_item.key}}</td>
                               <td>{{an_item.value}}</td>

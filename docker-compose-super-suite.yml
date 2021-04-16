@@ -81,7 +81,7 @@ services:
         MYSQL_INITDB_SKIP_TZINFO: NONE
         LOGSPOUT: ignore
       healthcheck:
-        test: [ "CMD-SHELL", 'mysqladmin ping' ]
+        test: ["CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-pRoot@1234' ]
         interval: 60s
         timeout: 30s
         retries: 15
@@ -142,7 +142,7 @@ services:
         MYSQL_USER: conductor
         MYSQL_PASSWORD: Conductor@1234
         ELASTICSEARCH_URL: http://elasticsearch:9200
-        OAUTH2_USER_INFO_URL: http://keycloak:8080/auth/realms/master/protocol/openid-connect/userinfo
+        OAUTH2_USER_INFO_URL: http://keycloak:8080/auth/realms/conductor/protocol/openid-connect/userinfo
         SPRING_PROFILES_ACTIVE: basic,mysql,external-elasticsearch,external-oauth2,security,conductor
       healthcheck:
         test: ["CMD", "curl","-I" ,"-XGET", "http://localhost:8080/api/health"]
@@ -223,11 +223,11 @@ services:
       environment:
         WF_SERVER: http://localhost:8080/api
         OAUTH_ENABLED: Y
-        OAUTH_TOKEN_URL: http://localhost:9990/auth/realms/master/protocol/openid-connect/token
+        OAUTH_TOKEN_URL: http://localhost:9990/auth/realms/conductor/protocol/openid-connect/token
         OAUTH_USER_INFO_URL: http://localhost:8080/userinfo
-        OAUTH_LOGOUT_URL: http://localhost:9990/auth/realms/master/protocol/openid-connect/logout
+        OAUTH_LOGOUT_URL: http://localhost:9990/auth/realms/conductor/protocol/openid-connect/logout
         OAUTH_CLIENT_ID: conductor_user_client
-        OAUTH_CLIENT_SECRET: 8782ca99-decc-441a-8988-736350fafe67
+        OAUTH_CLIENT_SECRET: 205bf09a-7df8-4c4a-9a79-c27efae878ab
         LOGSPOUT: ignore
       ports:
         - 80:80
@@ -244,6 +244,70 @@ services:
         keycloak-nw:
           aliases:
             - conductor-ng-ui
+  mariadb:
+    image: mariadb:latest
+    restart: on-failure
+    environment:
+      MYSQL_ROOT_PASSWORD: Root@1234
+      MYSQL_DATABASE: quartz
+      MYSQL_USER: quartz
+      MYSQL_PASSWORD: Quartz@1234
+      MYSQL_TCP_PORT: 52000
+      MYSQL_INITDB_SKIP_TZINFO: NONE
+      LOGSPOUT: ignore
+    ports:
+      - 52000:52000
+    mem_limit: "512000000"
+    networks:
+      api-call-scheduler-nw:
+        aliases:
+          - mariadb
+    healthcheck:
+      test: ["CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-pRoot@1234' ]
+      interval: 30s
+      timeout: 60s
+      retries: 10
+    volumes:
+      - mariadb_data:/var/lib/mysql
+  scheduler:
+    image: zzzmahesh/api-calls-scheduler:latest
+    restart: on-failure
+    links:
+      - mariadb
+      - keycloak
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    networks:
+      keycloak-nw:
+        aliases:
+          - scheduler
+      conductor-boot-nw:
+        aliases:
+          - scheduler
+      api-call-scheduler-nw:
+        aliases:
+          - scheduler
+    ports:
+      - 8880:8880
+    environment:
+      MYSQL_DATABASE_HOST: mariadb
+      MYSQL_DATABASE_PORT: 52000
+      MYSQL_DATABASE: quartz
+      MYSQL_USER: quartz
+      MYSQL_PASSWORD: Quartz@1234
+      OAUTH2_USER_INFO_URL: http://keycloak:8080/auth/realms/scheduler/protocol/openid-connect/userinfo
+      SPRING_PROFILES_ACTIVE: basic,external-mysql,external-oauth2
+      USER_TIMEZONE: IST
+      LOGSPOUT: ignore
+    healthcheck:
+      test: ["CMD", "curl","-I" ,"-XGET", "http://localhost:8880/actuator/health"]
+      interval: 30s
+      timeout: 30s
+      retries: 15
+    mem_limit: "1024000000"
 volumes:
   postgres_data:
     driver: local
@@ -269,7 +333,14 @@ volumes:
       type: none
       device: $PWD/keycloak/migration
       o: bind
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: $PWD/container/persistence/mariadb
+      o: bind
 networks:
   keycloak-nw:
   conductor-boot-nw:
   kibana-nw:
+  api-call-scheduler-nw:

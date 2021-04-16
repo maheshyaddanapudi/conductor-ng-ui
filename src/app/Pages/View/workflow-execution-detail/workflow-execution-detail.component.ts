@@ -7,6 +7,7 @@ import { WorkflowExecutionJsonMermaidConverterService } from 'src/app/Services/C
 import { NavigatorVarHolderService } from 'src/app/Services/Holders/navigator-var-holder.service';
 import { ToastrService } from 'src/app/Services/LibraryOverrides/toastr.service';
 import { ActivatedRoute } from '@angular/router';
+import { JSONFlattenerService } from 'src/app/Services/Helpers/jsonflattener.service';
 
 @Component({
   selector: 'app-workflow-execution-detail',
@@ -32,7 +33,7 @@ export class WorkflowExecutionDetailComponent implements OnInit {
   public show_loading: boolean
   public terminate_reason: string
 
-  constructor(private route: ActivatedRoute, private toastrService: ToastrService, private router: Router, private modalService: NgbModal, private navigatorVarHolderService: NavigatorVarHolderService, private metadataManagementService: MetadataManagementService, private workflowManagementService: WorkflowManagementService, private workflowExecutionJsonMermaidConverterService: WorkflowExecutionJsonMermaidConverterService) {
+  constructor(private jsonFlattenerService: JSONFlattenerService, private route: ActivatedRoute, private toastrService: ToastrService, private router: Router, private modalService: NgbModal, private navigatorVarHolderService: NavigatorVarHolderService, private metadataManagementService: MetadataManagementService, private workflowManagementService: WorkflowManagementService, private workflowExecutionJsonMermaidConverterService: WorkflowExecutionJsonMermaidConverterService) {
     
   }
 
@@ -246,5 +247,9 @@ export class WorkflowExecutionDetailComponent implements OnInit {
   async open_diagram_in_new_window(){
     let url = this.router.createUrlTree(['/view/workflow-execution-diagram'])
     window.open(url.toString()+'?workflow_name='+this.workflow_name+'&workflow_version='+this.workflow_version+'&workflow_id='+this.workflow_id, '_blank')
+  }
+
+  flatten_object(obj: any): any{
+    return this.jsonFlattenerService.flatten(obj)
   }
 }

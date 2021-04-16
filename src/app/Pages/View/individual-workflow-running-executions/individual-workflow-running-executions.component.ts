@@ -4,6 +4,7 @@ import { ActivatedRoute, NavigationEnd, ParamMap, Router } from '@angular/router
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BulkResponse, SearchResultWorkflowSummary, Workflow, WorkflowBulkManagementService, WorkflowManagementService } from 'src/app/Rest/Conductor';
 import { filter } from 'rxjs/operators';
+import { JSONFlattenerService } from 'src/app/Services/Helpers/jsonflattener.service';
 
 @Component({
   selector: 'app-individual-workflow-running-executions',
@@ -45,7 +46,7 @@ export class IndividualWorkflowRunningExecutionsComponent implements OnInit {
   public terminate_reason: string
   public terminate_index: number = -1
 
-  constructor(private route: ActivatedRoute, private router: Router, private workflowManagementService: WorkflowManagementService, private workflowBulkManagementService: WorkflowBulkManagementService, private modalService: NgbModal) { 
+  constructor(public jsonFlattenerService: JSONFlattenerService, private route: ActivatedRoute, private router: Router, private workflowManagementService: WorkflowManagementService, private workflowBulkManagementService: WorkflowBulkManagementService, private modalService: NgbModal) { 
     this.auto_refresh_message = 'Initializing Auto-Refresh ...'
     this.workflow_ids = []
     this.selected_workflow_execution_indexes = []
@@ -62,6 +63,10 @@ export class IndividualWorkflowRunningExecutionsComponent implements OnInit {
     console.log('Workflow Executions for Workflow', this.workflow_name +' :: '+this.workflow_version)
     this.initiate()
     this.set_auto_refresh()
+  }
+
+  flatten(obj: any): any{
+    return this.jsonFlattenerService.flatten(obj);
   }
 
   async initiate(){

@@ -3,7 +3,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NavigatorVarHolderService } from 'src/app/Services/Holders/navigator-var-holder.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SearchResultWorkflowSummary, WorkflowManagementService } from 'src/app/Rest/Conductor';
+import { SearchResultWorkflowSummary, Workflow, WorkflowManagementService } from 'src/app/Rest/Conductor';
+import { JSONFlattenerService } from 'src/app/Services/Helpers/jsonflattener.service';
 
 
 @Component({
@@ -34,7 +35,10 @@ export class IndividualWorkflowExecutionsComponent implements OnInit {
   public auto_refresh_message: string
   private auto_refresh_message_interval: any
 
-  constructor(private route: ActivatedRoute,private router: Router, private workflowManagementService: WorkflowManagementService, private modalService: NgbModal, private navigatorVarHolderService: NavigatorVarHolderService) { 
+  public workflow_execution_details_buffer: Map<string, Workflow> = new Map();
+  public show_loading: boolean = false
+
+  constructor(public jsonFlattenerService: JSONFlattenerService, private route: ActivatedRoute,private router: Router, private workflowManagementService: WorkflowManagementService, private modalService: NgbModal, private navigatorVarHolderService: NavigatorVarHolderService) { 
     this.auto_refresh_message = 'Initializing Auto-Refresh ...'
    }
 
@@ -285,6 +289,44 @@ export class IndividualWorkflowExecutionsComponent implements OnInit {
     await this.router.navigateByUrl('view/workflow-execution-detail?workflow_id='+workflow_id+'&workflow_name='+workflowName+'&workflow_version='+workflowVersion, { skipLocationChange: false },).then((fulfilled: boolean) => {
       console.log('Routed')
       });
+  }
+
+  get_workflow_input_parameters(workflow_run_id: string){
+    this.show_loading = true
+    if(this.workflow_execution_details_buffer.get(workflow_run_id)){
+      this.show_loading = false
+      return this.jsonFlattenerService.flatten(this.workflow_execution_details_buffer.get(workflow_run_id).input)
+    }
+
+    this.workflowManagementService.getExecutionStatus(workflow_run_id, true).toPromise().then((workflow_execution_detail : Workflow) =>{
+      this.workflow_execution_details_buffer.set(workflow_run_id, workflow_execution_detail);
+      this.show_loading = false
+      return this.jsonFlattenerService.flatten(workflow_execution_detail.input)
+    }).catch((err_response: HttpErrorResponse) => {
+      this.error_message = err_response.message
+      console.log('Response Code - ', err_response.status)
+      console.log('Response Status - ', err_response.statusText)
+      console.log('Response Error - ', err_response.error)
+    });
+  }
+
+  get_workflow_output_parameters(workflow_run_id: string){
+    this.show_loading = true
+    if(this.workflow_execution_details_buffer.get(workflow_run_id)){
+      this.show_loading = false
+      return this.jsonFlattenerService.flatten(this.workflow_execution_details_buffer.get(workflow_run_id).output)
+    }
+
+    this.workflowManagementService.getExecutionStatus(workflow_run_id, true).toPromise().then((workflow_execution_detail : Workflow) =>{
+      this.workflow_execution_details_buffer.set(workflow_run_id, workflow_execution_detail);
+      this.show_loading = false
+      return this.jsonFlattenerService.flatten(workflow_execution_detail.output)
+    }).catch((err_response: HttpErrorResponse) => {
+      this.error_message = err_response.message
+      console.log('Response Code - ', err_response.status)
+      console.log('Response Status - ', err_response.statusText)
+      console.log('Response Error - ', err_response.error)
+    });
   }
 
 }

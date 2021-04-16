@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { WorkflowManagementService, SearchResultWorkflowSummary, MetadataManagementService, WorkflowDef, WorkflowSummary, WorkflowBulkManagementService, BulkResponse } from 'src/app/Rest/Conductor';
+import { WorkflowManagementService, SearchResultWorkflowSummary, MetadataManagementService, WorkflowDef, WorkflowSummary, WorkflowBulkManagementService, BulkResponse, Workflow } from 'src/app/Rest/Conductor';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NavigatorVarHolderService } from 'src/app/Services/Holders/navigator-var-holder.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'src/app/Services/LibraryOverrides/toastr.service';
+import { JSONFlattenerService } from 'src/app/Services/Helpers/jsonflattener.service';
 
 @Component({
   selector: 'app-workflow-executions',
@@ -43,8 +44,10 @@ export class WorkflowExecutionsComponent implements OnInit {
 
   public terminate_index: number = -1
 
+  public workflow_execution_details_buffer: Map<string, Workflow> = new Map();
+  public show_loading: boolean = false
 
-  constructor(private workflowBulkManagementService: WorkflowBulkManagementService, private toastrService: ToastrService, private metadataManagementService: MetadataManagementService, private router: Router, private workflowManagementService: WorkflowManagementService, private modalService: NgbModal, private navigatorVarHolderService: NavigatorVarHolderService) { 
+  constructor(public jsonFlattenerService: JSONFlattenerService, private workflowBulkManagementService: WorkflowBulkManagementService, private toastrService: ToastrService, private metadataManagementService: MetadataManagementService, private router: Router, private workflowManagementService: WorkflowManagementService, private modalService: NgbModal, private navigatorVarHolderService: NavigatorVarHolderService) { 
     this.auto_refresh_message = 'Initializing Auto-Refresh ...'
     this.workflow_ids = []
     this.selected_workflow_execution_indexes = []
@@ -301,7 +304,46 @@ export class WorkflowExecutionsComponent implements OnInit {
     }
   }
 
+  get_workflow_input_parameters(workflow_run_id: string){
+    this.show_loading = true
+    if(this.workflow_execution_details_buffer.get(workflow_run_id)){
+      this.show_loading = false
+      return this.jsonFlattenerService.flatten(this.workflow_execution_details_buffer.get(workflow_run_id).input)
+    }
+
+    this.workflowManagementService.getExecutionStatus(workflow_run_id, true).toPromise().then((workflow_execution_detail : Workflow) =>{
+      this.workflow_execution_details_buffer.set(workflow_run_id, workflow_execution_detail);
+      this.show_loading = false
+      return this.jsonFlattenerService.flatten(workflow_execution_detail.input)
+    }).catch((err_response: HttpErrorResponse) => {
+      this.error_message = err_response.message
+      console.log('Response Code - ', err_response.status)
+      console.log('Response Status - ', err_response.statusText)
+      console.log('Response Error - ', err_response.error)
+    });
+  }
+
+  get_workflow_output_parameters(workflow_run_id: string){
+    this.show_loading = true
+    if(this.workflow_execution_details_buffer.get(workflow_run_id)){
+      this.show_loading = false
+      return this.jsonFlattenerService.flatten(this.workflow_execution_details_buffer.get(workflow_run_id).output)
+    }
+
+    this.workflowManagementService.getExecutionStatus(workflow_run_id, true).toPromise().then((workflow_execution_detail : Workflow) =>{
+      this.workflow_execution_details_buffer.set(workflow_run_id, workflow_execution_detail);
+      this.show_loading = false
+      return this.jsonFlattenerService.flatten(workflow_execution_detail.output)
+    }).catch((err_response: HttpErrorResponse) => {
+      this.error_message = err_response.message
+      console.log('Response Code - ', err_response.status)
+      console.log('Response Status - ', err_response.statusText)
+      console.log('Response Error - ', err_response.error)
+    });
+  }
+
    convert_string_to_json(an_item: string): any{
+
     let item_converted_to_json = {
 
     }

@@ -13,9 +13,23 @@ export class NavigatorVarHolderService {
   private workflow_status: string
   private graph_def_array: string[]
   private workflow_tasks: WorkflowTask[]
+  private workflow_input_params: string[]
 
   constructor() { 
 
+  }
+
+  set_workflow_input_params(inputKeys: string[]){
+    this.workflow_input_params = inputKeys
+  }
+
+  get_workflow_input_params()
+  {
+    return this.workflow_input_params
+  }
+
+  unset_workflow_input_params(){
+    this.workflow_input_params = []
   }
 
   set_workflow_tasks(workflow_tasks: WorkflowTask[])

@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MetadataManagementService, TaskDef, WorkflowTask } from 'src/app/Rest/Conductor';
+import { JSONFlattenerService } from 'src/app/Services/Helpers/jsonflattener.service';
 import { NavigatorVarHolderService } from 'src/app/Services/Holders/navigator-var-holder.service';
 
 @Component({
@@ -35,7 +36,7 @@ export class InitiateNewWorkflowDefinitionComponent implements OnInit {
 
   public show_loading: boolean
 
-  constructor(private navigatorVarHolderService: NavigatorVarHolderService, private router: Router, private datePipe: DatePipe, private metadataManagementService: MetadataManagementService, private modalService: NgbModal) {
+  constructor(private jsonFlattenerService: JSONFlattenerService, private navigatorVarHolderService: NavigatorVarHolderService, private router: Router, private datePipe: DatePipe, private metadataManagementService: MetadataManagementService, private modalService: NgbModal) {
     this.workflow_tasks = []
     this.workers_list = []
     this.task_defs_list = []
@@ -158,7 +159,7 @@ export class InitiateNewWorkflowDefinitionComponent implements OnInit {
           this.task_def_selected = {
             name: 'HTTP Task',
             description: 'An HTTP task is used to make calls to another microservice over HTTP',
-            inputKeys: ['uri', 'method', 'accept', 'contentType', 'headers', 'body', 'vipAddress', 'asyncComplete', 'oauthConsumerKey', 'oauthConsumerSecret', 'connectionTimeOut', 'readTimeOut'],
+            inputKeys: ['http_request.uri', 'http_request.method', 'http_request.accept', 'http_request.contentType', 'http_request.headers', 'http_request.body', 'http_request.vipAddress', 'http_request.asyncComplete', 'http_request.oauthConsumerKey', 'http_request.oauthConsumerSecret', 'http_request.connectionTimeOut', 'http_request.readTimeOut'],
             outputKeys: ['response', 'headers', 'statusCode', 'reasonPhrase']
           }
           break;
@@ -227,31 +228,29 @@ export class InitiateNewWorkflowDefinitionComponent implements OnInit {
     {
       switch(this.task_selected){
         case 'HTTP':
+          let httpTaskInputParams = {
+            'http_request': {
+              'uri': undefined,
+              'method': undefined,
+              'accept': undefined,
+              'contentType': undefined,
+              'headers': undefined,
+              'body': undefined,
+              'vipAddress': undefined,
+              'asyncComplete': false,
+              'oauthConsumerKey': undefined,
+              'oauthConsumerSecret': undefined,
+              'connectionTimeOut': 100,
+              'readTimeOut': 150
+            }
+          }
+
           let aHttpWorkflowTask: WorkflowTask = {
             name: this.task_def_selected.name,
             taskReferenceName: this.task_ref_name_selected,
             description: this.task_description_selected,
             type: 'HTTP',
-            inputParameters: {
-              'http_request': {
-                'uri': undefined,
-                'method': undefined,
-                'accept': undefined,
-                'contentType': undefined,
-                'headers': {
-        
-                },
-                'body': {
-        
-                },
-                'vipAddress': undefined,
-                'asyncComplete': false,
-                'oauthConsumerKey': undefined,
-                'oauthConsumerSecret': undefined,
-                'connectionTimeOut': 100,
-                'readTimeOut': 150
-              }
-            },
+            inputParameters: this.jsonFlattenerService.flatten(httpTaskInputParams),
             optional: this.task_selected_optional,
             taskDefinition: this.task_def_selected
           }
@@ -266,6 +265,10 @@ export class InitiateNewWorkflowDefinitionComponent implements OnInit {
             description: this.task_description_selected,
             type: 'SUB_WORKFLOW',
             subWorkflowParam: {
+              name: undefined,
+              version: 0,
+            },
+            inputParameters: {
               name: undefined,
               version: 0,
             },
@@ -336,9 +339,7 @@ export class InitiateNewWorkflowDefinitionComponent implements OnInit {
                 value: undefined,
                 requestTimeoutMs: 100,
                 maxBlockMs: 500,
-                headers: {
-
-                },
+                headers: undefined,
                 topic: undefined
               },
               asyncComplete: false

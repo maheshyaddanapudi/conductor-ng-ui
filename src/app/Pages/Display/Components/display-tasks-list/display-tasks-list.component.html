@@ -28,7 +28,7 @@
                   </div> 
                   
                   <div *ngIf="!tasks_execution_list ; else workflow_execution_input_template" class="modal-body bg-secondary">
-                    <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                    <perfect-scrollbar style="height: 500px; padding-bottom: 10px">
                         <div class="card-body">
                           <div *ngIf="a_task.inputParameters" class="alert alert-primary text-center" role="alert">
                             Total of {{get_keys_length(a_task.inputParameters)}} Params Found
@@ -42,7 +42,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr *ngFor="let anInputParam of a_task.inputParameters | keyvalue; index as inputParamCounter">
+                            <tr *ngFor="let anInputParam of flatten(a_task.inputParameters) | keyvalue; index as inputParamCounter">
                               <th scope="row">{{inputParamCounter+1}}</th>
                               <td>{{anInputParam.key}}</td>
                               <td>{{anInputParam.value}}</td>
@@ -54,7 +54,7 @@
                   </div>
                   <ng-template #workflow_execution_input_template>
                     <div class="modal-body bg-secondary">
-                      <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                      <perfect-scrollbar style="height: 500px; padding-bottom: 10px">
                           <div class="card-body">
                             <div *ngIf="a_task.task && a_task.task.inputData ; else count_from_input_parameters" class="alert alert-primary text-center" role="alert">
                               Total of {{get_keys_length(a_task.task.inputData)}} Params Found
@@ -102,7 +102,7 @@
                     </button>
                   </div> 
                   <div *ngIf="!a_task.task || !a_task.task.outputData ; else workflow_execution_output_template" class="modal-body bg-secondary">
-                    <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                    <perfect-scrollbar style="height: 500px; padding-bottom: 10px">
                         <div class="card-body">
                           <div *ngIf="a_task.taskDefinition.outputKeys" class="alert alert-primary text-center" role="alert">
                             Total of {{a_task.taskDefinition.outputKeys.length}} Params Found
@@ -126,7 +126,7 @@
                   </div>
                   <ng-template #workflow_execution_output_template>
                     <div class="modal-body bg-secondary">
-                      <perfect-scrollbar style="height: 250px; padding-bottom: 10px">
+                      <perfect-scrollbar style="height: 500px; padding-bottom: 10px">
                           <div class="card-body">
                             <div *ngIf="get_keys_length(a_task.task.outputData) > 0" class="alert alert-primary text-center" role="alert">
                               Total of {{get_keys_length(a_task.task.outputData)}} Params Found
@@ -140,7 +140,7 @@
                               </tr>
                               </thead>
                               <tbody>
-                              <tr *ngFor="let anOutputParam of a_task.task.outputData | keyvalue ; index as outputParamCounter">
+                              <tr *ngFor="let anOutputParam of flatten(a_task.task.outputData) | keyvalue ; index as outputParamCounter">
                                 <th scope="row">{{outputParamCounter+1}}</th>
                                 <td>{{anOutputParam.key}}</td>
                                 <td>{{anOutputParam.value}}</td>

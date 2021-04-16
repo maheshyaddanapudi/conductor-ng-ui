@@ -101,7 +101,7 @@
             </div>
             <table class="table table-striped">
                 <tbody class="tbody table-secondary">
-                    <tr *ngFor="let anInput of workflow_execution.input | keyvalue ; index as input_counter">
+                    <tr *ngFor="let anInput of flatten_object(workflow_execution.input) | keyvalue ; index as input_counter">
                         <td class="text-center text-muted">#{{input_counter+1}}</td>
                         <td class="text-center">
                             <strong>{{anInput.key}}</strong>
@@ -132,7 +132,7 @@
                 </tbody>
                 <ng-template #workflow_execution_output_template>
                     <tbody class="tbody table-secondary">
-                        <tr *ngFor="let anOutput of workflow_execution.output | keyvalue ; index as output_counter">
+                        <tr *ngFor="let anOutput of flatten_object(workflow_execution.output) | keyvalue ; index as output_counter">
                             <td class="text-center text-muted">#{{output_counter+1}}</td>
                             <td class="text-center">
                                 <strong>{{anOutput.key}}</strong>

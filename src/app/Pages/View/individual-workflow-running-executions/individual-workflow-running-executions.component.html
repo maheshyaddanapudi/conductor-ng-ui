@@ -311,7 +311,7 @@
                               </tr>
                               </thead>
                               <tbody>
-                                <tr *ngFor="let an_item of workflowExecution.input | keyvalue; index as item_counter">
+                                <tr *ngFor="let an_item of flatten(workflowExecution.input) | keyvalue; index as item_counter">
                                   <th scope="row">{{item_counter+1}}</th>
                                   <td>{{an_item.key}}</td>
                                   <td>{{an_item.value}}</td>
@@ -350,7 +350,7 @@
                               </tr>
                               </thead>
                               <tbody>
-                                <tr *ngFor="let an_item of workflowExecution.output | keyvalue; index as item_counter">
+                                <tr *ngFor="let an_item of flatten(workflowExecution.output) | keyvalue; index as item_counter">
                                   <th scope="row">{{item_counter+1}}</th>
                                   <td>{{an_item.key}}</td>
                                   <td>{{an_item.value}}</td>

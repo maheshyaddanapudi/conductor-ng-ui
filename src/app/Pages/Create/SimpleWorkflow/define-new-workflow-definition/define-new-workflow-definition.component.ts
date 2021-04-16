@@ -45,8 +45,12 @@ export class DefineNewWorkflowDefinitionComponent implements OnInit {
     this.navigatorVarHolderService.set_workflow_tasks(this.workflow_tasks);
     
 
-    this.router.navigateByUrl('wire-simple-conductor-workflow-creation', { skipLocationChange: true },).then((fulfilled: boolean) => {
+    this.router.navigateByUrl('create/wire-new-workflow', { skipLocationChange: true },).then((fulfilled: boolean) => {
       console.log('Routed')
       });
+  }
+
+  async delete_task_from_selection(index:number){
+    await this.workflow_tasks.splice(index, 1);
   }
 }

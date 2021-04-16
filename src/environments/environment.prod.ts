@@ -4,9 +4,9 @@ export const environment = {
     OAUTH_TOKEN_URL: 'http://localhost:9990/auth/realms/master/protocol/openid-connect/token',
     OAUTH_USER_INFO_URL: 'http://localhost:8080/userinfo',
     OAUTH_LOGOUT_URL: 'http://localhost:9990/auth/realms/master/protocol/openid-connect/logout',
-    OAUTH_ENABLED: 'Y',
+    OAUTH_ENABLED: 'N',
     OAUTH_CLIENT_ID: 'conductor_user_client',
-    OAUTH_CLIENT_SECRET: '8782ca99-decc-441a-8988-736350fafe67',
+    OAUTH_CLIENT_SECRET: '205bf09a-7df8-4c4a-9a79-c27efae878ab',
     LOG_AGGREGATOR_ANALYTICS_IFRAME_URL: 'undefined',
     API_HITS_COUNTER_ANALYTICS_IFRAME_URL: 'undefined',
     production: true

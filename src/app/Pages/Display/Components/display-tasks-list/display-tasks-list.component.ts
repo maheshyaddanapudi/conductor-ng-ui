@@ -3,6 +3,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MetadataManagementService, Task, TaskDef, TaskManagementService, WorkflowTask } from 'src/app/Rest/Conductor';
+import { JSONFlattenerService } from 'src/app/Services/Helpers/jsonflattener.service';
 
 @Component({
   selector: 'app-display-tasks-list',
@@ -47,7 +48,7 @@ export class DisplayTasksListComponent implements OnInit {
 
   }
 
-  constructor(private modalService: NgbModal, private router: Router, private metadataManagementService: MetadataManagementService, private taskManagementService: TaskManagementService) { }
+  constructor(private jsonFlattenerService: JSONFlattenerService, private modalService: NgbModal, private router: Router, private metadataManagementService: MetadataManagementService, private taskManagementService: TaskManagementService) { }
 
   async ngOnInit() {
     await this.update_task_defs()
@@ -56,6 +57,10 @@ export class DisplayTasksListComponent implements OnInit {
       await this.update_output_data()
     }
     this.loading = false
+  }
+
+  flatten(obj: any): any{
+    return this.jsonFlattenerService.flatten(obj)
   }
 
   async update_output_data(){
@@ -119,18 +124,18 @@ export class DisplayTasksListComponent implements OnInit {
 
   openLarge(content) {
     this.modalService.open(content,  { 
-      windowClass : 'myCustomModalClass',
+      windowClass : 'modal-x-large',
       backdrop : 'static',
       keyboard : false,
       }
     );
   }
 
-  get_input_data_from_execution(a_task: WorkflowTask){
+  get_input_data_from_execution(a_task: WorkflowTask): any{
 
     if(a_task.task && a_task.task.inputData)
     {
-      return a_task.task.inputData
+      return this.flatten(a_task.task.inputData)
     }
 
     return null

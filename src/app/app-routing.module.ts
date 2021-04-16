@@ -32,6 +32,8 @@ import {
 import { InitiateNewWorkflowDefinitionComponent } from './Pages/Create/SimpleWorkflow/initiate-new-workflow-definition/initiate-new-workflow-definition.component';
 import { DefineNewWorkflowDefinitionComponent } from './Pages/Create/SimpleWorkflow/define-new-workflow-definition/define-new-workflow-definition.component';
 import { LogAggregationDashboardComponent } from './Pages/Dashboards/log-aggregation-dashboard/log-aggregation-dashboard.component';
+import { WireNewWorkflowDefinitionComponent } from './Pages/Create/SimpleWorkflow/wire-new-workflow-definition/wire-new-workflow-definition.component';
+import { ConfirmNewWorkflowDefinitionComponent } from './Pages/Create/SimpleWorkflow/confirm-new-workflow-definition/confirm-new-workflow-definition.component';
 
 
 const routes: Routes = [
@@ -91,6 +93,8 @@ const routes: Routes = [
       {path: 'create/new-task-definition', component: NewTaskDefinitionComponent, data: {extraParameter: 'createDefinitionsMenu'}, canActivate: [RouteGuard]},
       {path: 'create/new-workflow-definition', component: InitiateNewWorkflowDefinitionComponent, data: {extraParameter: 'createDefinitionsMenu'}, canActivate: [RouteGuard]},
       {path: 'create/define-new-workflow', component: DefineNewWorkflowDefinitionComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
+      {path: 'create/wire-new-workflow', component: WireNewWorkflowDefinitionComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
+      {path: 'create/confirm-new-workflow', component: ConfirmNewWorkflowDefinitionComponent, data: {extraParameter: ''}, canActivate: [RouteGuard]},
 
 
       // Update
