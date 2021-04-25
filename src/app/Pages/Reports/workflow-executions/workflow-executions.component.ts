@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { WorkflowManagementService, SearchResultWorkflowSummary, MetadataManagementService, WorkflowDef, WorkflowSummary, WorkflowBulkManagementService, BulkResponse, Workflow } from 'src/app/Rest/Conductor';
+import { WorkflowResourceService, SearchResultWorkflowSummary, MetadataResourceService, WorkflowDef, WorkflowSummary, WorkflowBulkResourceService, BulkResponse, Workflow } from 'src/app/Rest/Conductor';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NavigatorVarHolderService } from 'src/app/Services/Holders/navigator-var-holder.service';
@@ -47,7 +47,7 @@ export class WorkflowExecutionsComponent implements OnInit {
   public workflow_execution_details_buffer: Map<string, Workflow> = new Map();
   public show_loading: boolean = false
 
-  constructor(public jsonFlattenerService: JSONFlattenerService, private workflowBulkManagementService: WorkflowBulkManagementService, private toastrService: ToastrService, private metadataManagementService: MetadataManagementService, private router: Router, private workflowManagementService: WorkflowManagementService, private modalService: NgbModal, private navigatorVarHolderService: NavigatorVarHolderService) { 
+  constructor(public jsonFlattenerService: JSONFlattenerService, private workflowBulkManagementService: WorkflowBulkResourceService, private toastrService: ToastrService, private metadataManagementService: MetadataResourceService, private router: Router, private workflowManagementService: WorkflowResourceService, private modalService: NgbModal, private navigatorVarHolderService: NavigatorVarHolderService) { 
     this.auto_refresh_message = 'Initializing Auto-Refresh ...'
     this.workflow_ids = []
     this.selected_workflow_execution_indexes = []
@@ -239,7 +239,7 @@ export class WorkflowExecutionsComponent implements OnInit {
   async get_workflow_executions(){
 
     if(!this.workflow_status || this.workflow_status == 'All'){
-      await this.workflowManagementService.search(((this.current_page_selected-1) * this.page_size), this.page_size, 'updateTime:DESC').toPromise().then((search_results: SearchResultWorkflowSummary) => {
+      await this.workflowManagementService.search1(((this.current_page_selected-1) * this.page_size), this.page_size, 'updateTime:DESC').toPromise().then((search_results: SearchResultWorkflowSummary) => {
         this.search_results = search_results
 
         console.log('Total Hits', this.search_results.totalHits)
@@ -286,7 +286,7 @@ export class WorkflowExecutionsComponent implements OnInit {
       console.log('Getting workflows for status', status)
 
       //await this.workflowManagementService.search(0,undefined,'updateTime:DESC','status:'+status).toPromise().then((search_results: SearchResultWorkflowSummary) => {
-        await this.workflowManagementService.search(0,undefined,'updateTime:DESC',undefined,'status\u003d"'+status+'"').toPromise().then(async (search_results: SearchResultWorkflowSummary) => {
+        await this.workflowManagementService.search1(0,undefined,'updateTime:DESC',undefined,'status\u003d"'+status+'"').toPromise().then(async (search_results: SearchResultWorkflowSummary) => {
         this.search_results = search_results
         console.log('Total Hits', this.search_results.totalHits)
 
@@ -408,7 +408,7 @@ export class WorkflowExecutionsComponent implements OnInit {
   }
 
   pause_workflow(workflow_id: string){
-    this.workflowManagementService.pauseWorkflow(workflow_id).toPromise().then((response: any) => {
+    this.workflowManagementService.pauseWorkflow1(workflow_id).toPromise().then((response: any) => {
       this.toastrService.success(workflow_id, "Workflow Pause Success !")
       this.initiate_with_delay(1)
     }).catch((err_response: HttpErrorResponse) => {
@@ -420,7 +420,7 @@ export class WorkflowExecutionsComponent implements OnInit {
   }
 
   resume_workflow(workflow_id: string){
-    this.workflowManagementService.resumeWorkflow(workflow_id).toPromise().then((response: any) => {
+    this.workflowManagementService.resumeWorkflow1(workflow_id).toPromise().then((response: any) => {
       this.toastrService.success(workflow_id, "Workflow Resume Success !")
       this.initiate_with_delay(1)
     }).catch((err_response: HttpErrorResponse) => {
@@ -432,7 +432,7 @@ export class WorkflowExecutionsComponent implements OnInit {
   }
 
   restart_workflow(workflow_id: string){
-    this.workflowManagementService.restart(workflow_id).toPromise().then((response: any) => {
+    this.workflowManagementService.restart1(workflow_id).toPromise().then((response: any) => {
       this.toastrService.success(workflow_id, "Workflow Restart Success !")
       this.initiate_with_delay(1)
     }).catch((err_response: HttpErrorResponse) => {
@@ -444,7 +444,7 @@ export class WorkflowExecutionsComponent implements OnInit {
   }
 
   retry_workflow(workflow_id: string){
-    this.workflowManagementService.retry(workflow_id).toPromise().then((response: any) => {
+    this.workflowManagementService.retry1(workflow_id).toPromise().then((response: any) => {
       this.toastrService.success(workflow_id, "Workflow Retry Success !")
       this.initiate_with_delay(1)
     }).catch((err_response: HttpErrorResponse) => {
@@ -456,7 +456,7 @@ export class WorkflowExecutionsComponent implements OnInit {
   }
 
   terminate_workflow(workflow_id: string, reason?: string){
-    this.workflowManagementService.terminate(workflow_id, reason).toPromise().then((response: any) => {
+    this.workflowManagementService.terminate1(workflow_id, reason).toPromise().then((response: any) => {
       this.toastrService.success(workflow_id, "Workflow Termination Success !")
       this.initiate_with_delay(1)
     }).catch((err_response: HttpErrorResponse) => {

@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChartDataSets } from 'chart.js';
 import { Label } from 'ng2-charts';
-import { MetadataManagementService, SearchResultWorkflowSummary, TaskDef, WorkflowDef, WorkflowManagementService } from 'src/app/Rest/Conductor';
+import { MetadataResourceService, SearchResultWorkflowSummary, TaskDef, WorkflowDef, WorkflowResourceService } from 'src/app/Rest/Conductor';
 import { DashboardDataHolderService } from 'src/app/Services/Holders/dashboard-data-holder.service';
 import { NavigatorVarHolderService } from 'src/app/Services/Holders/navigator-var-holder.service';
 import { UserInfoAndTokenDataHolderService } from 'src/app/Services/Holders/user-info-and-token-data-holder.service';
@@ -31,7 +31,7 @@ export class WorkflowDashboardComponent implements OnInit {
 
   public API_HITS_COUNTER_ANALYTICS_IFRAME_URL: string
 
-  constructor(private userInfoAndTokenDataHolderService: UserInfoAndTokenDataHolderService, private medatadataManagementService: MetadataManagementService, private workflowManagementService: WorkflowManagementService, public dashboardDataHolderService: DashboardDataHolderService, private router: Router, private navigatorVarHolderService: NavigatorVarHolderService) { 
+  constructor(private userInfoAndTokenDataHolderService: UserInfoAndTokenDataHolderService, private medatadataManagementService: MetadataResourceService, private workflowManagementService: WorkflowResourceService, public dashboardDataHolderService: DashboardDataHolderService, private router: Router, private navigatorVarHolderService: NavigatorVarHolderService) { 
     this.total_task_defs = 0
     this.total_workflow_defs = 0
     if(environment.API_HITS_COUNTER_ANALYTICS_IFRAME_URL && environment.API_HITS_COUNTER_ANALYTICS_IFRAME_URL != 'undefined')
@@ -57,7 +57,7 @@ export class WorkflowDashboardComponent implements OnInit {
 
     this.loading = true
 
-    await this.workflowManagementService.search(0,undefined, 'updateTime:DESC').toPromise().then((search_results: SearchResultWorkflowSummary) => {
+    await this.workflowManagementService.search1(0,undefined, 'updateTime:DESC').toPromise().then((search_results: SearchResultWorkflowSummary) => {
       this.dashboardDataHolderService.set_total(search_results.totalHits)
 
     }).catch((err_response: HttpErrorResponse) => {
@@ -67,7 +67,7 @@ export class WorkflowDashboardComponent implements OnInit {
       console.log('Response Error - ', err_response.error)
     })
 
-    await this.workflowManagementService.search(0,undefined,'updateTime:DESC',undefined,'status\u003d"RUNNING"').toPromise().then((search_results: SearchResultWorkflowSummary) => {
+    await this.workflowManagementService.search1(0,undefined,'updateTime:DESC',undefined,'status\u003d"RUNNING"').toPromise().then((search_results: SearchResultWorkflowSummary) => {
       this.dashboardDataHolderService.set_paused(search_results.totalHits)
     }).catch((err_response: HttpErrorResponse) => {
       this.error_message.push(err_response.message)
@@ -76,7 +76,7 @@ export class WorkflowDashboardComponent implements OnInit {
       console.log('Response Error - ', err_response.error)
     })
 
-    await this.workflowManagementService.search(0,undefined,'updateTime:DESC',undefined,'status\u003d"PAUSED"').toPromise().then((search_results: SearchResultWorkflowSummary) => {
+    await this.workflowManagementService.search1(0,undefined,'updateTime:DESC',undefined,'status\u003d"PAUSED"').toPromise().then((search_results: SearchResultWorkflowSummary) => {
       this.dashboardDataHolderService.set_running(search_results.totalHits)
     }).catch((err_response: HttpErrorResponse) => {
       this.error_message.push(err_response.message)
@@ -85,7 +85,7 @@ export class WorkflowDashboardComponent implements OnInit {
       console.log('Response Error - ', err_response.error)
     })
 
-    await this.workflowManagementService.search(0,undefined,'updateTime:DESC',undefined,'status\u003d"COMPLETED"').toPromise().then((search_results: SearchResultWorkflowSummary) => {
+    await this.workflowManagementService.search1(0,undefined,'updateTime:DESC',undefined,'status\u003d"COMPLETED"').toPromise().then((search_results: SearchResultWorkflowSummary) => {
       this.dashboardDataHolderService.set_completed(search_results.totalHits)
     }).catch((err_response: HttpErrorResponse) => {
       this.error_message.push(err_response.message)
@@ -94,7 +94,7 @@ export class WorkflowDashboardComponent implements OnInit {
       console.log('Response Error - ', err_response.error)
     })
 
-    await this.workflowManagementService.search(0,undefined,'updateTime:DESC',undefined,'status\u003d"FAILED"').toPromise().then((search_results: SearchResultWorkflowSummary) => {
+    await this.workflowManagementService.search1(0,undefined,'updateTime:DESC',undefined,'status\u003d"FAILED"').toPromise().then((search_results: SearchResultWorkflowSummary) => {
       this.dashboardDataHolderService.set_failed(search_results.totalHits)
     }).catch((err_response: HttpErrorResponse) => {
       this.error_message.push(err_response.message)
@@ -103,7 +103,7 @@ export class WorkflowDashboardComponent implements OnInit {
       console.log('Response Error - ', err_response.error)
     })
 
-    await this.workflowManagementService.search(0,undefined,'updateTime:DESC',undefined,'status\u003d"TERMINATED"').toPromise().then((search_results: SearchResultWorkflowSummary) => {
+    await this.workflowManagementService.search1(0,undefined,'updateTime:DESC',undefined,'status\u003d"TERMINATED"').toPromise().then((search_results: SearchResultWorkflowSummary) => {
       this.dashboardDataHolderService.set_terminated(search_results.totalHits)
     }).catch((err_response: HttpErrorResponse) => {
       this.error_message.push(err_response.message)
@@ -112,7 +112,7 @@ export class WorkflowDashboardComponent implements OnInit {
       console.log('Response Error - ', err_response.error)
     })
 
-    await this.workflowManagementService.search(0,undefined,'updateTime:DESC',undefined,'status\u003d"TIMED_OUT"').toPromise().then((search_results: SearchResultWorkflowSummary) => {
+    await this.workflowManagementService.search1(0,undefined,'updateTime:DESC',undefined,'status\u003d"TIMED_OUT"').toPromise().then((search_results: SearchResultWorkflowSummary) => {
       this.dashboardDataHolderService.set_timedout(search_results.totalHits)
     }).catch((err_response: HttpErrorResponse) => {
       this.error_message.push(err_response.message)

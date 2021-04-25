@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { MetadataManagementService, StartWorkflowRequest, WorkflowDef, WorkflowManagementService } from 'src/app/Rest/Conductor';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { MetadataResourceService, StartWorkflowRequest, WorkflowDef, WorkflowResourceService } from 'src/app/Rest/Conductor';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { NavigatorVarHolderService } from 'src/app/Services/Holders/navigator-var-holder.service';
@@ -41,7 +41,7 @@ export class WorkflowDefinitionsComponent implements OnInit {
 
   private startWorkflowRequest: StartWorkflowRequest
 
-  constructor(private jsonFlattenerService: JSONFlattenerService, private workflowManagementService: WorkflowManagementService, private router: Router, private navigatorVarHolderService: NavigatorVarHolderService, private metadataManagementService: MetadataManagementService, private modalService: NgbModal) { 
+  constructor(private jsonFlattenerService: JSONFlattenerService, private workflowManagementService: WorkflowResourceService, private router: Router, private navigatorVarHolderService: NavigatorVarHolderService, private metadataManagementService: MetadataResourceService, private modalService: NgbModal) { 
 
     this.workflowDefs = [];
     this.paginated_workflow_defs = [];
@@ -78,7 +78,7 @@ export class WorkflowDefinitionsComponent implements OnInit {
 
     console.log(this.startWorkflowRequest)
     
-    await this.workflowManagementService.startWorkflow(this.startWorkflowRequest).toPromise().then((response: string) => {
+    await this.workflowManagementService.startWorkflow1(this.startWorkflowRequest).toPromise().then((response: string) => {
       this.workflow_run_id = response
     }).catch((err_response: HttpErrorResponse) => {
 

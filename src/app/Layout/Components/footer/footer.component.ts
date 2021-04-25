@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from '../../../../environments/environment'
-import { HealthCheckService, HealthCheckStatus } from 'src/app/Rest/Conductor';
+import { HealthCheckResourceService, HealthCheckStatus } from 'src/app/Rest/Conductor';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
@@ -26,7 +26,7 @@ export class FooterComponent implements OnInit {
 
   public hc_paused: boolean = false
 
-  constructor(private health_check_service: HealthCheckService) { 
+  constructor(private health_check_service: HealthCheckResourceService) { 
    
     this.time_interval = 5000
 

@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { PollData, TaskManagementService } from 'src/app/Rest/Conductor';
+import { PollData, TaskResourceService } from 'src/app/Rest/Conductor';
 
 @Component({
   selector: 'app-queues-and-poll-data',
@@ -15,7 +15,7 @@ export class QueuesAndPollDataComponent implements OnInit {
 
   public error_message: string
 
-  constructor(private taskManagementService: TaskManagementService) { 
+  constructor(private taskManagementService: TaskResourceService) { 
     
   }
 

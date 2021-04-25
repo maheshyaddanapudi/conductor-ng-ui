@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { HttpErrorResponse } from '@angular/common/http';
-import { MetadataManagementService, TaskDef } from 'src/app/Rest/Conductor';
+import { MetadataResourceService, TaskDef } from 'src/app/Rest/Conductor';
 
 @Component({
   selector: 'app-new-task-definition',
@@ -41,7 +41,7 @@ export class NewTaskDefinitionComponent implements OnInit {
   public result: string;
   public error_message: string;
 
-  constructor(private modalService: NgbModal, private metadataManagementService: MetadataManagementService) { 
+  constructor(private modalService: NgbModal, private metadataManagementService: MetadataResourceService) { 
     this.inputKeys = [];
     this.outputKeys = [];
 
@@ -272,7 +272,7 @@ async createTaskDefn()
   
     tasks_list.push(aTaskDef)
   
-    await this.metadataManagementService.registerTaskDef_1(tasks_list).toPromise().then((response: any) => {
+    await this.metadataManagementService.registerTaskDef(tasks_list).toPromise().then((response: any) => {
       
       if(response)
       {

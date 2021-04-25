@@ -1,8 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal, NgbModalOptions, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { MetadataManagementService, PollData, TaskDef, TaskManagementService } from 'src/app/Rest/Conductor';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { MetadataResourceService, PollData, TaskDef, TaskResourceService } from 'src/app/Rest/Conductor';
 import { NavigatorVarHolderService } from 'src/app/Services/Holders/navigator-var-holder.service';
 
 @Component({
@@ -20,7 +20,7 @@ export class TaskDefinitionDetailComponent implements OnInit {
 
   private opened_model_content: NgbModalRef 
 
-  constructor(private route: ActivatedRoute, private taskManagementService: TaskManagementService, private router: Router, private modalService: NgbModal, private navigatorVarHolderService: NavigatorVarHolderService, private metadataManagementService: MetadataManagementService) { }
+  constructor(private route: ActivatedRoute, private taskManagementService: TaskResourceService, private router: Router, private modalService: NgbModal, private navigatorVarHolderService: NavigatorVarHolderService, private metadataManagementService: MetadataResourceService) { }
 
   async ngOnInit() {
     

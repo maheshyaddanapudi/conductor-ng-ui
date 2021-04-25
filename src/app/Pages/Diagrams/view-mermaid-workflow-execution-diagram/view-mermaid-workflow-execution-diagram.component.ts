@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AfterContentInit, Component, Input, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import mermaid from 'mermaid';
-import { MetadataManagementService, Workflow, WorkflowDef, WorkflowManagementService } from 'src/app/Rest/Conductor';
+import { MetadataResourceService, Workflow, WorkflowDef, WorkflowResourceService } from 'src/app/Rest/Conductor';
 import { WorkflowExecutionJsonMermaidConverterService } from 'src/app/Services/Converters/workflow-execution-json-mermaid-converter.service';
 
 @Component({
@@ -26,7 +26,7 @@ export class ViewMermaidWorkflowExecutionDiagramComponent implements AfterConten
 
   public error_message: string
 
-  constructor(private router: Router, private route: ActivatedRoute, private workflowExecutionJsonMermaidConverterService: WorkflowExecutionJsonMermaidConverterService, private metadataManagementService: MetadataManagementService, private workflowManagementService: WorkflowManagementService) { }
+  constructor(private router: Router, private route: ActivatedRoute, private workflowExecutionJsonMermaidConverterService: WorkflowExecutionJsonMermaidConverterService, private metadataManagementService: MetadataResourceService, private workflowManagementService: WorkflowResourceService) { }
 
   async ngOnInit() {
     console.log('Initialized Workflow Execution Diagram')

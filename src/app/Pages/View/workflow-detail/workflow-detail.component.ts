@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MetadataManagementService, WorkflowDef, WorkflowManagementService, StartWorkflowRequest } from 'src/app/Rest/Conductor';
+import { MetadataResourceService, WorkflowDef, WorkflowResourceService, StartWorkflowRequest } from 'src/app/Rest/Conductor';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { WorkflowJsonMermaidConverterService } from 'src/app/Services/Converters/workflow-json-mermaid-converter.service';
@@ -42,7 +42,7 @@ export class WorkflowDetailComponent implements OnInit {
 
   }
 
-  constructor(private jsonFlattenerService: JSONFlattenerService, private route: ActivatedRoute, private router: Router, private navigatorVarHolderService: NavigatorVarHolderService, private workflowJsonMermaidConverterService: WorkflowJsonMermaidConverterService, private metadataManagementService: MetadataManagementService, private workflowManagementService: WorkflowManagementService, private modalService: NgbModal) {
+  constructor(private jsonFlattenerService: JSONFlattenerService, private route: ActivatedRoute, private router: Router, private navigatorVarHolderService: NavigatorVarHolderService, private workflowJsonMermaidConverterService: WorkflowJsonMermaidConverterService, private metadataManagementService: MetadataResourceService, private workflowManagementService: WorkflowResourceService, private modalService: NgbModal) {
     this.input_parameter = {
 
     }
@@ -118,7 +118,7 @@ export class WorkflowDetailComponent implements OnInit {
       input: this.jsonFlattenerService.unflatten(this.input_parameter)
     }
     
-    await this.workflowManagementService.startWorkflow(this.startWorkflowRequest).toPromise().then((response: string) => {
+    await this.workflowManagementService.startWorkflow1(this.startWorkflowRequest).toPromise().then((response: string) => {
       this.workflow_run_id = response
     }).catch((err_response: HttpErrorResponse) => {
 

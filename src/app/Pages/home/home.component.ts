@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CronOptions } from 'cron-editor';
 import { environment } from '../../../environments/environment'
 
 declare const SwaggerUIBundle: any;
@@ -9,6 +11,30 @@ declare const SwaggerUIBundle: any;
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+
+  public cronExpression = '0 0/5 * 1/1 * ? *';
+  public isCronDisabled = false;
+  public cronOptions: CronOptions = {
+    formInputClass: 'cron-editor-material-control',
+    formSelectClass: 'cron-editor-material-control',
+    formRadioClass: 'cron-editor-radio',
+    formCheckboxClass: 'cron-editor-checkbox',
+
+    defaultTime: '10:00:00',
+    use24HourTime: true,
+
+    hideMinutesTab: false,
+    hideHourlyTab: false,
+    hideDailyTab: false,
+    hideWeeklyTab: false,
+    hideMonthlyTab: false,
+    hideYearlyTab: false,
+    hideAdvancedTab: false,
+
+    hideSeconds: true,
+    removeSeconds: false,
+    removeYears: false
+  };
 
   public server_swagger_url: string;
 
@@ -33,8 +59,17 @@ export class HomeComponent implements OnInit {
             ],
             layout: "BaseLayout", 
             supportedSubmitMethods: [],
-            url: environment.WF_SERVER+'/swagger.json',
+            url: environment.WF_SERVER+'/api-docs',
       });
       
+    }
+
+    constructor(private modalService: NgbModal) {}
+
+    openXLarge(content) {
+      this.modalService.open(content, {
+        modalDialogClass: 'modal-x-large',
+        size: 'xl'
+      });
     }
   }

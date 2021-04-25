@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { MetadataManagementService, WorkflowDef, WorkflowTask } from 'src/app/Rest/Conductor';
+import { MetadataResourceService, WorkflowDef, WorkflowTask } from 'src/app/Rest/Conductor';
 import { JSONFlattenerService } from 'src/app/Services/Helpers/jsonflattener.service';
 import { NavigatorVarHolderService } from 'src/app/Services/Holders/navigator-var-holder.service';
 
@@ -30,7 +30,7 @@ export class ConfirmNewWorkflowDefinitionComponent implements OnInit {
   public timeoutSeconds: number = 60
   public inputParameters: string[] = []
 
-  constructor(private jsonFlattenerService: JSONFlattenerService, private metadataManagementService: MetadataManagementService, private navigatorVarHolderService: NavigatorVarHolderService) { }
+  constructor(private jsonFlattenerService: JSONFlattenerService, private metadataManagementService: MetadataResourceService, private navigatorVarHolderService: NavigatorVarHolderService) { }
 
   async ngOnInit() {
     this.show_loading = true;

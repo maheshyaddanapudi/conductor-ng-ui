@@ -1,4 +1,4 @@
-<div class="container-fluid bg-light card">
+<div class="container-fluid bg-light card mb-5">
   <div class="card-header bg-dark text-white text-center">
     <h5><b><strong>Swagger UI (Read-Only)</strong></b></h5>
     <p>Note: Below Swagger UI is just for API mapping ONLY and will NOT be executing the real API calls.
@@ -8,3 +8,28 @@
   </div>
   <div class="card-body" id="swagger-ui"></div>
 </div>
+
+<button type="button" class="btn btn-block btn-lg btn-info" (click)="openXLarge(scheduler_template)">Show Scheduler</button>
+<ng-template #scheduler_template>
+  <div class="card container-fluid bg-dark">
+    <div class="card-header bg-secondary text-center">
+      <h5><strong>Scheduler</strong></h5>
+    </div>
+    <div class="mt-5 container-fluid bg-dark text-white col-md-9">
+      <cron-editor [(cron)]="cronExpression" [disabled]="isCronDisabled" [(options)]="cronOptions"></cron-editor>
+      <hr />
+      <p>The resulting Cron expression: <strong>{{cronExpression}}</strong></p>
+    </div>
+    <div class="card-footer bg-dark">
+      <div class="row">
+        <div class="col-md-6">
+          <button type="button" class="btn btn-block btn-lg btn-secondary">Cancel</button>
+        </div>
+        <div class="col-md-6">
+          <button type="button" class="btn btn-block btn-lg btn-info">Submit</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</ng-template>

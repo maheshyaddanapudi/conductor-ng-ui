@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { MetadataManagementService, Task, TaskDef, TaskManagementService, WorkflowTask } from 'src/app/Rest/Conductor';
+import { MetadataResourceService, Task, TaskResourceService, WorkflowTask } from 'src/app/Rest/Conductor';
 import { JSONFlattenerService } from 'src/app/Services/Helpers/jsonflattener.service';
 
 @Component({
@@ -48,7 +48,7 @@ export class DisplayTasksListComponent implements OnInit {
 
   }
 
-  constructor(private jsonFlattenerService: JSONFlattenerService, private modalService: NgbModal, private router: Router, private metadataManagementService: MetadataManagementService, private taskManagementService: TaskManagementService) { }
+  constructor(private jsonFlattenerService: JSONFlattenerService, private modalService: NgbModal, private router: Router, private metadataManagementService: MetadataResourceService, private taskManagementService: TaskResourceService) { }
 
   async ngOnInit() {
     await this.update_task_defs()

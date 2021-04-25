@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { MetadataManagementService, TaskDef, WorkflowTask } from 'src/app/Rest/Conductor';
+import { MetadataResourceService, TaskDef, WorkflowTask } from 'src/app/Rest/Conductor';
 import { JSONFlattenerService } from 'src/app/Services/Helpers/jsonflattener.service';
 import { NavigatorVarHolderService } from 'src/app/Services/Holders/navigator-var-holder.service';
 
@@ -36,7 +36,7 @@ export class InitiateNewWorkflowDefinitionComponent implements OnInit {
 
   public show_loading: boolean
 
-  constructor(private jsonFlattenerService: JSONFlattenerService, private navigatorVarHolderService: NavigatorVarHolderService, private router: Router, private datePipe: DatePipe, private metadataManagementService: MetadataManagementService, private modalService: NgbModal) {
+  constructor(private jsonFlattenerService: JSONFlattenerService, private navigatorVarHolderService: NavigatorVarHolderService, private router: Router, private datePipe: DatePipe, private metadataManagementService: MetadataResourceService, private modalService: NgbModal) {
     this.workflow_tasks = []
     this.workers_list = []
     this.task_defs_list = []

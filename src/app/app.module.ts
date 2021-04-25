@@ -82,6 +82,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { SafePipe } from './Pipes/SafePipe';
 import { LogAggregationDashboardComponent } from './Pages/Dashboards/log-aggregation-dashboard/log-aggregation-dashboard.component';
 import { JwtModule } from "@auth0/angular-jwt";
+import { CronEditorModule } from 'cron-editor';
+
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -161,6 +163,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    CronEditorModule,
 
     // Charts
 

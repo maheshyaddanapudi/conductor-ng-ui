@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { AdminService } from 'src/app/Rest/Conductor';
+import { AdminResourceService } from 'src/app/Rest/Conductor';
 
 @Component({
   selector: 'app-runtime-configuration',
@@ -13,7 +13,7 @@ export class RuntimeConfigurationComponent implements OnInit {
   public configuration_details_length: number
   public error_message: string
 
-  constructor(private adminService: AdminService) { 
+  constructor(private adminService: AdminResourceService) { 
     
   }
 

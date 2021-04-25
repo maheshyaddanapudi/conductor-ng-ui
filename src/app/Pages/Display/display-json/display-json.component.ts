@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MetadataManagementService, Workflow, WorkflowDef, WorkflowManagementService } from 'src/app/Rest/Conductor';
+import { MetadataResourceService, Workflow, WorkflowDef, WorkflowResourceService } from 'src/app/Rest/Conductor';
 
 @Component({
   selector: 'app-display-json',
@@ -21,7 +21,7 @@ export class DisplayJsonComponent implements OnInit {
 
   public error_message: string
 
-  constructor(private route: ActivatedRoute, private router: Router, private metadataManagementService: MetadataManagementService, private workflowManagementService: WorkflowManagementService) { }
+  constructor(private route: ActivatedRoute, private router: Router, private metadataManagementService: MetadataResourceService, private workflowManagementService: WorkflowResourceService) { }
 
   async ngOnInit() {
 

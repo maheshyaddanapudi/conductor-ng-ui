@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, ParamMap, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { BulkResponse, SearchResultWorkflowSummary, Workflow, WorkflowBulkManagementService, WorkflowManagementService } from 'src/app/Rest/Conductor';
+import { BulkResponse, SearchResultWorkflowSummary, Workflow, WorkflowBulkResourceService, WorkflowResourceService } from 'src/app/Rest/Conductor';
 import { filter } from 'rxjs/operators';
 import { JSONFlattenerService } from 'src/app/Services/Helpers/jsonflattener.service';
 
@@ -46,7 +46,7 @@ export class IndividualWorkflowRunningExecutionsComponent implements OnInit {
   public terminate_reason: string
   public terminate_index: number = -1
 
-  constructor(public jsonFlattenerService: JSONFlattenerService, private route: ActivatedRoute, private router: Router, private workflowManagementService: WorkflowManagementService, private workflowBulkManagementService: WorkflowBulkManagementService, private modalService: NgbModal) { 
+  constructor(public jsonFlattenerService: JSONFlattenerService, private route: ActivatedRoute, private router: Router, private workflowManagementService: WorkflowResourceService, private workflowBulkManagementService: WorkflowBulkResourceService, private modalService: NgbModal) { 
     this.auto_refresh_message = 'Initializing Auto-Refresh ...'
     this.workflow_ids = []
     this.selected_workflow_execution_indexes = []
@@ -76,7 +76,7 @@ export class IndividualWorkflowRunningExecutionsComponent implements OnInit {
 
     let buffer_worlfow_execution_results: Workflow[] = []
     await this.worlfow_execution_results.forEach((execution_result: Workflow) => {
-      if(execution_result.version == this.workflow_version)
+      if(execution_result.workflowDefinition.version == this.workflow_version)
       {
         buffer_worlfow_execution_results.push(execution_result)
       }

@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NavigatorVarHolderService } from 'src/app/Services/Holders/navigator-var-holder.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SearchResultWorkflowSummary, Workflow, WorkflowManagementService } from 'src/app/Rest/Conductor';
+import { SearchResultWorkflowSummary, Workflow, WorkflowResourceService } from 'src/app/Rest/Conductor';
 import { JSONFlattenerService } from 'src/app/Services/Helpers/jsonflattener.service';
 
 
@@ -38,7 +38,7 @@ export class IndividualWorkflowExecutionsComponent implements OnInit {
   public workflow_execution_details_buffer: Map<string, Workflow> = new Map();
   public show_loading: boolean = false
 
-  constructor(public jsonFlattenerService: JSONFlattenerService, private route: ActivatedRoute,private router: Router, private workflowManagementService: WorkflowManagementService, private modalService: NgbModal, private navigatorVarHolderService: NavigatorVarHolderService) { 
+  constructor(public jsonFlattenerService: JSONFlattenerService, private route: ActivatedRoute,private router: Router, private workflowManagementService: WorkflowResourceService, private modalService: NgbModal, private navigatorVarHolderService: NavigatorVarHolderService) { 
     this.auto_refresh_message = 'Initializing Auto-Refresh ...'
    }
 
@@ -216,7 +216,7 @@ export class IndividualWorkflowExecutionsComponent implements OnInit {
   async get_workflow_executions(){
     
     if(this.workflow_name && this.workflow_version){
-      await this.workflowManagementService.search(((this.current_page_selected-1) * this.page_size), this.page_size, 'updateTime:DESC','workflowType\u003d"'+this.workflow_name+'" && version='+this.workflow_version).toPromise().then((search_results: SearchResultWorkflowSummary) => {
+      await this.workflowManagementService.search1(((this.current_page_selected-1) * this.page_size), this.page_size, 'updateTime:DESC','workflowType\u003d"'+this.workflow_name+'" && version='+this.workflow_version).toPromise().then((search_results: SearchResultWorkflowSummary) => {
         this.search_results = search_results
         console.log('Total Hits', this.search_results.totalHits)
 

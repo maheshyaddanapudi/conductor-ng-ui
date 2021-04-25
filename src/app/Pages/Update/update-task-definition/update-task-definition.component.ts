@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { MetadataManagementService, TaskDef } from 'src/app/Rest/Conductor';
+import { MetadataResourceService, TaskDef } from 'src/app/Rest/Conductor';
 import { NavigatorVarHolderService } from 'src/app/Services/Holders/navigator-var-holder.service'; 
 
 @Component({
@@ -44,7 +44,7 @@ export class UpdateTaskDefinitionComponent implements OnInit {
   public result: string;
   public error_message: string;
 
-  constructor(private route: ActivatedRoute, private router: Router, private modalService: NgbModal, private metadataManagementService: MetadataManagementService, private navigatorVarHolderService: NavigatorVarHolderService) { 
+  constructor(private route: ActivatedRoute, private router: Router, private modalService: NgbModal, private metadataManagementService: MetadataResourceService, private navigatorVarHolderService: NavigatorVarHolderService) { 
     this.inputKeys = [];
     this.outputKeys = [];
   }
@@ -279,7 +279,7 @@ async updateTaskDefn()
     retry_logic_choice_index = retry_logic_choice_index + 1    
   })
 
-  await this.metadataManagementService.registerTaskDef(aTaskDef).toPromise().then((response: any) => {
+  await this.metadataManagementService.registerTaskDef1(aTaskDef).toPromise().then((response: any) => {
     
     if(response)
     {

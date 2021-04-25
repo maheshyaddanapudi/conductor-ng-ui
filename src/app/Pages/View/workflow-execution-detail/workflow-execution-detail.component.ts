@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { MetadataManagementService, Task, Workflow, WorkflowDef, WorkflowManagementService } from 'src/app/Rest/Conductor';
+import { MetadataResourceService, Task, Workflow, WorkflowDef, WorkflowResourceService } from 'src/app/Rest/Conductor';
 import { WorkflowExecutionJsonMermaidConverterService } from 'src/app/Services/Converters/workflow-execution-json-mermaid-converter.service';
 import { NavigatorVarHolderService } from 'src/app/Services/Holders/navigator-var-holder.service';
 import { ToastrService } from 'src/app/Services/LibraryOverrides/toastr.service';
@@ -33,7 +33,7 @@ export class WorkflowExecutionDetailComponent implements OnInit {
   public show_loading: boolean
   public terminate_reason: string
 
-  constructor(private jsonFlattenerService: JSONFlattenerService, private route: ActivatedRoute, private toastrService: ToastrService, private router: Router, private modalService: NgbModal, private navigatorVarHolderService: NavigatorVarHolderService, private metadataManagementService: MetadataManagementService, private workflowManagementService: WorkflowManagementService, private workflowExecutionJsonMermaidConverterService: WorkflowExecutionJsonMermaidConverterService) {
+  constructor(private jsonFlattenerService: JSONFlattenerService, private route: ActivatedRoute, private toastrService: ToastrService, private router: Router, private modalService: NgbModal, private navigatorVarHolderService: NavigatorVarHolderService, private metadataManagementService: MetadataResourceService, private workflowManagementService: WorkflowResourceService, private workflowExecutionJsonMermaidConverterService: WorkflowExecutionJsonMermaidConverterService) {
     
   }
 
@@ -151,7 +151,7 @@ export class WorkflowExecutionDetailComponent implements OnInit {
   }
 
   pause_workflow(){
-    this.workflowManagementService.pauseWorkflow(this.workflow_id).toPromise().then((response: any) => {
+    this.workflowManagementService.pauseWorkflow1(this.workflow_id).toPromise().then((response: any) => {
       this.toastrService.success(this.workflow_id, "Workflow Pause Success !")
       this.initiate_with_delay(1)
     }).catch((err_response: HttpErrorResponse) => {
@@ -163,7 +163,7 @@ export class WorkflowExecutionDetailComponent implements OnInit {
   }
 
   resume_workflow(){
-    this.workflowManagementService.resumeWorkflow(this.workflow_id).toPromise().then((response: any) => {
+    this.workflowManagementService.resumeWorkflow1(this.workflow_id).toPromise().then((response: any) => {
       this.toastrService.success(this.workflow_id, "Workflow Resume Success !")
       this.initiate_with_delay(1)
     }).catch((err_response: HttpErrorResponse) => {
@@ -175,7 +175,7 @@ export class WorkflowExecutionDetailComponent implements OnInit {
   }
 
   restart_workflow(){
-    this.workflowManagementService.restart(this.workflow_id).toPromise().then((response: any) => {
+    this.workflowManagementService.restart1(this.workflow_id).toPromise().then((response: any) => {
       this.toastrService.success(this.workflow_id, "Workflow Restart Success !")
       this.initiate_with_delay(1)
     }).catch((err_response: HttpErrorResponse) => {
@@ -187,7 +187,7 @@ export class WorkflowExecutionDetailComponent implements OnInit {
   }
 
   retry_workflow(){
-    this.workflowManagementService.retry(this.workflow_id).toPromise().then((response: any) => {
+    this.workflowManagementService.retry1(this.workflow_id).toPromise().then((response: any) => {
       this.toastrService.success(this.workflow_id, "Workflow Retry Success !")
       this.initiate_with_delay(1)
     }).catch((err_response: HttpErrorResponse) => {
@@ -199,7 +199,7 @@ export class WorkflowExecutionDetailComponent implements OnInit {
   }
 
   terminate_workflow(){
-    this.workflowManagementService.terminate(this.workflow_id, this.terminate_reason).toPromise().then((response: any) => {
+    this.workflowManagementService.terminate1(this.workflow_id, this.terminate_reason).toPromise().then((response: any) => {
       this.toastrService.success(this.workflow_id, "Workflow Termination Success !")
       this.initiate_with_delay(1)
     }).catch((err_response: HttpErrorResponse) => {

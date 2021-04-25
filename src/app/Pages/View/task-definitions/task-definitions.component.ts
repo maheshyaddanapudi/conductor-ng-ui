@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { MetadataManagementService, TaskDef } from 'src/app/Rest/Conductor';
+import { MetadataResourceService, TaskDef } from 'src/app/Rest/Conductor';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Router } from '@angular/router';
 import { NavigatorVarHolderService } from 'src/app/Services/Holders/navigator-var-holder.service';
@@ -25,7 +25,7 @@ export class TaskDefinitionsComponent implements OnInit {
   public taskDefJsonTemp: string = ''
   public error_message: string
 
-  constructor(private metadataManagementService: MetadataManagementService, private navigatorVarHolderService: NavigatorVarHolderService, private router: Router, private metadata_management_service: MetadataManagementService, private modalService: NgbModal) {
+  constructor(private metadataManagementService: MetadataResourceService, private navigatorVarHolderService: NavigatorVarHolderService, private router: Router, private modalService: NgbModal) {
     this.taskdefs_list = []
     this.paginated_taskdefs_list = []
    }
@@ -36,7 +36,7 @@ export class TaskDefinitionsComponent implements OnInit {
 
   async initiate()
   {
-    await this.metadata_management_service.getTaskDefs().toPromise().then((taskdefs_list_response: TaskDef[]) => {
+    await this.metadataManagementService.getTaskDefs().toPromise().then((taskdefs_list_response: TaskDef[]) => {
       this.taskdefs_list = taskdefs_list_response;
       console.log('Total TaskDefs - ', taskdefs_list_response.length)
       
