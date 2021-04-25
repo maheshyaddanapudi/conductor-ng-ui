@@ -97,6 +97,7 @@
             "styles": [
               "./node_modules/bootstrap/dist/css/bootstrap.min.css",
               "./node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
+              "./node_modules/cron-editor-material-style/css/cron-editor-material-style.css",
               "src/styles.sass"
             ],
             "assets": [

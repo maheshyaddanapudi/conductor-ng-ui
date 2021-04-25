@@ -47,6 +47,8 @@ export class WorkflowJsonMermaidConverterService {
 
     workflow_def.tasks.forEach((workflow_task: WorkflowTask) => {
 
+      console.log(workflow_task_counter, workflow_task.type, workflow_task.taskReferenceName)
+
       let task_graph = this.recursive_converter(workflow_task)
 
       console.log('Task Graph Final',task_graph)
@@ -62,6 +64,10 @@ export class WorkflowJsonMermaidConverterService {
           graph_def = graph_def + task_graph + this.LINE_SEPERATOR
         }
       }
+      else if(workflow_task.type == 'DO_WHILE' && workflow_task_counter == 1)
+      {
+        graph_def = graph_def + this.ARROW_DOTTED + task_graph + this.LINE_SEPERATOR
+      }
       else
       {
         graph_def = graph_def + this.ARROW + task_graph + this.LINE_SEPERATOR
@@ -74,7 +80,8 @@ export class WorkflowJsonMermaidConverterService {
       if(
         task_type != 'FORK_JOIN' &&
         task_type != 'DECISION' &&
-        task_type != 'FORK_JOIN_DYNAMIC' 
+        task_type != 'FORK_JOIN_DYNAMIC' &&
+        task_type != 'DO_WHILE' 
       )
       {
         graph_def = graph_def + workflow_task.taskReferenceName
@@ -106,6 +113,11 @@ export class WorkflowJsonMermaidConverterService {
          graph_def = graph_def + this.LINE_SEPERATOR + branch[branch.length-1].taskReferenceName + this.ARROW_DOTTED + 'Z' + this.CIRCLE.replace(this.REPLACE_THIS_PLACEHOLDER, 'Stop') 
       })
     }
+    else if(workflow_def.tasks[workflow_def.tasks.length-1].type == 'DO_WHILE')
+    {
+      let last_task_index: number = workflow_def.tasks[workflow_def.tasks.length-1].loopOver.length - 1
+      graph_def = graph_def + workflow_def.tasks[workflow_def.tasks.length-1].loopOver[last_task_index].taskReferenceName + this.ARROW_DOTTED + 'Z' + this.CIRCLE.replace(this.REPLACE_THIS_PLACEHOLDER, 'Stop')
+    }
     else
     {
       graph_def = graph_def + this.ARROW + 'Z' + this.CIRCLE.replace(this.REPLACE_THIS_PLACEHOLDER, 'Stop')
@@ -114,8 +126,6 @@ export class WorkflowJsonMermaidConverterService {
     console.log('Main Graph Final',graph_def)
 
     graph_def_array = graph_def.split(' \\n ')
-
-    localStorage.removeItem('my_awf_manager_ui.mermaid_workflow_graph_def')
 
     console.log(JSON.stringify(graph_def_array))
    
@@ -333,7 +343,11 @@ export class WorkflowJsonMermaidConverterService {
 
             console.log('Sub Task Graph', sub_task_graph)
 
-            if(sub_tasks_list[sub_task_counter-2] && ( sub_tasks_list[sub_task_counter-2].type == 'DECISION' || sub_tasks_list[sub_task_counter-2].type == 'FORK_JOIN' ) )
+            if(sub_task_counter == 1)
+            {
+              branch_graph = branch_graph + this.ARROW_DOTTED + sub_task_graph + this.LINE_SEPERATOR
+            }
+            else if(sub_tasks_list[sub_task_counter-2] && ( sub_tasks_list[sub_task_counter-2].type == 'DECISION' || sub_tasks_list[sub_task_counter-2].type == 'FORK_JOIN' ) )
             {
               if(sub_tasks_list[sub_task_counter-2].type == 'DECISION')
               {
@@ -399,7 +413,7 @@ export class WorkflowJsonMermaidConverterService {
   draw_do_while_task_graph(workflow_task: WorkflowTask): string{
     let graph_def = ""
 
-    let do_while_graph: string = workflow_task.taskReferenceName.replace(' ','_') + this.LINE_SEPERATOR + "subgraph " + workflow_task.type+'_'+workflow_task.taskReferenceName.replace(' ','_') + ' [DO WHILE]' + this.LINE_SEPERATOR
+    let do_while_graph: string = this.LINE_SEPERATOR + "subgraph " + workflow_task.type+'_'+workflow_task.taskReferenceName.replace(' ','_') + ' [DO WHILE]' + this.LINE_SEPERATOR
 
       console.log('Do While Graph Init',do_while_graph)
 
@@ -411,7 +425,11 @@ export class WorkflowJsonMermaidConverterService {
 
           console.log('Sub Task Graph', sub_task_graph)
 
-          if(workflow_task.loopOver[sub_task_counter-2] && ( workflow_task.loopOver[sub_task_counter-2].type == 'DECISION' || workflow_task.loopOver[sub_task_counter-2].type == 'FORK_JOIN' ) )
+          if(sub_task_counter == 1)
+          {
+            do_while_graph = sub_task.taskReferenceName + this.LINE_SEPERATOR + do_while_graph 
+          }
+          else if(workflow_task.loopOver[sub_task_counter-2] && ( workflow_task.loopOver[sub_task_counter-2].type == 'DECISION' || workflow_task.loopOver[sub_task_counter-2].type == 'FORK_JOIN' ) )
           {
             if(workflow_task.loopOver[sub_task_counter-2].type == 'DECISION')
             {

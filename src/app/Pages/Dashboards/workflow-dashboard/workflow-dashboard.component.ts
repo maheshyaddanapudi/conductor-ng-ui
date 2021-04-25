@@ -17,7 +17,7 @@ import { environment } from 'src/environments/environment';
 export class WorkflowDashboardComponent implements OnInit {
 
   public chartData: number[] = []
-  public chartLabels: Label[] = ['Running', 'Paused', 'Completed', 'Failed', 'Terminated', 'Timed-Out'];
+  public chartLabels: Label[] = ['Paused', 'Running', 'Completed', 'Failed', 'Terminated', 'Timed-Out'];
 
   public radarChartData: ChartDataSets[] = []
   public scatterChartData: ChartDataSets[] = []

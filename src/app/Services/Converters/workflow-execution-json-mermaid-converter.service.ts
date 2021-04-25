@@ -46,6 +46,8 @@ export class WorkflowExecutionJsonMermaidConverterService {
 
     workflow_def.tasks.forEach((workflow_task: WorkflowTask) => {
 
+      console.log(workflow_task_counter, workflow_task.type, workflow_task.taskReferenceName)
+
       let task_graph = this.recursive_converter(workflow_task)
 
       console.log('Task Graph Final',task_graph)
@@ -61,6 +63,10 @@ export class WorkflowExecutionJsonMermaidConverterService {
           graph_def = graph_def + task_graph + this.LINE_SEPERATOR
         }
       }
+      else if(workflow_task.type == 'DO_WHILE' && workflow_task_counter == 1)
+      {
+        graph_def = graph_def + this.ARROW_DOTTED + task_graph + this.LINE_SEPERATOR
+      }
       else
       {
         graph_def = graph_def + this.ARROW + task_graph + this.LINE_SEPERATOR
@@ -73,7 +79,8 @@ export class WorkflowExecutionJsonMermaidConverterService {
       if(
         task_type != 'FORK_JOIN' &&
         task_type != 'DECISION' &&
-        task_type != 'FORK_JOIN_DYNAMIC' 
+        task_type != 'FORK_JOIN_DYNAMIC' &&
+        task_type != 'DO_WHILE' 
       )
       {
         graph_def = graph_def + workflow_task.taskReferenceName
@@ -105,6 +112,11 @@ export class WorkflowExecutionJsonMermaidConverterService {
          graph_def = graph_def + this.LINE_SEPERATOR + branch[branch.length-1].taskReferenceName + this.ARROW_DOTTED + 'Z' + this.CIRCLE.replace(this.REPLACE_THIS_PLACEHOLDER, 'Stop') 
       })
     }
+    else if(workflow_def.tasks[workflow_def.tasks.length-1].type == 'DO_WHILE')
+    {
+      let last_task_index: number = workflow_def.tasks[workflow_def.tasks.length-1].loopOver.length - 1
+      graph_def = graph_def + workflow_def.tasks[workflow_def.tasks.length-1].loopOver[last_task_index].taskReferenceName + this.ARROW_DOTTED + 'Z' + this.CIRCLE.replace(this.REPLACE_THIS_PLACEHOLDER, 'Stop')
+    }
     else
     {
       graph_def = graph_def + this.ARROW + 'Z' + this.CIRCLE.replace(this.REPLACE_THIS_PLACEHOLDER, 'Stop')
@@ -118,7 +130,7 @@ export class WorkflowExecutionJsonMermaidConverterService {
 
     console.log('Graph Def Array Without Status Updates : '+JSON.stringify(graph_def_array))
 
-    this.update_task_status(workflow_execution, graph_def_array).then((graph_def_updated_array: string[]) => {
+    this.update_task_status(workflow_execution, graph_def_array, workflow_def).then((graph_def_updated_array: string[]) => {
       graph_def_array = graph_def_updated_array
     })
    
@@ -402,7 +414,7 @@ export class WorkflowExecutionJsonMermaidConverterService {
   draw_do_while_task_graph(workflow_task: WorkflowTask): string{
     let graph_def = ""
 
-    let do_while_graph: string = workflow_task.taskReferenceName.replace(' ','_') + this.LINE_SEPERATOR + "subgraph " + workflow_task.type+'_'+workflow_task.taskReferenceName.replace(' ','_') + ' [DO WHILE]' + this.LINE_SEPERATOR
+    let do_while_graph: string = this.LINE_SEPERATOR + "subgraph " + workflow_task.type+'_'+workflow_task.taskReferenceName.replace(' ','_') + ' [DO WHILE]' + this.LINE_SEPERATOR
 
       console.log('Do While Graph Init',do_while_graph)
 
@@ -414,7 +426,11 @@ export class WorkflowExecutionJsonMermaidConverterService {
 
           console.log('Sub Task Graph', sub_task_graph)
 
-          if(workflow_task.loopOver[sub_task_counter-2] && ( workflow_task.loopOver[sub_task_counter-2].type == 'DECISION' || workflow_task.loopOver[sub_task_counter-2].type == 'FORK_JOIN' ) )
+          if(sub_task_counter == 1)
+          {
+            do_while_graph = sub_task.taskReferenceName + this.LINE_SEPERATOR + do_while_graph 
+          }
+          else if(workflow_task.loopOver[sub_task_counter-2] && ( workflow_task.loopOver[sub_task_counter-2].type == 'DECISION' || workflow_task.loopOver[sub_task_counter-2].type == 'FORK_JOIN' ) )
           {
             if(workflow_task.loopOver[sub_task_counter-2].type == 'DECISION')
             {
@@ -491,11 +507,19 @@ export class WorkflowExecutionJsonMermaidConverterService {
       return exclusive_join_graph
   }
 
-  async update_task_status(workflow_execution: Workflow, graph_def_array: string[])
+  async update_task_status(workflow_execution: Workflow, graph_def_array: string[], workflow_def: WorkflowDef)
   {
 
+    let workflow_task_counter: number = 0;
     await workflow_execution.tasks.forEach((workflow_execution_task: Task) => {
-      if(workflow_execution_task && workflow_execution_task.status)
+     
+      if(workflow_execution_task && workflow_execution_task.status &&
+        (
+          workflow_execution_task.taskType != 'DO_WHILE'
+        )
+        &&
+        !workflow_execution_task.loopOverTask
+        )
       {
         switch(workflow_execution_task.status){
           case 'IN_PROGRESS':
@@ -529,10 +553,77 @@ export class WorkflowExecutionJsonMermaidConverterService {
           break;
         }
       }
+      else if(workflow_execution_task && workflow_execution_task.status &&
+        (
+          workflow_execution_task.taskType != 'DO_WHILE'
+        )
+        &&
+        workflow_execution_task.loopOverTask
+        )
+      {
+        let refTaskName: string = ''
+
+        if(workflow_execution_task.loopOverTask)
+        {
+          let word_counter: number = 1;
+
+          workflow_execution_task.referenceTaskName.split("__").forEach((a_word: string) =>{
+            if(word_counter < workflow_execution_task.referenceTaskName.split("__").length)
+            {
+              if(refTaskName == '')
+              {
+                refTaskName = refTaskName + a_word
+              }
+              else
+              {
+                refTaskName = refTaskName + '__' + a_word
+              }
+            }
+            word_counter = word_counter + 1
+          })
+        }
+        else
+        {
+          refTaskName = workflow_execution_task.referenceTaskName
+        }
+
+        switch(workflow_execution_task.status){
+          case 'IN_PROGRESS':
+            graph_def_array.push("style "+refTaskName+" fill:#ffa600;")
+          break;
+          case 'FAILED':
+            graph_def_array.push("style "+refTaskName+" fill:#ff0000;")
+          break;
+          case 'FAILED_WITH_TERMINAL_ERROR':
+            graph_def_array.push("style "+refTaskName+" fill:#ff0000;")
+          break;
+          case 'SKIPPED':
+            graph_def_array.push("style "+refTaskName+" fill:#00aeff;")
+          break;
+          case 'CANCELED':
+            graph_def_array.push("style "+refTaskName+" fill:#00aeff;")
+          break;
+          case 'COMPLETED':
+            graph_def_array.push("style "+refTaskName+" fill:#00ff00;")
+          break;
+          case 'COMPLETED_WITH_ERRORS':
+            graph_def_array.push("style "+refTaskName+" fill:#00ff40;")
+          break;
+          case 'TIMED_OUT':
+            graph_def_array.push("style "+refTaskName+" fill:#ffd000;")
+          break;
+          case 'SCHEDULED':
+            graph_def_array.push("style "+refTaskName+" fill:#00aeff;")
+          break;
+          default:
+          break;
+        }
+      }
       else
       {
         console.log('Ignoring Task status as Task Type is : '+workflow_execution_task.taskType)
       }
+      workflow_task_counter = workflow_task_counter + 1
     })
 
     return graph_def_array
