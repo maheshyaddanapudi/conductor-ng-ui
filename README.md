@@ -9,7 +9,11 @@
 
 Before starting, for details on Conductor Boot, refer to <a href="https://github.com/maheshyaddanapudi/conductor-boot/blob/main/README.md">Conductor Boot Documentation</a>
 
-Added PR to Netflic/Conductor Repository --> <a href="https://github.com/Netflix/conductor/pull/2184">PR 2184</a>
+Or
+
+http://netflix.github.io/conductor/
+
+Added to Netflix/Conductor Repository --> <a href="https://github.com/Netflix/conductor/blob/main/RELATED.md#conductor-web-ui">Conductor Community Projects</a>
 
 ## Overview
 
