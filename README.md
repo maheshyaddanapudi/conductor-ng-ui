@@ -7,11 +7,7 @@
 
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/dashboard?id=maheshyaddanapudi_conductor-ng-ui)
 
-Before starting, for details on Conductor Boot, refer to <a href="https://github.com/maheshyaddanapudi/conductor-boot/blob/main/README.md">Conductor Boot Documentation</a>
-
-Or
-
-http://netflix.github.io/conductor/
+Before starting, for details on Conductor, refer to http://netflix.github.io/conductor/
 
 Added to Netflix/Conductor Repository --> <a href="https://github.com/Netflix/conductor/blob/main/RELATED.md#conductor-web-ui">Conductor Community Projects</a>
 
