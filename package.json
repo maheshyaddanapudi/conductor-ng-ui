@@ -58,7 +58,8 @@
     "swagger-ui-themes": "^3.0.1",
     "ts-transformer-keys": "^0.4.2",
     "tslib": "^2.0.0",
-    "zone.js": "~0.10.2"
+    "zone.js": "~0.10.2",
+    "postcss": ">=7.0.36"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1102.1",
