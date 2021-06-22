@@ -1,4 +1,4 @@
-FROM alpine as builder
+FROM python:3-alpine as builder
 
 RUN apk add --update nodejs npm 
 
