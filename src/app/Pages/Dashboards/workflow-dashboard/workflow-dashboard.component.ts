@@ -17,7 +17,7 @@ import { environment } from 'src/environments/environment';
 export class WorkflowDashboardComponent implements OnInit {
 
   public chartData: number[] = []
-  public chartLabels: Label[] = ['Paused', 'Running', 'Completed', 'Failed', 'Terminated', 'Timed-Out'];
+  public chartLabels: Label[] = ['Running', 'Paused', 'Completed', 'Failed', 'Terminated', 'Timed-Out'];
 
   public radarChartData: ChartDataSets[] = []
   public scatterChartData: ChartDataSets[] = []
@@ -68,7 +68,7 @@ export class WorkflowDashboardComponent implements OnInit {
     })
 
     await this.workflowManagementService.search1(0,undefined,'updateTime:DESC',undefined,'status\u003d"RUNNING"').toPromise().then((search_results: SearchResultWorkflowSummary) => {
-      this.dashboardDataHolderService.set_paused(search_results.totalHits)
+      this.dashboardDataHolderService.set_running(search_results.totalHits)
     }).catch((err_response: HttpErrorResponse) => {
       this.error_message.push(err_response.message)
       console.log('Response Code - ', err_response.status)
@@ -77,7 +77,7 @@ export class WorkflowDashboardComponent implements OnInit {
     })
 
     await this.workflowManagementService.search1(0,undefined,'updateTime:DESC',undefined,'status\u003d"PAUSED"').toPromise().then((search_results: SearchResultWorkflowSummary) => {
-      this.dashboardDataHolderService.set_running(search_results.totalHits)
+      this.dashboardDataHolderService.set_paused(search_results.totalHits)
     }).catch((err_response: HttpErrorResponse) => {
       this.error_message.push(err_response.message)
       console.log('Response Code - ', err_response.status)

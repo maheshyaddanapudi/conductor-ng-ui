@@ -54,7 +54,7 @@
             </td>
             <td class="text-center">{{dashboardDataHolderService.get_running()}}</td>
             <td class="text-center">
-              <button class="btn btn-sm btn-alternate text-white">View</button>
+              <button class="btn btn-sm btn-alternate text-white" (click)="workflow_executions_selection('Running')" >View</button>
             </td>
           </tr>
           <tr>
@@ -64,7 +64,7 @@
             </td>
             <td class="text-center">{{dashboardDataHolderService.get_paused()}}</td>
             <td class="text-center">
-              <button class="btn btn-sm btn-alternate text-white">View</button>
+              <button class="btn btn-sm btn-alternate text-white" (click)="workflow_executions_selection('Paused')" >View</button>
             </td>
           </tr>
           <tr>
@@ -74,7 +74,7 @@
             </td>
             <td class="text-center">{{dashboardDataHolderService.get_completed()}}</td>
             <td class="text-center">
-              <button class="btn btn-sm btn-alternate text-white">View</button>
+              <button class="btn btn-sm btn-alternate text-white" (click)="workflow_executions_selection('Completed')" >View</button>
             </td>
           </tr>
           <tr>
@@ -84,7 +84,7 @@
             </td>
             <td class="text-center">{{dashboardDataHolderService.get_failed()}}</td>
             <td class="text-center">
-              <button class="btn btn-sm btn-alternate text-white">View</button>
+              <button class="btn btn-sm btn-alternate text-white" (click)="workflow_executions_selection('Failed')" >View</button>
             </td>
           </tr>
           <tr>
@@ -94,7 +94,7 @@
             </td>
             <td class="text-center">{{dashboardDataHolderService.get_terminated()}}</td>
             <td class="text-center">
-              <button class="btn btn-sm btn-alternate text-white">View</button>
+              <button class="btn btn-sm btn-alternate text-white" (click)="workflow_executions_selection('Terminated')" >View</button>
             </td>
           </tr>
           <tr>
@@ -104,7 +104,7 @@
             </td>
             <td class="text-center">{{dashboardDataHolderService.get_timedout()}}</td>
             <td class="text-center">
-              <button class="btn btn-sm btn-alternate text-white">View</button>
+              <button class="btn btn-sm btn-alternate text-white" (click)="workflow_executions_selection('Timed Out')">View</button>
             </td>
           </tr>
         </tbody>
@@ -132,7 +132,7 @@
           <td class="text-center">Task Definitions</td>
           <td class="text-center">{{total_task_defs}}</td>
           <td class="text-center">
-            <button class="btn btn-sm btn-focus text-white">View</button>
+            <button class="btn btn-sm btn-focus text-white" routerLink="/view/task-definitions">View</button>
           </td>
         </tr>
         <tr>
@@ -140,7 +140,7 @@
           <td class="text-center">Workflow Definitions</td>
           <td class="text-center">{{total_workflow_defs}}</td>
           <td class="text-center">
-            <button class="btn btn-sm btn-focus text-white">View</button>
+            <button class="btn btn-sm btn-focus text-white" routerLink="/view/workflow-definitions">View</button>
           </td>
         </tr>
       </tbody>

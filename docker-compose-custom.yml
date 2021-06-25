@@ -1,0 +1,96 @@
+version: '2.3'
+
+services:
+  conductor-server:
+    environment:
+      - CONFIG_PROP=config-mongo.properties
+    image: zzzmahesh/conductor:latest
+    restart: on-failure
+    networks:
+      - internal
+    ports:
+      - 8080:8080
+    healthcheck:
+      test: ["CMD", "curl","-I" ,"-XGET", "http://localhost:8080/health"]
+      interval: 60s
+      timeout: 30s
+      retries: 12
+    links:
+      - elasticsearch:elasticsearch
+      - mongo:mongo
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1k"
+        max-file: "3"
+
+  mongo:
+    image: mongo
+    restart: on-failure
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=conductor
+      - MONGO_INITDB_ROOT_PASSWORD=conductor
+      - MONGO_INITDB_DATABASE=conductor
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/conductor --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    ports:
+      - 27017:27017
+    networks:
+      - internal
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1k"
+        max-file: "3"
+
+  elasticsearch:
+    image: elasticsearch:6.8.15
+    restart: on-failure
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx1024m"
+      - transport.host=0.0.0.0
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    networks:
+      - internal
+    ports:
+      - 9200:9200
+      - 9300:9300
+    healthcheck:
+      test: timeout 5 bash -c 'cat < /dev/null > /dev/tcp/localhost/9300'
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1k"
+        max-file: "3"
+
+  conductor-ng-ui:
+      image: conductor-ng-ui:latest
+      build: 
+        context: .
+      restart: on-failure
+      environment:
+        WF_SERVER: http://localhost:8080
+        OAUTH_ENABLED: N
+      ports:
+        - 80:80
+      depends_on:
+        conductor-server:
+          condition: service_healthy
+      networks:
+        internal:
+          aliases:
+            - conductor-ng-ui
+networks:
+  internal:
