@@ -34,6 +34,8 @@ import { DefineNewWorkflowDefinitionComponent } from './Pages/Create/SimpleWorkf
 import { LogAggregationDashboardComponent } from './Pages/Dashboards/log-aggregation-dashboard/log-aggregation-dashboard.component';
 import { WireNewWorkflowDefinitionComponent } from './Pages/Create/SimpleWorkflow/wire-new-workflow-definition/wire-new-workflow-definition.component';
 import { ConfirmNewWorkflowDefinitionComponent } from './Pages/Create/SimpleWorkflow/confirm-new-workflow-definition/confirm-new-workflow-definition.component';
+import { DiagramComponent } from './Pages/Diagrams/diagram/diagram.component';
+import { MinioClientComponent } from './Pages/Test/minio-client/minio-client.component';
 
 
 const routes: Routes = [
@@ -86,6 +88,8 @@ const routes: Routes = [
 
       // Workflow Execution Details
       { path: "view/workflow-execution-diagram", component: ViewMermaidWorkflowExecutionDiagramComponent , data: {extraParameter: ''}, canActivate: [RouteGuard]},
+
+      { path: "bpmn/diagram", component: MinioClientComponent , data: {extraParameter: ''}, canActivate: [RouteGuard]},
 
 
       // Create

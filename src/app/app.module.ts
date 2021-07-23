@@ -82,6 +82,9 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { SafePipe } from './Pipes/SafePipe';
 import { LogAggregationDashboardComponent } from './Pages/Dashboards/log-aggregation-dashboard/log-aggregation-dashboard.component';
 import { JwtModule } from "@auth0/angular-jwt";
+import { DiagramComponent } from './Pages/Diagrams/diagram/diagram.component';
+import { MinioClientComponent } from './Pages/Test/minio-client/minio-client.component';
+import { MinioExt, MinioModule } from '@hapiness/minio'
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -145,8 +148,11 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     ConfirmNewWorkflowDefinitionComponent,
     SafePipe,
     LogAggregationDashboardComponent,
+    DiagramComponent,
+    MinioClientComponent,
   ],
   imports: [
+    MinioModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
@@ -187,7 +193,20 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     }, 
     ConfigActions, 
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent, [
+    MinioExt.setConfig(
+      {
+          connection: {
+            endPoint: 'localhost',
+            port: 9000,
+            useSSL: false,
+            accessKey: 'minioadmin',
+            secretKey: 'minioadmin',
+            region: 'us-east-1'
+          },
+      }
+  )
+  ]]
 })
 
 export class AppModule {

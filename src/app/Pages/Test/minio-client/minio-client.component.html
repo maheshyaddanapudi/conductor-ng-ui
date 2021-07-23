@@ -1,0 +1,19 @@
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h4>Create Bucket</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">Bucket Name</div>
+                <div class="col-md-8">
+                    <input [(ngModel)]="bucketName" type="text" autofocus>
+                </div>
+            </div>
+            <p *ngIf="message" class="text-center">{{message}}</p>
+        </div>
+        <div class="card-footer">
+            <button type="button" class="btn btn-lg btn-block btn-success" (click)="createBucket()"><strong>Submit</strong></button>
+        </div>
+    </div>
+</div>

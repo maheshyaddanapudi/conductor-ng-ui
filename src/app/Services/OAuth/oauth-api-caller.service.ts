@@ -71,8 +71,6 @@ export class OauthApiCallerService {
     }
     else
     {
-
-      console.log('Refresh Token Value', this.userInfoAndTokenDataHolderService.get_refresh_token())
       return true
     }
   }
