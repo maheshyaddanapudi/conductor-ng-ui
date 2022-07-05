@@ -44,7 +44,7 @@
     "font-awesome": "^4.7.0",
     "jquery": "^3.5.1",
     "lodash-es": "^4.17.21",
-    "mermaid": "^8.8.0",
+    "mermaid": "^9.1.2",
     "ng-bootstrap": "^1.6.3",
     "ng2-charts": "^2.4.2",
     "ng6-toastr-notifications": "^1.0.4",
